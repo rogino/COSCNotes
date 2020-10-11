@@ -96,7 +96,7 @@ Hence, the search space needs to be reduced:
 - Table lookup instead of search (e.g. for opening/closing situations)
 - Monte-Carlo tree search: randomly sample tree
 
-#### Pruning: ALpha-Beta Pruning
+#### Pruning: Alpha-Beta Pruning
 
 If an option is bad compared to other available options, there is no point in expending search time to find out exactly how bad it is.
 
@@ -130,57 +130,50 @@ If *m > n*, the max node is guaranteed to get a utility of at least *m* - hence,
 
 The algorithm has:
 
-- $\alpha$: highest-value choice found for a max node higher-up in the tree. Initially $-\infty$
-- $\beta$:   lowest-value choice found for a min node higher-up in the tree. Initially $ \infty$
+- $\alpha$: highest-value choice found for a max node higher-up (parents) in the tree. Initially $-\infty$
+- $\beta$:   lowest-value choice found for a min node higher-up (parents) in the tree. Initially $ \infty$
 
-These two values should be passed down to the child nodes during search:
-
-- Max nodes update $\alpha$ at max nodes
-- Min nodes update $\beta$ at min nodes
-
-When $\alpha >= \beta$ at a node, branches should be pruned.
+These two values should be passed down to the child nodes during search. If the value of a child node is greater than alpha for a max node, then alpha should be updated, and vice versa. If $\alpha >= \beta$, the node can be pruned.
 
 ```python
-import math
-INF = math.inf
+from math import inf
 
-def alpha_beta_search(state, root_is_max = True):
-  if root_is_max:
-    return min([(min_value(child, -INF, INF), child) for child in state.children()])[1]
-  else:
-    return max([(max_value(child, -INF, INF), child) for child in state.children()])[1]
+def alpha_beta_search(tree, is_max_node = True, alpha = -math.inf, beta = math.inf):
+  # returns a tuple of the best utility and path that gets that utility
+  # If path is none, pruning occurred or it is a leaf node
+  best_path = None
+  best_utility = -math.inf if is_max_node else math.inf
 
-  # TODO min_value and max_value should update parent's alpha and beta values? Only update one of alpha or beta?
+  if isinstance(tree, int):
+    return (tree, None)
 
-def max_value(state, alpha, beta):
-  if state.is_terminal:
-    return state.calculate_utility()
-  
-  max_val = -INF
-  for child in state.children():
-    val = min_value(child, alpha, beta)
-    if val > max_val:
-      max_val = val
-      alpha = max(alpha, max_val)
-      if alpha >= beta:
-        break
+  for (i, child) in enumerate(tree):
+    utility, path = MinimaxAlphaBeta(child, not is_max_node, alpha, beta)
+    path = [i] if path is None else ([i] + path) # Append index of child to path received by child
 
-  return max_value
+    if is_max_node:
+      if utility > best_utility:
+        (best_utility, best_path) = (utility, path)
 
-def min_value(state, alpha, beta):
-  if state.is_terminal:
-    return state.calculate_utility()
-  
-  min_val = INF
-  for child in state.children():
-    val = max_value(child, alpha, beta)
-    if val < min_val:
-      min_val = val
-      beta = max(beta, min_val)
-      if alpha >= beta:
-        break
+        if utility > alpha:
+          # This child is now the largest child encountered by this max node or any parent max nodes
+          alpha = utility
+    else:
+      if utility < best_utility:
+        (best_utility, best_path) = (utility, path)
 
-  return min_value
+        if utility < beta:
+          beta = utility
+
+    if alpha >= beta:
+      return (utility, None)
+      # In the case that this is a max node:
+      # The child node is min node and its value is larger than or equal to the smallest value
+      # encountered so far by any parent min nodes. Hence, this (max) node pick this child or
+      # a larger one, so this node's parent will reject it. Thus, this node can be pruned
+      # Similar logic applies if it is a min node
+
+  return (best_utility, best_path)
 ```
 
 ##### Effectiveness
