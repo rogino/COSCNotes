@@ -139,7 +139,8 @@ These two values should be passed down to the child nodes during search. If the 
 from math import inf
 
 def alpha_beta_search(tree, is_max_node = True, alpha = -math.inf, beta = math.inf):
-  # returns a tuple of the best utility and path that gets that utility
+  # Input: nested array. Numbers are leaf nodes, arrays are inner nodes
+  # Returns a tuple of the best utility and path that gets that utility
   # If path is none, pruning occurred or it is a leaf node
   best_path = None
   best_utility = -math.inf if is_max_node else math.inf
