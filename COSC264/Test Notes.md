@@ -1,9 +1,3 @@
-ASes:
-
-- Stub: leaf node connected to single AS
-- Multihomed: connected to multiple ASes
-- Transit: multihomed but traffic can path through
-
 ### Distance-Vector
 
 Periodically send $D_n$, $n$'s estimates of the least cost path to all nodes in the networks: $D_x(y) = min([C(x, v) + D_v(y) \mbox{ for } v \mbox{ in } neighbours(x)])$
@@ -142,6 +136,8 @@ To prevent this from being interpreted as a new packet, the sender base number m
 |              Data              |
 ```
 
+Identified by destination port and IP,
+
 ### TCP
 
 ```
@@ -159,6 +155,8 @@ To prevent this from being interpreted as a new packet, the sender base number m
 - Acknowledgement: next expected byte number
 - Flags starts with 4-bit header length - bytes in header divided by 4
 
+#### Handshake and Termination
+
 Segments with `SYN` or `FIN` treated as if they have a 1 byte payload
 
 Three-way handshake:
@@ -174,11 +172,58 @@ Termination:
 3. Once connection closed, server sends `FIN` 
 4. Client responds with `ACK`, waiting twice the max segment lifespan to ensure the ACK arrived
 
+#### Acknowledgements
+
+ACK: **largest byte received** (cumulative ACK)
+
+Sender events:
+
+- One retransmission timer timer
+- If timer expires, resend oldest unacknowledged packet
+  - Double timeout and restart timer
+- When ACK received, restart timer (if received ACK is not for base packet)
+- Fast retransmit: if three ACKs with the same segment number received, retransmit it immediately
+
+Receiver events:
+
+- If in-order segment arrives, wait 500 ms. If another in-order segment arrives in this window, send the ACK immediately
+- If out-of-order packet arrives, buffer and send duplicate ACK
+
+Timeout value requires finding round trip time: use exponential weighted moving average
+
+- $EstimatedRTT = EstimatedRTT (1 - \alpha) + SampleRTT * \alpha$
+- $DevRTT = devRTT (1 - \beta) + \beta|SampleRTT - EstimatedRTT|$
+- $\alpha \approx 0.125, \beta \approx 0.25$
+- $Timeout = EstimatedRTT + 4 * DevRTT$
+
+#### Flow control
+
+- Send receive window - amount of free space in buffer
+- If receive window 0, need to periodically send TCP segment
+
+#### Congestion Control
+
+Overflowing router buffers
+
+Slow start:
+
+- Congestion window = 1 MSS (1 segment per RTT)
+- Double window every RTT (increment by one after every ACK)
+
+AIMD (after first loss):
+
+- Increase by 1 after every RTT (window += 1/window)
+- Half after every loss
+
+After 3 duplicate ACKs, half window and move to AIMD
+
+After timeout, slow start until it reaches half of window size before timeout. Then move to AIMD
+
+`LastByteSent - LastByteAcked <= min(CongestionWindow, ReceiveWindow)`
+
 ### Lab 4
 
 - First ping to station on the same network slow as ARP request required
-
-
 - Minimal forwarding table: `0.0.0.0/0` pointing to default gateway
 
 Ping failure modes:
@@ -187,3 +232,9 @@ Ping failure modes:
 - Destination host unreachable: directly-attached network, ARP fails
 - Destination port not reachable: TCP/UDP packet, port not bound
 - No response: if routing table of receiver empty
+
+ASes:
+
+- Stub: leaf node connected to single AS
+- Multihomed: connected to multiple ASes
+- Transit: multihomed but traffic can path through

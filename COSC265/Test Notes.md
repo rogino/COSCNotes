@@ -112,7 +112,7 @@ leads to a set that is not equivalent.
 
 ### Normal Forms
 
-$X \rightarrow Y$: if elements can be removed from $X$, then it is a **partial** FD. Otherwise, it is called a **full** FD
+If elements can be removed from the RHS, then it is a **partial** FD. Otherwise, it is called a **full** FD
 
 If $X \rightarrow Y$ and $Y \rightarrow Z$, $X \rightarrow Z$ is a **transitive functional dependency**.
 
@@ -157,7 +157,7 @@ for fd in G:
 - File: sequence of records. May be fixed or variable length
 - Blocking factor: records/block
 
-Hashing:
+### Hashing
 
 - Files divided into buckets; function on hash key determines which bucket a record goes in
 - Bucket has pointer to overflow buckets

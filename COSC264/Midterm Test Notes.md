@@ -198,14 +198,15 @@ p-persistent CSMA:
 ### Ethernet
 Manchester Encoding
 
-|  Length |  Name       |
-| 7       | Preamble    |
-| 1       | SOF         |
-| 6       | DstAddr     |
-| 6       | SrcAddr     |
-| 2       | Length/Type |
-| 46-1500 | Payload     |
-| 4       | FCS         |
+| Length  | Name          |
+| ------- | ------------- |
+| 7       | `Preamble`    |
+| 1       | `SOF`         |
+| 6       | `DstAddr`     |
+| 6       | `SrcAddr`     |
+| 2       | `Length/Type` |
+| 46-1500 | `Payload`     |
+| 4       | `FCS`         |
 
 MAC address: 48 bit globally unique
 If first of address is 1, multicast. Else, unicast address
