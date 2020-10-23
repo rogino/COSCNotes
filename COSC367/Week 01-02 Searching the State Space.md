@@ -46,12 +46,12 @@ Many problems can be abstracted into the problem of finding a path in a directed
 def search(graph, start_nodes, is_goal_node):
   frontier = [[s] for s in start_nodes]
   while len(frontier) != 0:
-  path = frontier.pop()
-  if is_goal_node[path[-1]]:
-  return path
+    path = frontier.pop()
+    if is_goal_node[path[-1]]:
+      return path
 
   for n in path[-1].neighbours():
-  frontier.append(path + n)
+    frontier.append(path + n)
 ```
 
 - The value selected from the frontier at each stage defines the search strategy - above, the frontier object is passed to the search procedure using `pop`
@@ -65,7 +65,6 @@ def search(graph, start_nodes, is_goal_node):
 - Pop last element from stack
 - If algorithm continues, the paths that extend the popped element are pushed to the stack
 - Thus, the algorithm expands the deepest path
-
 - Does not guarantee it will find the solution with the fewest arcs
 - Does not halt on every graph and is **not complete - is not guaranteed to find a solution if one exists**
   - No pruning, so it can get stuck in a cycle
@@ -164,11 +163,14 @@ $f(p) = cost(p) + h(n)$ where:
 - $cost(p)$ is the real cost from the starting node to $n$
 - $h(n)$ is an estimate of the cost from $n$ to the closest goal node
 - $f(p)$ is the estimated total cost of the path
-
 - The frontier is a priority queue, ordered by f
+
 - **Fails if the heuristic is an overestimate**
+
 - When underestimating, makes it prefer exploring less-explored paths
+
 - **Fails if there is pruning and the heuristic is not monotone**
+  
   - An expensive path may be expanded before a cheaper one ending at the same node. If pruning occurs, the cheaper path cannot be used
 
 ### Monotonicity
@@ -176,19 +178,19 @@ $f(p) = cost(p) + h(n)$ where:
 A requirement that is stronger than admissibility. A function is **monotone/consistent** if, for any two nodes $n$ and $n'$ (which are reachable from $n$):
 
 $$
-h(n) <= cost(n, n^′) + h(n^′)
+h(n) \leq cost(n, n^′) + h(n^′)
 $$
 
 That is, the estimated cost from $n$ to the goal must be less than the estimated cost of going to the goal via $n'$.
 
 $$
-f(n^) = cost(s, n^) + h(n^)
-f(n^′) = cost(s, n) + cost(n, n^) + h(n^)
+\begin{aligned}
+f(n′) &= cost(s, n') + h(n') \\
+&= cost(s, n) + cost(n, n') + h(n') \\
 
-h(n) <= cost(n, n^) + h(n^)
-
-\therefore f(n^) <= cost(s, n) + cost(n, n^)
-\therefore f(n^) <= f(n)
+\therefore f(n') &\leq cost(s, n) + h(n) \\
+\therefore f(n') &\leq f(n) \\
+\end{aligned}
 $$
 
 Thus, **$f(n)$ is non-decreasing along any path**
@@ -224,7 +226,7 @@ The bottom of the lattice is the zero heuristic - makes A* search just a LCFS.
 ## Bounded Depth-First Search
 
 - Takes a bound (cost or depth) and does not expand paths that exceed the bound
-
+  
   - Explores part of the search tree
   - Uses space linear in the depth of the search
   - Kind of acts like BFS while using little memory
@@ -237,7 +239,6 @@ Uses less memory but more CPU
 - Do a bounded depth-first search with bound $b$
 - While a solution is not found, increment $b$ and repeat
 - Nothing is remembered between iterations; wasteful
-
 - **This will find the same first solution as BFS**
 - But linear in depth of goal node: $O(bd)$
 - If there is no path to the goal: identical behaviour to BFS. Infinite loop if not pruning
