@@ -25,7 +25,7 @@ Event: set *E* of assignments; $P(E) = \sum_{(x_1, ..., x_n \in E)}{P(x_1, ..., 
 
 Marginalization (summing out): projecting a joint distribution to a sub-distribution over subset of variables: $P(X_1 = x_1) = \sum_{x_2 \in domain(X_2)}{P(X_1 = x_1, X_2 = x_2)}$
 
-Conditional probability: $P(a|b) = P(a, b)/P(b)$
+Conditional probability: $P(a|b) = \frac{P(a, b)}{P(b)}$
 
 Conditional distribution: probability distribution over some variables given fixed values of others. If $W$ and $T$ take binary values, $P(W, T)$ is a 2 by 2 table, $P(W|T)$ is two 2-row tables, each summing to 1.
 
@@ -40,7 +40,7 @@ P(x_1|x_2) &= \frac{P(x_1, x_2)}{P(x_2)} \\
 \end{aligned}
 $$
 
-Product rule: 
+**Product rule**: 
 $$
 \begin{aligned}
 P(x|y) &= \frac{P(x, y)}{P(y)} \\
@@ -48,10 +48,10 @@ P(x|y) &= \frac{P(x, y)}{P(y)} \\
 \end{aligned}
 $$
 
-Chain rule: $P(x_1,  x_2, x_3) = P(x_1) \cdot P(x2|x_1) \cdot P(x_3|x1, x2)$. More generally:
+**Chain rule**: $P(x_1,  x_2, x_3) = P(x_1) \cdot P(x2|x_1) \cdot P(x_3|x1, x2)$. More generally:
 
 $$
-P(x_1, ... x_n) = \prod_{i=1..n}{x_i|x_1, ..., x_{i-1}}
+P(x_1, ... x_n) = \prod_{i=1..n}{P(x_i|x_1, ..., x_{i-1})}
 $$
 
 ## Probabilistic Inference
@@ -65,6 +65,23 @@ P(x|y) = \frac{P(y|x) \cdot P(x)}{P(y)}
 $$
 
 This allows us to invert a conditional distribution - often one conditional is simple but the other is tricky.
+$$
+\begin{aligned}
+P(x,y|z) &= P(y,x|z) \\
+\\
+P(x,y|z) &= \frac{P(x,y,z)}{P(z)} \\
+P(y|x,z) &= \frac{P(x,y,z)}{P(x,z)} \\
+\therefore P(x,y,z) &= P(y|x,z) \cdot P(x,z) \\
+\therefore P(x,y|z) &= \frac{P(y|x,z) \cdot P(x,z)}{P(z)} \\
+&= P(y|x,z) \cdot P(x|z) \\
+\\
+&= P(y|x,z) \cdot P(x|z) \\
+\therefore P(x|y,z) &= \frac{P(y|x,z) \cdot P(x|z)}{P(y,z)} \\
+\textrm{if z is implicit}: \\
+P(x|y) &= \frac{P(y|x) \cdot P(x)}{P(y)} \textrm{ (Baye's rule)}
+\end{aligned}
+$$
+
 
 ### Inference by Enumeration
 

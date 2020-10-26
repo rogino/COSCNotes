@@ -79,9 +79,11 @@ Determine if the patient is susceptible to heart disease (y/n) given family hist
 
 Model it as $Hist$, $BG$, $BMI$ all having $Class$ as a parent (not the opposite!)
 
-$P(Class | Hist, BG, BMI) = \alpha * P(Class) * P(Hist | Class) * P(BG | Class) * P(BMI | Class)$
+$$
+P(Class | Hist, BG, BMI) = \alpha \cdot P(Class) \cdot P(Hist | Class) \cdot P(BG | Class) \cdot P(BMI | Class)
+$$
 
-The class can take two values, so there are two tables per feature and two rows for $Hist$/$BG$ per table (three for $BMI$ as it has three values).
+The class can take two values, so there are two tables per feature and two rows for $\frac{Hist}{BG}$ per table (three for $BMI$ as it has three values).
 
 NB: in the quiz, you only store value for when class is true
 
@@ -102,13 +104,17 @@ $count(constraints)$ is the number of examples in the dataset that satisfy the g
 
 Given these:
 
-$P(A=a | B=b) \approx (count(A=a | B=b) + pseudo\_count)/(\sum_{a' \in domain(A)}{ count(A=a', B=b) + pseudo\_count })$
+$$
+P(A=a | B=b) \approx \frac{count(A=a | B=b) + pseudo\_count}{\sum_{a' \in domain(A)}{ count(A=a', B=b) + pseudo\_count }}
+$$
 
 This is equivalent to:
 
-$P(A=a | B=b) \approx (count(A=a | B=b) + pseudo\_count)/(count(B=b) + pseudo\_count \cdot |domain(A)|)$
+$$
+P(A=a | B=b) \approx \frac{count(A=a | B=b) + pseudo\_count}{count(B=b) + pseudo\_count \cdot |domain(A)|}
+$$
 
-The greater the pseudo-count is, the closer the probabilities will even out (closer to $1/|domain(A)|$)
+The greater the pseudo-count is, the closer the probabilities will even out (closer to $\frac{1}{|domain(A)|}$)
 
 ### Parametric vs Non-Parametric Models
 
@@ -133,7 +139,7 @@ Training only requires storing all the examples
 Prediction: $H(x_new)$:
 
 - Let $x_1, ..., x_k$ be the *k* most similar examples to $x_new$
-- $h(x_new) = combine_predictions(x_1, ..., x_k)$; given the *k* nearest neighbours to $x_new$, calculate which value it should have
+- $h(x_new) = combine\_predictions(x_1, ..., x_k)$; given the *k* nearest neighbours to $x_new$, calculate which value it should have
 
 If *k* is too high, it will be under-fit.
 

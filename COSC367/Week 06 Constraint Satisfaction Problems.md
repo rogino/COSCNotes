@@ -2,9 +2,9 @@
 
 These problems are characterized by:
 
-- A set of variables `V_1`, `V_2`, ..., `V_n`
-- A set of domains for each variable: `D_V_i` is the domain for `V_i`
-- A set of constraints on various subsets which specify legal combinations of values for these variables (e.g. `V_1 != V_2` )
+- A set of variables $V_1$, $V_2$, ..., $V_n$
+- A set of domains for each variable: $D_{V_i}$ is the domain for $V_i$
+- A set of constraints on various subsets which specify legal combinations of values for these variables (e.g. $V_1 \neq V_2$ )
 
 A solution is a *n*-tuple of values for the variables that satisfies the constraints.
 
@@ -12,9 +12,9 @@ A solution is a *n*-tuple of values for the variables that satisfies the constra
 
 Australian map colouring:
 
-- Variables: `WA, NT, Q, NSW, V, SA, T`
-- Domains: `{red, green, blue}`
-- Constraints: `WA != NT, WA != SA, NA != Q, NT != SA, SA != Q, SA != NSW, SA != V, NSW != V`
+- Variables: $WA, NT, Q, NSW, V, SA, T$
+- Domains: ${red, green, blue}$
+- Constraints: $WA \neq NT, WA \neq SA, NA \neq Q, NT \neq SA, SA \neq Q, SA \neq NSW, SA \neq V, NSW \neq V$
 
 Sudoku:
 
@@ -32,7 +32,7 @@ Eight queens puzzle:
 
 ### Generate-and-Test algorithm
 
-Generate the assignment space `D = D_v_1 \times ... \times D_v_n` (cartesian product), then test each assignment with the constraints.
+Generate the assignment space $D = D_{v_1} \times \dots \times D_{v_n}$ (cartesian product), then test each assignment with the constraints.
 
 It is exponential in the number of variables.
 
@@ -40,7 +40,7 @@ It is exponential in the number of variables.
 
 Systematically explore *D* by instantiating variables one at a time, evaluating each constraint as all its variables are bound.
 
-Thus, any partial assignment that doesn't satisfy the constraints can be pruned (e.g. if `A!=B`, can prune these even if `C`, `D` etc. have not been instantiated yet)
+Thus, any partial assignment that doesn't satisfy the constraints can be pruned (e.g. if $A \neq B$, can prune these even if $C$, $D$ etc. have not been instantiated yet)
 
 ### CSP as graph search
 
@@ -48,8 +48,8 @@ A node is an assignment of values to some of the variables
 
 Search:
 
-- Select a variable `Y` that is not assigned to node `N`
-- Generate the neighbour to `N` where `Y` has been assigned for all possible values of `Y`
+- Select a variable $Y$ that is not assigned to node $N$
+- Generate the neighbour to $N$ where $Y$ has been assigned for all possible values of $Y$
 - Prune if the assignment is not consistent with the constraints
 
 The start node is the empty assignment, and the goal node is a total assignment that satisfies the constraints.
@@ -69,28 +69,28 @@ An instance of CSP can be represented as a network:
 
 ### Arc Consistency
 
-An arc `\langle X, r(X, \overline{Y})\rangle` is arc consistent if for **every** value of `X`, there **a** value of `\overline{Y}` such that `r(x,\overline{y})` is satisfied. `\overline{Y}` may be a set of multiple variables (variables in the scope of the constraint, except `X`).
+An arc $\langle X, r(X, \overline{Y})\rangle$ is arc consistent if for **every** value of $X$, there **a** value of $\overline{Y}$ such that $r(x,\overline{y})$ is satisfied. $\overline{Y}$ may be a set of multiple variables (variables in the scope of the constraint, except $X$).
 
 A network is arc consistent if all arcs are arc consistent.
 
-If there is an arc that is not arc consistent, **remove values from `X`'s domain** to make it arc consistent.
+If there is an arc that is not arc consistent, **remove values from $X$'s domain** to make it arc consistent.
 
 Example:
 
-- Variables `A, B, C`
-- Domain `[1, 4]` for all variables
-- `A + B = C`
+- Variables $A, B, C$
+- Domain $[1, 4]$ for all variables
+- $A + B = C$
 
-One arc would be `\langle{A, A+B=C}`:
+One arc would be $\langle{A, A+B=C}$:
 
-- `\overline{Y} = domain(B) \times domain(C)`
-- To make it arc consistent, `4` must be removed from the domain of `A`
+- $\overline{Y} = domain(B) \times domain(C)$
+- To make it arc consistent, $4$ must be removed from the domain of $A$
 
 By repeating this with other nodes, the network can be made arc consistent.
 
 #### Arc Consistency Algorithm
 
-Arcs can be considered in series. An arc, `\langle X, r(X, \overline{Y})\rangle`, needs to be revisited if the domain of one of the `Y`'s is reduced.
+Arcs can be considered in series. An arc, $\langle X, r(X, \overline{Y})\rangle$, needs to be revisited if the domain of one of the $Y$'s is reduced.
 
 ```python
 def GAC(variables, domains, constraints):
@@ -104,7 +104,7 @@ def GAC2(variables, domains, constraints, todo):
 
     new_domain = [x for x in domain(X)
       # such that there exists a set (y_1,..., y_n) such that is_consistent(X=x, Y_1=y_1, ..., Y_n=y_n)
-    )]
+    ]
 
     if new_domain != domain(X):
       # need to re-check all variables that are involved with any constraints involving X
@@ -122,15 +122,15 @@ There are three possible outcomes of this algorithm:
 
 Split a problem into a number of disjoint cases and solve each case separately: the set of solutions is the union of all solutions to each case
 
-e.g. if `X \in {0,1}`, find all solutions where `X=0`, then where `X=1`
+e.g. if $X \in {0,1}$, find all solutions where $X=0$, then where $X=1$
 
 #### Algorithm
 
 Given a CSP instance:
 
-- Select any variable `X` that has more than one value in its domain
-- Split `X` into two disjoint, non-empty sets
-- Create two new CSP instances with the new domain for `X`
+- Select any variable $X$ that has more than one value in its domain
+- Split $X$ into two disjoint, non-empty sets
+- Create two new CSP instances with the new domain for $X$
 
 ```python
 def CSPSolver(variables, domains, constraints, todo):
@@ -163,10 +163,10 @@ A join operation can be done on two constraints to capture both constraints, joi
 #### Algorithm
 
 - If there is only one variable, return the intersections of the constraints
-- Select a variable `X`
-- Join the constraints in which `X` appears to form constraint `R_1`
-- Project `R_1` onto its variables other than `X` to form `R2`
-- Replace all constraints in which `X` appears with `R2`
+- Select a variable $X$
+- Join the constraints in which $X$ appears to form constraint $R_1$
+- Project $R_1$ onto its variables other than $X$ to form $R2$
+- Replace all constraints in which $X$ appears with $R2$
 - Recursively solve
 
 ```python
