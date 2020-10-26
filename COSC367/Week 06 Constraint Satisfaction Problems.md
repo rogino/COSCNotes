@@ -139,7 +139,7 @@ def CSPSolver(variables, domains, constraints, todo):
   else if [domain[0] for domain in domains if len(domain) == 1] is the same length:
     # Every domain has one possible value
     return (domain[0] for domain in domains)
-  
+
   X = [X for X in domains if domain(X) > 1][0]
   D1, D2 = split(domain(X))
 

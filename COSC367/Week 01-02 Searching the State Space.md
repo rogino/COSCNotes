@@ -113,16 +113,16 @@ Tracing the frontier
 
 - Each element has priority
 - Element with higher priority always selected/removed/dequeued before element with lower cost
-- *Queue is stable: if two or more elements have the same priority, FIFO**
+- **Queue is stable: if two or more elements have the same priority, FIFO**
   - Does not affect the correctness of the algorithm, but makes it deterministic
 - Python has `heapq`
   - Won't automatically be stable
 
 ## Pruning
 
-Two problems: cycles - an infinite search tree, and when expanding multiple paths leads to the same node
+Two problems: cycles - an infinite search tree, and when expanding multiple paths leads to the same node.
 
-We need memory - the frontier should keep track of which nodes have been expanded/closed
+We need memory - the frontier should keep track of which nodes have been expanded/closed.
 
 - Expansion happens when the frontier is removed from the path and you add new elements to it 
 - Store the expanded nodes as a set
@@ -147,6 +147,7 @@ Extra knowledge that can be used to guide a search
 ## Best-first Search
 
 - Select the path on the frontier with **minimal $h$-value**
+  - This is in comparison to lowest-cost-first search, with selects the path with the minimal cost
 - Priority queue ordered by $h$
 - Explores more promising paths first - usually faster than LCFS
 - **May NOT find the optimal solution**
@@ -160,14 +161,16 @@ Extra knowledge that can be used to guide a search
 $f(p) = cost(p) + h(n)$ where:
 
 - $p$ is a path and $n$ is the last node on $p$
+
 - $cost(p)$ is the real cost from the starting node to $n$
+
 - $h(n)$ is an estimate of the cost from $n$ to the closest goal node
+
 - $f(p)$ is the estimated total cost of the path
-- The frontier is a priority queue, ordered by f
 
-- **Fails if the heuristic is an overestimate**
+- The frontier is a priority queue, ordered by $f$
 
-- When underestimating, makes it prefer exploring less-explored paths
+- Should be admissible (underestimate) - makes it prefer less-explored (i.e. shallower) paths
 
 - **Fails if there is pruning and the heuristic is not monotone**
   
@@ -193,7 +196,7 @@ f(n′) &= cost(s, n') + h(n') \\
 \end{aligned}
 $$
 
-Thus, **$f(n)$ is non-decreasing along any path**
+Thus, **$f(n)$ is non-decreasing along any path**.
 
 ## Finding good heuristics
 
@@ -211,7 +214,7 @@ Example: sliding puzzle
 
 ### Dominance Relation
 
-Dominance: for two heuristics, if $h_a > h_c$ if $\forall{n}: h_a(n) >= h_c(n)$.
+Dominance: for two heuristics, if $h_a > h_c$ if $\forall{n}: h_a(n) \geq h_c(n)$.
 
 Heuristics form a semi-lattice: if neither are dominating, could use $max(h_a(n), h_c(n))$.
 
@@ -233,7 +236,7 @@ The bottom of the lattice is the zero heuristic - makes A* search just a LCFS.
 
 ### Iterative-deepening Search
 
-Uses less memory but more CPU
+Uses less memory but more CPU:
 
 - Start with bound $b = 0$
 - Do a bounded depth-first search with bound $b$
@@ -250,6 +253,6 @@ Complexity with solution at depth $k$ and branching factor $b$:
 | $1$   | $1$ (only looks at nodes once) | $k$ (repeat search $k$ times) | $b$        |
 | $2$   | $1$                            | $k - 1$                       | $b^2$      |
 | $k$   | $1$                            | $1$                           | $b^k$      |
-| Total | $>= b^k$                       | $<= b^k(\frac{b}{b-1})^2$     |            |
+| Total | $\geq b^k$                     | $\leq b^k(\frac{b}{b-1})^2$   |            |
 
-As branching factor increases, complexity gets closer and closer to BFS - thus, it is not very wasteful
+As branching factor increases, complexity gets closer and closer to BFS - thus, it is not very wasteful.

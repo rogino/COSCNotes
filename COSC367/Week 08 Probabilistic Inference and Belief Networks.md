@@ -17,55 +17,72 @@ Some aspect of the world about which there is uncertainty.
 
 RVs are denoted with a capital letter and have an associated domain.
 
-Unobserved RVs have distributions; a table of probabilities of values. A probability is a single number e.g. `P(W = rain) = 0.1`. The probabilities sum to 1 and none are negative.
+Unobserved RVs have distributions; a table of probabilities of values. A probability is a single number e.g. $P(W = rain) = 0.1$. The probabilities sum to 1 and none are negative.
 
-Joint distribution over a set of RVs: a map from assignments/outcomes/atomic events to reals; `P(X_1 = x_1, ..., X_n = x_n)`
+Joint distribution over a set of RVs: a map from assignments/outcomes/atomic events to reals; $P(X_1 = x_1, ..., X_n = x_n)$
 
-Event: set *E* of assignments; `P(E) = \sum_{(x_1, ..., x_n \in E)}{P(x_1, ..., x_n)}`
+Event: set *E* of assignments; $P(E) = \sum_{(x_1, ..., x_n \in E)}{P(x_1, ..., x_n)}$
 
-Marginalization (summing out): projecting a joint distribution to a sub-distribution over subset of variables: `P(X_1 = x_1) = \sum_{x_2 \in domain(X_2)}{P(X_1 = x_1, X_2 = x_2)}`
+Marginalization (summing out): projecting a joint distribution to a sub-distribution over subset of variables: $P(X_1 = x_1) = \sum_{x_2 \in domain(X_2)}{P(X_1 = x_1, X_2 = x_2)}$
 
-Conditional probability: `P(a|b) = P(a, b)/P(b)`
+Conditional probability: $P(a|b) = P(a, b)/P(b)$
 
-Conditional distribution: probability distribution over some variables given fixed values of others. If `W` and `T` take binary values, `P(W, T)` is a 2 by 2 table, `P(W|T)` is two 2-row tables, each summing to 1.
+Conditional distribution: probability distribution over some variables given fixed values of others. If $W$ and $T$ take binary values, $P(W, T)$ is a 2 by 2 table, $P(W|T)$ is two 2-row tables, each summing to 1.
 
 To get the whole conditional distribution at once, select the joint probabilities matching the evidence and normalize the selection (make it sum to 1). Example:
 
-`P(T|rain)`: select rows where `R=rain`, then divide the probabilities by the sum `P(warm, rain) + P(cold, rain)`.
+$P(T|rain)$: select rows where $R=rain$, then divide the probabilities by the sum $P(warm, rain) + P(cold, rain)$.
 
-`P(x_1|x_2) = P(x_1, x_2)/P(x_2) = P(x_1, x_2)/\sum_{x_1 \in domain(X_1)}{P(x_1, x_2)}`
+$$
+\begin{aligned}
+P(x_1|x_2) &= \frac{P(x_1, x_2)}{P(x_2)} \\
+&= \frac{P(x_1, x_2)}{\sum_{x_1 \in domain(X_1)}{P(x_1, x_2)}}
+\end{aligned}
+$$
 
-Product rule: `P(x|y) = P(x, y)/P(y) \therefore P(x, y) = P(x|y) * P(y)`
+Product rule: 
+$$
+\begin{aligned}
+P(x|y) &= \frac{P(x, y)}{P(y)} \\
+\therefore P(x, y) &= P(x|y) \cdot P(y)
+\end{aligned}
+$$
 
-Chain rule: `P(x_1,  x_2, x_3) = P(x_1)/P(x2|x_1) * P(x_3|x1, x2)`. More generally:
+Chain rule: $P(x_1,  x_2, x_3) = P(x_1) \cdot P(x2|x_1) \cdot P(x_3|x1, x2)$. More generally:
 
-`P(x_1, ... x_n) = \product_{i=1..n}{x_i|x_1, ..., x_{i-1}}`
+$$
+P(x_1, ... x_n) = \prod_{i=1..n}{x_i|x_1, ..., x_{i-1}}
+$$
 
 ## Probabilistic Inference
 
 Computing a desired probability from other known probabilities.
 
-`P(x, y) = P(x|y) * P(y) = P(y|x) * P(x)`. By dividing this by the marginal, we get Baye's rule:
+$P(x, y) = P(x|y) \cdot P(y) = P(y|x) \cdot P(x)$. By dividing this by the marginal, we get Baye's rule:
 
-`P(x|y) = (P(y|x) * P(x))/P(y)`
+$$
+P(x|y) = \frac{P(y|x) \cdot P(x)}{P(y)}
+$$
 
 This allows us to invert a conditional distribution - often one conditional is simple but the other is tricky.
 
 ### Inference by Enumeration
 
-A more general procedure: `P(Y_1, ..., Y_m|e_1, ..., e_k)` where:
+A more general procedure: $P(Y_1, ..., Y_m|e_1, ..., e_k)$ where:
 
-- `(E_1, ..., E_k) = (e_1, ..., e_k)` are evidence variables
-- `Y_1, ..., Y_m` are query variables
-- `H_1, ..., H_r` are hidden variables
+- $(E_1, ..., E_k) = (e_1, ..., e_k)$ are evidence variables
+- $Y_1, ..., Y_m$ are query variables
+- $H_1, ..., H_r$ are hidden variables
 
-These variables can be referred to as `X_1, ..., X_n`
+These variables can be referred to as $X_1, ..., X_n$
 
 First, select entries consistent with the evidence
 
-Then, sum out `H`:
+Then, sum out $H$:
 
-`P(Y_1, ..., Y_m, e_1, ..., e_k) = \sum_{h_1, ..., h_r}{P(Y_1, ..., Y_m, h_1, ..., h_r, e_1, ..., e_k)}`
+$$
+P(Y_1, ..., Y_m, e_1, ..., e_k) = \sum_{h_1, ..., h_r}{P(Y_1, ..., Y_m, h_1, ..., h_r, e_1, ..., e_k)}
+$$
 
 Finally, normalize the remaining entries.
 
@@ -73,32 +90,43 @@ Finally, normalize the remaining entries.
 
 Simple models are easier to build, explain, and usually lead to lower time complexity and space requirements.
 
-To measure complexity, count the number of free parameters that must be specified; a joint distribution over *n* variables, each with a domain size of *d* requires `d^n` entries in the table, and the number of free parameters will be `d^n - 1` (the last one can be inferred as probabilities must sum to 1).
+To measure complexity, count the number of free parameters that must be specified; a joint distribution over *n* variables, each with a domain size of *d* requires $d^n$ entries in the table, and the number of free parameters will be $d^n - 1$ (the last one can be inferred as probabilities must sum to 1).
 
 ### Independence
 
-Two variables are independent if `P(X, Y) = P(X) * P(Y)` or `\forall x, y: P(x, y) = P(X=x) * P(Y=y)`; their joint distribution **factors** into a product of two simpler distributions.
+Two variables are independent if:
+$$
+\begin{aligned}
+P(X, Y) &= P(X) \cdot P(Y) \textrm{ or} \\
+\forall x, y: P(x, y) &= P(X=x) \cdot P(Y=y)
+\end{aligned}
+$$
+That is, their joint distribution **factors** into a product of two simpler distributions.
 
-Absolute independence: `X{\perp\!\!\!\perp}Y`
+Absolute independence: $X{\perp\!\!\!\perp}Y$
 
-Independence can be used as a modelling assumption; if all the variables are independent, instead of having `d^n - 1` parameters in the joint model, we only need `n * d - 1` rows.
+Independence can be used as a modelling assumption; if all the variables are independent, instead of having $d^n - 1$ parameters in the joint model, we only need $nd - 1$ rows.
 
-Absolute (unconditional) independence is vary rare; conditional independence is more robust:
+Absolute (unconditional) independence is vary rare; **conditional independence** is more robust. For a given value of $Z$, the probability of $X$ is independent of $Y$; $X{\perp\!\!\!\perp}Y|Z$ if:
 
-For a given value of `Z`, the probability of `X` is independent of `Y`; `X{\perp\!\!\!\perp}Y|Z` if:
-
-`\forall x, y, z: P(x, y|z) = P(x|z) * P(y|z)` OR `\forall x, y, z: P(x|z, y) = P(x|z)`
+$$
+\begin{aligned}
+&\forall x, y, z: P(x, y|z) = P(x|z) \cdot P(y|z) \textrm{ or}\\
+&\forall x, y, z: P(x|z, y) = P(x|z)
+\end{aligned}
+$$
 
 In this case:
 
-```
-P(X, Y, Z)
-= P(X|Y, Z) * P(Y, Z)
-= P(X|Y, Z) * P(Y|Z) * P(Z)
-= P(X|Z) * P(Y|Z) * P(Z)
-```
+$$
+\begin{aligned}
+P(X, Y, Z) &= P(X|Y, Z) \cdot P(Y, Z) \\
+&= P(X|Y, Z) \cdot P(Y|Z) \cdot P(Z) \\
+&= P(X|Z) \cdot P(Y|Z) \cdot P(Z)
+\end{aligned}
+$$
 
-This can occur if `X` and `Y` are both dependent on `Z` but are independent of each other; the value of `X` modifies the probability of the parent, `Z`'s, value and thus modifies the probability of `Y` in turn.
+This can occur if $X$ and $Y$ are both dependent on $Z$ but are independent of each other; the value of $X$ modifies the probability of the parent, $Z$'s, value and thus modifies the probability of $Y$ in turn.
 
 ## Belief Networks
 
@@ -125,9 +153,9 @@ Nodes:
 Distributions:
 
 - A collection of distributions (CPTs) over each node; one for each combination of the parents' values
-  - `P(X|a_1, ..., a_n)` for all combinations of `a`s
+  - $P(X|a_1, ..., a_n)$ for all combinations of $a$s
 
-D-separation can be used to decide if a set of nodes `X` is independent of `Y` given `Z`.
+D-separation can be used to decide if a set of nodes $X$ is independent of $Y$ given $Z$.
 
 ### Encoding
 
@@ -135,28 +163,36 @@ BNs implicitly encode joint distributions; this can be calculated as a product o
 
 Example:
 
-```
-A->B
-A->C
-B,C->D
-C->E
+$$
+\begin{aligned}
+A &\rightarrow B \\
+A &\rightarrow C \\
+B, C &\rightarrow D \\
+C &\rightarrow E \\
+\end{aligned}
+$$
 
-P(a, b, c, d, e)
-= P(e|a, b, c, d) * P(a, b, c, d) // by the product rule
-= P(e|c) * P(a, b, c, d)          // e dependent on c but independent of all others
-= P(e|c) * P(d|a, b, c) * P(a, b, c)
-= P(e|c) * P(d|b, c) * P(a, b, c)
-= P(e|c) * P(d|b, c) * P(c|a, b) * P(a, b)
-= P(e|c) * P(d|b, c) * P(c|a) * P(b|a) * P(a)
-```
+$$
+\begin{aligned}
+P(a, b, c, d, e) &= P(e|a, b, c, d) \cdot P(a, b, c, d) \quad\textrm{(by the product rule)} \\
+&= P(e|c) \cdot P(a, b, c, d)          \quad\textrm{(e dependent on c but independent of all others)} \\
+&= P(e|c) \cdot P(d|a, b, c) \cdot P(a, b, c) \\
+&= P(e|c) \cdot P(d|b, c) \cdot P(a, b, c) \\ 
+&= P(e|c) \cdot P(d|b, c) \cdot P(c|a, b) \cdot P(a, b) \\
+&= P(e|c) \cdot P(d|b, c) \cdot P(c|a) \cdot P(b|a) \cdot P(a) \\
+\end{aligned}
+$$
+
+
 
 More generally, if you have a full assignment, multiplying the relevant conditionals gives the probability:
-
-`P(x_1, ..., x_n) = \product_{i=1}^{n}{P(x_i | parents(X_i))}`
+$$
+P(x_1, ..., x_n) = \prod_{i=1}^{n}{P(x_i | parents(X_i))}
+$$
 
 ```python
 product = 1
-for var in range(1, n):
+for i in range(1, n):
   product *= probability(x[i] | parents(i))
 ```
 
@@ -164,14 +200,18 @@ Thus, we can reconstruct any entry of the full joint. However, not every BN can 
 
 ### Inference Enumeration
 
-Computing `P(Y | e)`. If `H` are the hidden variables and `\alpha` normalizes the values so the sum of the probabilities is 1:
+Computing $P(Y | e)$. If $H$ are the hidden variables and $\alpha$ normalizes the values so the sum of the probabilities is 1:
 
-`P(Y|e) = \alpha * P(Y, e) = \alpha \sum_H{P(Y, e, H)}` (NB: `\sum_H` means `\sum_{H_1}{\sum_{H_2}{...}}`)
+$$
+P(Y|e) = \alpha \cdot P(Y, e) = \alpha \sum_H{P(Y, e, H)}
+$$
 
-This has to be computed for every value in the domain of `Y`
+(NB: $\sum_H$ means $\sum_{H_1}{\sum_{H_2}{...}}$)
 
-Answering `P(Y)`: no evidence; all variables except the query are hidden
+This has to be computed for every value in the domain of $Y$
 
-Answering `P(y|e)`: answer `P(Y|e)`, then pick result for `Y=y`
+Answering $P(Y)$: no evidence; all variables except the query are hidden
 
-Answering `P(Y_1=y_1, Y_2=y_2 | e)`: `P(y_1|y_2, e) * P(y_2, e)`
+Answering $P(y|e)$: answer $P(Y|e)$, then pick result for $Y=y$
+
+Answering $P(Y_1=y_1, Y_2=y_2 | e)$: $P(y_1|y_2, e) \cdot P(y_2, e)$

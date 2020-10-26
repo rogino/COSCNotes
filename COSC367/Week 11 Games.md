@@ -66,13 +66,13 @@ def min_max_decision(state, root_is_max = True):
 def max_value(state):
   if state.is_terminal:
     return state.calculate_utility()
-  
+
   return max([(min_value(child), child) for child in state.children()])[1]
 
 def min_value(state):
   if state.is_terminal:
     return state.calculate_utility()
-  
+
   return min([(max_value(child), child) for child in state.children()])[1]
 ```
 
@@ -87,7 +87,7 @@ Game tree size:
 - Chess
   - $b \approx 35$ legal moves per state
   - $d \approx 100$ for a typical game
-  - $b^d \approx 35^100$: searching the entire tree completely infeasible
+  - $b^d \approx 35^{100}$: searching the entire tree completely infeasible
 
 Hence, the search space needs to be reduced:
 
@@ -103,9 +103,9 @@ If an option is bad compared to other available options, there is no point in ex
 Example:
 
 ```
-MAX          3
-           /    \
-          /      \
+MAX           3
+           /     \
+          /       \
 Min      3         ?
        / | \     /   \
 Leaf  3  9  6   2     ?
@@ -133,7 +133,7 @@ The algorithm has:
 - $\alpha$: highest-value choice found for a max node higher-up (parents) in the tree. Initially $-\infty$
 - $\beta$:   lowest-value choice found for a min node higher-up (parents) in the tree. Initially $ \infty$
 
-These two values should be passed down to the child nodes during search. If the value of a child node is greater than alpha for a max node, then alpha should be updated, and vice versa. If $\alpha >= \beta$, the node can be pruned.
+These two values should be passed down to the child nodes during search. If the value returned by the child node is greater than $\alpha$ for a max node, then $\alpha$ should be updated, and vice versa if it is a min node. If $\alpha >= \beta$, the node can be pruned.
 
 ```python
 from math import inf
@@ -203,4 +203,3 @@ A typical function could evaluate how good the state is for the player subtract 
 This can be used to perform a **cut-off search**: after a maximum depth is reached, use the heuristic evaluation instead of finding the actual utility.
 
 Sidenote: three players. We now have two degrees of freedom; the utility is a tuple, not a scalar. Each player will attempt to maximize it's own dimensions.
-

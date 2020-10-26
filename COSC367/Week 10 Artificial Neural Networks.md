@@ -31,6 +31,7 @@ Given a data set - a collection of training vectors of the form $(x_1, ..., x_n,
 - Randomly initialize the weights and bias
 
 - While there are mis-classifications and the **number of iterations is less than the maximum number of epochs**:
+  
   - For each training example, classify the example. If it is misclassified, then update the weights, where $\eta$ is the learning rate, $x_j$ is the value for input $j$, $t$ is the actual output and $y$ is the current prediction (perceptron output):
     - $w_j \leftarrow w_j + \eta x_j(t-y)$
     - $bias \leftarrow bias + \eta(t-y)$ (the same equation can be used for bias as above if it is represented as a virtual input)
@@ -94,7 +95,6 @@ Some notes:
 - The first layer contains only input nodes
   - Hence, the number of input nodes is the number of inputs in the problem domain
 - The last layer is called the output layer
-
 - A network with only one layer is an **identify function**
 - Weights and biases are *between* layers
   - Between layer $i$ and $i+1$:
@@ -121,12 +121,16 @@ Outputting numeric values instead of a Boolean requires the **Sigmoid function**
 
 The mean squared error is typically used, where $t_i$ is the desired output (according to the training data), $y_i$ is the output of the network, and $n$ is the number of examples in the training set:
 
-$E=\sum_{i=1}^{n}{(t_i - y_i)^2}$
+$$
+E=\sum_{i=1}^{n}{(t_i - y_i)^2}
+$$
 
 The weights can be updated incrementally:
+
 $$
 W \leftarrow W - \eta \nabla E(W)
 $$
+
 $\nabla E(W)$ is the gradient of the error; a vector of partial derivatives (derivatives for each input scalar given all other inputs are fixed). The gradient in the output layer is easy to compute, but in the hidden layer neurons can influence multiple other neurons, so back-propagation is needed (not covered).
 
 ### Typical Architecture

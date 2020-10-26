@@ -22,8 +22,8 @@ Learning architecture:
 
 Given the following as input:
 
-- A set of **input attributes**/features/random variables: `X_1, ..., X_n`
-- A **target feature** `Y` (discrete class value or continuous/real value) - what is being predicted
+- A set of **input attributes**/features/random variables: $X_1, ..., X_n$
+- A **target feature** $Y$ (discrete class value or continuous/real value) - what is being predicted
 - A set of **training examples**/instances where the value of the input and target variables are given
 
 This is fed to a learning algorithm to build a **predictive model** that takes a new **instance** and returns/predicts the value for the target feature.
@@ -34,14 +34,14 @@ For continuous target variables, regression is used
 
 Common performance measures:
 
-- `error = (number of incorrectly classified instances)/(total number of instances)`
-- `accuracy = 1 - error = (number of correctly classified instances)/(total number of instances)`
+- $\textrm{error} = \frac{\textrm{number of incorrectly classified instances}}{\textrm{total number of instances}}$
+- $\textrm{accuracy} = 1 - \textrm{error} = \frac{\textrm{number of correctly classified instances}}{\textrm{total number of instances}}$
 
-In binary classification problems, one class is called *positive* (*p*) and the other *negative* (*n*)
+In binary classification problems, one class is called *positive* (*p*) and the other *negative* (*n*).
 
 Common performance measures for regression:
 
-- Mean squared error (MSE): `1/n \cdot \sum_{i=1}^{n}{(Y_i - \hat{Y_i})^2}`
+- Mean squared error (MSE): $\frac{1}{n} \cdot \sum_{i=1}^{n}{(Y_i - \hat{Y_i})^2}$
 - Mean absolute error
 
 ### Training and Test Sets
@@ -54,20 +54,22 @@ A general pattern is that at a certain complexity, increasing the complexity of 
 
 ### Naïve Bayes Model
 
-`P(C | X_1, ..., X_n) = \alpha * \prod_{i=1}^n{P(X_i | C)} * P(C)`
+$$
+P(C | X_1, ..., X_n) = \alpha * \prod_{i=1}^n{P(X_i | C)} * P(C)​
+$$
 
 Where:
 
-- Features `X` are independent given the class variable `C`
-- `P(C)`: prior distribution of `C`
-- `P(X_i | C)`: likelihood conditional distributions
-- `P(C | X_1, ..., X_n)`: posterior distribution
+- Features $X$ are independent given the class variable $C$
+- $P(C)$: prior distribution of $C$
+- $P(X_i | C)$: likelihood conditional distributions
+- $P(C | X_1, ..., X_n)$: posterior distribution
 
 Conditional probabilities can be estimated from labelled data
 
-Find `P(Class | an input vector)` for different classes and **pick the class with the highest probability**
+Find $P(Class | an\_input\_vector)$ for different classes and **pick the class with the highest probability**
 
-Problem: hard to learn `P(Class | Evidence)` as there needs to be **examples for every possible assignment**. As the number of features increases, the number of assignments grows exponentially.
+Problem: hard to learn $P(Class | Evidence)$ as there needs to be **examples for every possible assignment**. As the number of features increases, the number of assignments grows exponentially.
 
 Thus, **assume input features are conditionally independent** given the class model.
 
@@ -75,15 +77,15 @@ Thus, **assume input features are conditionally independent** given the class mo
 
 Determine if the patient is susceptible to heart disease (y/n) given family history (t/f), fasting blood sugar level (l/h), BMI (l, n, h)
 
-Model it as `Hist`, `BG`, `BMI` all having `Class` as a parent (not the opposite!)
+Model it as $Hist$, $BG$, $BMI$ all having $Class$ as a parent (not the opposite!)
 
-`P(Class | Hist, BG, BMI) = \alpha * P(Class) * P(Hist | Class) * P(BG | Class) * P(BMI | Class)`
+$P(Class | Hist, BG, BMI) = \alpha * P(Class) * P(Hist | Class) * P(BG | Class) * P(BMI | Class)$
 
-The class can take two values, so there are two tables per feature and two rows for `Hist`/`BG` per table (three for `BMI` as it has three values).
+The class can take two values, so there are two tables per feature and two rows for $Hist$/$BG$ per table (three for $BMI$ as it has three values).
 
 NB: in the quiz, you only store value for when class is true
 
-To calculate `\alpha`, calculate the sum of `P(Class | Hist, BG, BMI)` for all values of `Class`, and then take the inverse.
+To calculate $\alpha$, calculate the sum of $P(Class | Hist, BG, BMI)$ for all values of $Class$, and then take the inverse.
 
 ### Laplace Smoothing
 
@@ -91,22 +93,22 @@ Zero counts in small data sets lead to zero probabilities - this is too strong a
 
 To fix this, add a **non-negative pseudo-count** to the counts - this can **reduce the confidence**
 
-`domain(A)` is the set of values `A` can take; `|domain(A)|` is the number of values `A` can take
+$domain(A)$ is the set of values $A$ can take; $|domain(A)|$ is the number of values $A$ can take
 
-`count(constraints)` is the number of examples in the dataset that satisfy the given constraints:
+$count(constraints)$ is the number of examples in the dataset that satisfy the given constraints:
 
-- e.g. `count(A=a, B=b)` is the number of examples in the dataset where `A=a` and `B=b`
-- `count()` is the number of examples in the dataset
+- e.g. $count(A=a, B=b)$ is the number of examples in the dataset where $A=a$ and $B=b$
+- $count()$ is the number of examples in the dataset
 
 Given these:
 
-`P(A=a | B=b) \approx (count(A=a | B=b) + pseudo\-count)/(\sum_{a' \in domain(A)}{ count(A=a', B=b) + pseudo\-count })`
+$P(A=a | B=b) \approx (count(A=a | B=b) + pseudo\_count)/(\sum_{a' \in domain(A)}{ count(A=a', B=b) + pseudo\_count })$
 
 This is equivalent to:
 
-`P(A=a | B=b) \approx (count(A=a | B=b) + pseudo\-count)/(count(B=b) + pseudo\-count \cdot |domain(A)|)`
+$P(A=a | B=b) \approx (count(A=a | B=b) + pseudo\_count)/(count(B=b) + pseudo\_count \cdot |domain(A)|)$
 
-The greater the pseudo-count is, the closer the probabilities will even out (closer to `1/|domain(A)|`)
+The greater the pseudo-count is, the closer the probabilities will even out (closer to $1/|domain(A)|$)
 
 ### Parametric vs Non-Parametric Models
 
@@ -118,7 +120,6 @@ Non-parametric models are not characterized by parameters - a family of this is 
 - The cost of learning is 0; all the cost is in the computation of the prediction
 - It is called **lazy-learning**: learning is put off until it is required
 
-
 #### *k*-Nearest Neighbours
 
 An example of a instance-based learning algorithm is *k*-nearest neighbours:
@@ -129,11 +130,11 @@ An example of a instance-based learning algorithm is *k*-nearest neighbours:
 
 Training only requires storing all the examples
 
-Prediction: `H(x_new)`:
+Prediction: $H(x_new)$:
 
-- Let `x_1, ..., x_k` be the *k* most similar examples to `x_new`
-- `h(x_new) = combine_predictions(x_1, ..., x_k)`; given the *k* nearest neighbours to `x_new`, calculate which value it should have
+- Let $x_1, ..., x_k$ be the *k* most similar examples to $x_new$
+- $h(x_new) = combine_predictions(x_1, ..., x_k)$; given the *k* nearest neighbours to $x_new$, calculate which value it should have
 
 If *k* is too high, it will be under-fit.
 
-Geometrically, each data point `x` defines a 'cell' of space where any point within that space has `x` as the closest point to it. As the target feature is discrete, decision boundaries can be made where the class is different on each side of the boundary.
+Geometrically, each data point $x$ defines a 'cell' of space where any point within that space has $x$ as the closest point to it. As the target feature is discrete, decision boundaries can be made where the class is different on each side of the boundary.

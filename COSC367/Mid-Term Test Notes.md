@@ -1,6 +1,5 @@
 Prune on insert/remove if the end node has been **expanded**
 
-
 A*: `f(path) = cost(path) + h(path[-1])`
 
 Admissible: estimate is always an underestimate
@@ -14,7 +13,6 @@ Fails if pruning + heuristic not monotone
 
 Bidirectional: `2 * pow(b, d/2) << pow(b, d)`; saves time and space. BFS, LCFS, A*
 Iterative deepening: bound incremented until solution found. DFS is `>= pow(b, k)`; iterative is `<= pow(b, k) * pow(b/(b-1), 2)`
-
 
 `h <- b`: if `b` is true, `h` must be true
 

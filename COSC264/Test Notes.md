@@ -154,6 +154,7 @@ Identified by destination port and IP,
 - Sequence number: byte number for first byte in segment
 - Acknowledgement: next expected byte number
 - Flags starts with 4-bit header length - bytes in header divided by 4
+- `LastByteSent - LastByteACKed <= min(CongestionWindow, RecvWindow)`
 
 #### Handshake and Termination
 
