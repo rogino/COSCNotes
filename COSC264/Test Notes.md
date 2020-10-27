@@ -1,6 +1,6 @@
 ### Distance-Vector
 
-Periodically send $D_n$, $n$'s estimates of the least cost path to all nodes in the networks: $D_x(y) = min([C(x, v) + D_v(y) \mbox{ for } v \mbox{ in } neighbours(x)])$
+Periodically send $D_x$, node $x$'s estimates of the least cost path to all nodes in the networks: $D_x(y) = min([C(x, v) + D_v(y) \mbox{ for } v \mbox{ in } neighbours(x)])$, to its neighbours
 
 Poisoned reverse: if $x$ routes to $z$ through $y$, $x$ will say that $D_x(z) = \infty$, ensuring $y$ will not route to $z$ through $x$ if the link cost changes. This reduces the time to converge when link cost increases.
 
@@ -20,6 +20,8 @@ Poisoned reverse: if $x$ routes to $z$ through $y$, $x$ will say that $D_x(z) = 
 Each router reliably floods information about its neighbours and independently calculates the least-cost path to every other router.
 
 Add nearest node not in tree to the tree, calculate distance to each neighbour through the node.
+
+$O(n^2)$ algorithm, $O(nE)$ messages.
 
 ### OSPF
 

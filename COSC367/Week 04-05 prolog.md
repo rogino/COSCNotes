@@ -25,9 +25,9 @@
   - `happy` is a **predicate**; a **test** - it is 'true' (provably true) or 'false' (unknown) for the given argument; it is not a function call
 - `listensToMusic(yolanda) :- happy(yolanda).` is a rule
   - If RHS (head) is true, then LHS (body) must be true
-  - `:-` means `\leftarrow`
-- `,` means conjunction (`\land`)
-- `;` means disjunction (`\lor`). It can defined by having two rules; this is just syntactic sugar
+  - `:-` means $\leftarrow \textrm{}$
+- `,` means conjunction ($\land$)
+- `;` means disjunction ($\lor$). It can defined by having two rules; this is just syntactic sugar
 
 ### Variables
 
@@ -105,7 +105,7 @@ mother(X, Y) :- parent(X, Y), female(X).
 sister(X, Y) :- parent(Z, X), parent(Z, Y), female(X).
 ```
 
-Any female is their own sister; use `dif`; append `X \= Y` to the end of the sister body.
+Any female is their own sister so the `dif` predicate is required: append `X \= Y` to the end of the sister body.
 
 ### Predicate description - argument mode indicator
 
@@ -246,4 +246,3 @@ These force the left and right hand arguments to be evaluated.
 If `Goal` unifies, it gets to `!` so can never backtrack. Then it gets to `fail` an fails. If the `!` was not there, it would attempt to evaluate `Goal` again.
 
 As this is so common, there is a built in operator that does this: `\+`
- 

@@ -7,7 +7,7 @@ An optimization problem has:
 
 The assignment that optimizes (maximize/minimize) the value of the objective function must be found.
 
-A **constrained optimization problem** (CSP) adds a set of constraints which determines which assignments are allowed.
+A **constrained optimization problem** adds a set of constraints which determines which assignments are allowed.
 
 ## Local Search
 
@@ -67,8 +67,17 @@ With parallel search, if a solution is found all individuals can be stopped.
 - If it is an improvement, adopt it
 - If not. adopt it with some probability
 
-If the current assignment is *n*, the proposed assignment *n'*, the objective function *h* and the current **temperature parameter** is *T*, the probability of adopting the new value is `e^{*h(n) - h(n'))/T}`
+Given:
 
+- The current assignment is $n$
+- The proposed assignment $n'$
+- The objective function $h$
+- The current **temperature parameter** is $T$
+
+The probability of adopting the new value is:
+$$
+e^{(h(n) - h(n'))/T}
+$$
 As temperature gets reduced, the probability of accepting a change decreases.
 
 ## Gradient Descent
@@ -77,13 +86,12 @@ Objective function must be (mostly) differentiable
 
 ```python
 def gradient_descent(f, initial_guess):
-  x = initial_guess
-  k = 0
-  while magnitude(grad(f)(x)) > ?:
+  # f = objective function
+  x = initial_guess # x is a vector
+  while magnitude(grad(f)(x)) > epsilon:
     # f is a multi-variable function, so \nabla f returns a vector
-    # Steepest slope along the vector
     x = x - step_size * grad(f)(x)
-    k += 1
+    # Steepest slope is along the vector, so walk along it
 ```
 
 ## Evolutionary Algorithms

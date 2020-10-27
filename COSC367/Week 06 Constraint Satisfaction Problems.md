@@ -81,7 +81,7 @@ Example:
 - Domain $[1, 4]$ for all variables
 - $A + B = C$
 
-One arc would be $\langle{A, A+B=C}$:
+One arc would be $\langle{A, A+B=C}\rangle$:
 
 - $\overline{Y} = domain(B) \times domain(C)$
 - To make it arc consistent, $4$ must be removed from the domain of $A$

@@ -147,7 +147,6 @@ Extra knowledge that can be used to guide a search
 ## Best-first Search
 
 - Select the path on the frontier with **minimal $h$-value**
-  - This is in comparison to lowest-cost-first search, with selects the path with the minimal cost
 - Priority queue ordered by $h$
 - Explores more promising paths first - usually faster than LCFS
 - **May NOT find the optimal solution**

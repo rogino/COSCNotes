@@ -4,14 +4,14 @@
 
 - Atom: symbol starting with lower case letter
 - Body: atom or of the form $b_1 \land b_2$, where $b_1$ and $b_2$ are bodies 
-- Definite clause: atom or rule of form $h \leftarrow b$, where $h$ is an atom and $b$ is a body
+- Definite clause: atom or rule of form $h \leftarrow b$, where $h$ is an atom and $b$ is a body. If it has an empty body, is called an **atomic clause**/fact
 - Knowledge base: set of definite clauses
 
 ## Interpretation
 
-An interpretation** assigns a truth value to each atom**. Thus, there are $2^{num\_atoms}$ possible interpretations.
+An interpretation **assigns a truth value to each atom**. Thus, there are $2^{num\_atoms}$ possible interpretations.
 
-- Body$b_1 \land b_2$  is true in $I$ if both $b_1$ and $b_2$ are true in $I$
+- Body $b_1 \land b_2$  is true in $I$ if both $b_1$ and $b_2$ are true in $I$
 - **Rule $h \leftarrow b$ is false in $I$ if $b$ is true and $h$ is false**
 - - i.e. If $b$ is true, $h$ must be true
 - Knowledge base $KB$ is true in iff every clause in $KB$ is true in $I$
