@@ -55,7 +55,7 @@ A general pattern is that at a certain complexity, increasing the complexity of 
 ### Naïve Bayes Model
 
 $$
-P(C | X_1, ..., X_n) = \alpha * \prod_{i=1}^n{P(X_i | C)} * P(C)​
+P(C | X_1, ..., X_n) = \alpha \cdot \prod_{i=1}^n{P(X_i | C)} \cdot P(C)
 $$
 
 Where:
@@ -85,7 +85,7 @@ $$
 
 The class can take two values, so there are two tables per feature and two rows for $\frac{Hist}{BG}$ per table (three for $BMI$ as it has three values).
 
-NB: in the quiz, you only store value for when class is true
+NB: in the quiz, you only store value for when class is true.
 
 To calculate $\alpha$, calculate the sum of $P(Class | Hist, BG, BMI)$ for all values of $Class$, and then take the inverse.
 

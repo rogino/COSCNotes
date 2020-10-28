@@ -132,3 +132,36 @@ Eliminate variables by passing constraints on to their neighbours
   - Decrease temperature over time
 - Gradient descent
   - Walk along the gradient of the objective function to find a minima
+
+Roulette wheel: return the first individual whose fitness added to the running total is larger than a random number between 1 and sum of the fitnesses.
+
+## Probabilistic Inference and Belief Networks
+
+$$
+P(x|y,z) = \frac{P(y|z)}{P(x,y|z)}
+$$
+
+
+
+For a full assignment:
+$$
+P(x_1, ..., x_n) = \prod_{i=1}^{n}{P(x_i | parents(X_i))}
+$$
+
+## Basic Machine Learning
+
+- Error = num incorrect / total
+- Naïve Bayes model: assume features only dependent on class variable (thing being predicted)
+- Laplace smoothing: add pseudo-count to reduce confidence
+  - Add pseudo-count to counts for every tuple
+- K-nearest neighbours
+  - Non-parametric, instance-based learning: needs to store all examples
+  - Uses k examples closest to one being retrieved and method to merge them
+
+## Artificial Neural Networks
+
+Prediction: $a = \sum_{i = 0}^{n}{w_i x_i}$, where $x_0 = 1$
+
+Activation function: $g(a): bool = a \geq 0$
+
+Learning:  $weight \leftarrow weight + \eta\_learning\_rate \cdot x(actual - prediction)$. Repeat for each training example and loop until no mis-classifications or limit reached.

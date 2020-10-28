@@ -75,7 +75,6 @@ P(y|x,z) &= \frac{P(x,y,z)}{P(x,z)} \\
 \therefore P(x,y|z) &= \frac{P(y|x,z) \cdot P(x,z)}{P(z)} \\
 &= P(y|x,z) \cdot P(x|z) \\
 \\
-&= P(y|x,z) \cdot P(x|z) \\
 \therefore P(x|y,z) &= \frac{P(y|x,z) \cdot P(x|z)}{P(y,z)} \\
 \textrm{if z is implicit}: \\
 P(x|y) &= \frac{P(y|x) \cdot P(x)}{P(y)} \textrm{ (Baye's rule)}

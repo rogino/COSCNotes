@@ -12,7 +12,7 @@ $a = \sum_{i = 1}^{n}{w_i\cdot x_i} + bias$
 
 Sometimes, bias is represented as another weight $w_0$ - in this case, there is a virtual input $x_0 = 1$ and $a = \sum_{i = 1}^{n}{w_i\cdot x_i}$
 
-For this course, $g(a) = 1$ if $a >= 0$ and $0$ otherwise; a Heaviside (step) function"
+For this course, $g(a) = 1$ if $a >= 0$ and $0$ otherwise; a Heaviside (step) function.
 
 A perceptron can be seen as a predicate: given a vector $x$, $f(x) = 1$ if the predicate over $x$ is true, and 0 otherwise. Hence, it can be used in decision making and binary classification problems ($f(x) = 1$ if in the positive class).
 
@@ -31,9 +31,9 @@ Given a data set - a collection of training vectors of the form $(x_1, ..., x_n,
 - Randomly initialize the weights and bias
 
 - While there are mis-classifications and the **number of iterations is less than the maximum number of epochs**:
-  
+
   - For each training example, classify the example. If it is misclassified, then update the weights, where $\eta$ is the learning rate, $x_j$ is the value for input $j$, $t$ is the actual output and $y$ is the current prediction (perceptron output):
-    - $w_j \leftarrow w_j + \eta x_j(t-y)$
+    - $w_j \leftarrow w_{j} + \eta \cdot x_j(t - y)$
     - $bias \leftarrow bias + \eta(t-y)$ (the same equation can be used for bias as above if it is represented as a virtual input)
 
 If examples are linearly separable, the weights and bias will, in finite time, converge to values that produce a perfect separation.
@@ -98,7 +98,7 @@ Some notes:
 - A network with only one layer is an **identify function**
 - Weights and biases are *between* layers
   - Between layer $i$ and $i+1$:
-    - The number of weights is $nodesInLayer(i) * nodesInLayer(i + 1)$
+    - The number of weights is $nodesInLayer(i) \cdot nodesInLayer(i + 1)$
     - The number of biases is $nodesInLayer(i + 1)$.
 - Layers between the input and output are called **hidden layers**
 
