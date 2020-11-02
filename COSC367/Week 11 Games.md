@@ -96,7 +96,7 @@ Hence, the search space needs to be reduced:
 - Table lookup instead of search (e.g. for opening/closing situations)
 - Monte-Carlo tree search: randomly sample tree
 
-#### Pruning: Alpha-Beta Pruning
+#### Alpha-Beta Pruning
 
 If an option is bad compared to other available options, there is no point in expending search time to find out exactly how bad it is.
 
@@ -131,25 +131,25 @@ If *m > n*, the max node is guaranteed to get a utility of at least *m* - hence,
 The algorithm has:
 
 - $\alpha$: highest-value choice found for a max node higher-up (parents) in the tree. Initially $-\infty$
-- $\beta$:   lowest-value choice found for a min node higher-up (parents) in the tree. Initially $ \infty$
+- $\beta$: lowest-value choice found for a min node higher-up (parents) in the tree. Initially $ \infty$
 
-These two values should be passed down to the child nodes during search. If the value returned by the child node is greater than $\alpha$ for a max node, then $\alpha$ should be updated, and vice versa if it is a min node. If $\alpha >= \beta$, the node can be pruned.
+These two values should be passed down to the child nodes during search. If the value returned by the child node is greater than $\alpha$ for a max node, then $\alpha$ should be updated, and vice versa if it is a min node. If $\alpha \geq \beta$, the node can be pruned.
 
 ```python
 from math import inf
 
-def alpha_beta_search(tree, is_max_node = True, alpha = -math.inf, beta = math.inf):
+def alpha_beta_search(tree, is_max_node = True, alpha = -inf, beta = inf):
   # Input: nested array. Numbers are leaf nodes, arrays are inner nodes
-  # Returns a tuple of the best utility and path that gets that utility
+  # Returns a tuple of the best utility and path that gets that utility (index numbers)
   # If path is none, pruning occurred or it is a leaf node
   best_path = None
-  best_utility = -math.inf if is_max_node else math.inf
+  best_utility = -inf if is_max_node else inf
 
   if isinstance(tree, int):
     return (tree, None)
 
   for (i, child) in enumerate(tree):
-    utility, path = MinimaxAlphaBeta(child, not is_max_node, alpha, beta)
+    utility, path = alpha_beta_search(child, not is_max_node, alpha, beta)
     path = [i] if path is None else ([i] + path) # Append index of child to path received by child
 
     if is_max_node:
@@ -192,7 +192,7 @@ Good move ordering improves effectiveness. Examples:
 - Expand captures first, then treats, then forward moves etc.
 - Run iterative deepening search, sort by value last iteration
 
-ALpha-beta search often gives us $O(b^\frac{d}{2})$; an improvement over $O(b^d)$ (i.e. take the square root of the branching factor)
+Alpha-beta search often gives us $O(b^\frac{d}{2})$; an improvement over $O(b^d)$ (i.e. take the square root of the branching factor)
 
 #### Static (Heuristic Evaluation) Function
 

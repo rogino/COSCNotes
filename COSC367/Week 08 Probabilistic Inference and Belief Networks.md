@@ -51,7 +51,7 @@ $$
 **Chain rule**: $P(x_1,  x_2, x_3) = P(x_1) \cdot P(x2|x_1) \cdot P(x_3|x1, x2)$. More generally:
 
 $$
-P(x_1, ... x_n) = \prod_{i=1..n}{P(x_i|x_1, ..., x_{i-1})}
+P(x_1, ... x_n) = \prod_{i=1}^{n}{P(x_i|x_1, ..., x_{i-1})}
 $$
 
 ## Probabilistic Inference

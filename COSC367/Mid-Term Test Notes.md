@@ -26,8 +26,8 @@ Iterative deepening: max depth incremented until solution found. DFS is $\geq po
 ### Soundness and Completeness
 
 - $KB \vdash g$ means $g$ can be derived (is a consequence) from the given proof procedure
-- *Sound* if every consequence found is true (if $KB \vdash g$, $KB \models g$)
-- *Complete* if all consequences found are true (if $KB \models g$, $KB \vdash g$)
+- *Sound* if every consequence derived is true (if $KB \vdash g$, $KB \models g$)
+- *Complete* if all consequences are derived (if $KB \models g$, $KB \vdash g$)
 
 ### Bottom-up/forward-chaining
 - Initialize the set of consequences to be the set of atomic clauses

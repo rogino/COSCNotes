@@ -73,6 +73,8 @@ An arc $\langle X, r(X, \overline{Y})\rangle$ is arc consistent if for **every**
 
 A network is arc consistent if all arcs are arc consistent.
 
+If an constraint has only one variable in its scope and every value in the domain satisfies the constraint, then the arc is **domain consistent**.
+
 If there is an arc that is not arc consistent, **remove values from $X$'s domain** to make it arc consistent.
 
 Example:
@@ -94,6 +96,7 @@ Arcs can be considered in series. An arc, $\langle X, r(X, \overline{Y})\rangle$
 
 ```python
 def GAC(variables, domains, constraints):
+  # GAC: Generalized Arc Consistency algorithm
   return GAC2(variables, domains, constraints, [((X, C) for C in constraints if X in scope(C)) for X in variables].flatten())
 
 def GAC2(variables, domains, constraints, todo):
