@@ -1,0 +1,555 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>02. Sockets</title></head>
+<body><h1>02. Sockets</h1>
+<p>Ethernet/WLAN/PPP etc. -&gt; Internet Protocol -&gt; TCP/DNS/HTTP etc.</p>
+<p>Everything over IP, IP over everything.</p>
+<h2>IP Address</h2>
+<ul>
+<li><p>Each host (not just end hosts) is identified by one or more IP addresses</p>
+<ul>
+<li>Usually as many IP addresses as network adapters</li>
+<li>End hosts usually have one</li>
+<li>Exceptions e.g. laptops with Wi-Fi and ethernet</li>
+
+</ul>
+</li>
+<li><p>Both identifies the host and helps with routing</p>
+</li>
+<li><p>DNS used to translate human readable host names to IPv4 addresses</p>
+</li>
+
+</ul>
+<h3>Representation</h3>
+<ul>
+<li>32-bit wide address</li>
+<li>Worldwide unique (with caveats)</li>
+<li>Dotted-decimal notation: 192.168.1.1</li>
+
+</ul>
+<h3>IP Service - Best Effort</h3>
+<p>The basic IP service is packet delivery. It is:</p>
+<ul>
+<li>Stateless: no connection/shared state</li>
+<li>Unacknowledged: the IP service does not send acknowledgement that a package has been received</li>
+<li>Unreliable: no retransmissions on the IP level</li>
+<li>Unordered: does not guarantee in-sequence delivery</li>
+
+</ul>
+<h2>UDP and TCP</h2>
+<ul>
+<li><p>UDP: user datagram protocol</p>
+</li>
+<li><p>TCP: transmission control protocols</p>
+</li>
+<li><p>Both operate <strong>on top of IPv4</strong>: they generate packets and use that as the IPv4 packet payload: protocol layering</p>
+</li>
+<li><p>Both are unicast: between a pair of IP addresses</p>
+</li>
+<li><p>They add their own addressing capabilities: <strong>port numbers</strong></p>
+<ul>
+<li>IPv4 address refers to end host; port number refers to particular application running on the end host</li>
+
+</ul>
+</li>
+
+</ul>
+<h3>UDP</h3>
+<p>IPv4, plus port numbers. It is:</p>
+<ul>
+<li>Connectionless</li>
+<li>Unacknowledged</li>
+<li>Unreliable</li>
+<li>Unordered</li>
+
+</ul>
+<h3>TCP</h3>
+<p>TCP allows safe and reliable transfer over the internet. It is:</p>
+<ul>
+<li><p>Connection-oriented</p>
+<ul>
+<li>Different from a connection in a circuit-switched network: <strong>resources are NOT reserved</strong></li>
+<li>Goes through the same three phases of a connection: setup, use and teardown</li>
+
+</ul>
+</li>
+<li><p>Reliable and in-sequence</p>
+</li>
+<li><p>Byte-stream oriented</p>
+</li>
+<li><p>Full-duplex</p>
+</li>
+
+</ul>
+<h3>Ports</h3>
+<ul>
+<li><p>16-bit port number</p>
+</li>
+<li><p>A process can allocate one or more ports</p>
+</li>
+<li><p>One port is allocated to at most one process</p>
+</li>
+<li><p>Some ports, well-known ports, are allocated to well-known applications</p>
+<ul>
+<li>22: SSH; 25: SMTP; 53: DNS; 80: HTTP; 443: HTTPS</li>
+<li>This is convention, not a rule</li>
+<li>Ports 1023 and below are usually reserved for system services</li>
+<li>Admin permissions required in Linux</li>
+
+</ul>
+</li>
+
+</ul>
+<h2>Processes and blocking socket calls</h2>
+<p>An OS creates an abstraction for processes to make processes think that they have their own exclusive processor and allocate memory exclusively (memory not accessible by other processes). Below the abstraction, time-sharing is used. A process can be:</p>
+<ul>
+<li><p>Running: running on the processor</p>
+<ul>
+<li>A process will be given some quantum of time to run, after which it will be swapped out with another runnable process</li>
+
+</ul>
+</li>
+<li><p>Runnable: ready to run on the processor, but not currently running</p>
+</li>
+<li><p>Blocked: waiting for external input e.g. file from disk, socket</p>
+<ul>
+<li><strong>Blocked processes use no CPU resources</strong></li>
+<li>Much better than busy-looping (polling)</li>
+<li>NB: of one thread calls a blocking call, the whole process will be blocked</li>
+
+</ul>
+</li>
+
+</ul>
+<h3>Socket API</h3>
+<ul>
+<li><p>Follows the Unix philosophy that (almost) everything is a file (or acts like a file)</p>
+</li>
+<li><p><strong>One socket is bound to exactly one port</strong></p>
+<ul>
+<li>Within the same process, multiple sockets can be bound to the same port</li>
+
+</ul>
+</li>
+<li><p>Associated with its underlying protocol (e.g. UDP or TCP)</p>
+<ul>
+<li>Application does not need to know the details of the abstraction, but needs to specify which one to use</li>
+
+</ul>
+</li>
+<li><p>Associated with buffers - decouples the application from the underlying data protocol</p>
+<ul>
+<li>Receiver&#39;s TCP/UDP entity places incoming data into the receiver buffer; process will <code>read()</code> from the buffer at its own discretion</li>
+<li>Transmitter <code>write()</code>s data into the transmit buffer; TCP/UDP sends it at its own discretion</li>
+
+</ul>
+</li>
+<li><p>When writing to a socket:</p>
+<ul>
+<li>UDP: data encapsulated in UDP datagram and transferred - <strong>one write, one datagram</strong></li>
+<li>TCP: data buffered and <strong>may be combined with data from previous/future <code>write()</code>s before being transmitted</strong></li>
+<li>Successful write means data was successfully put into the buffer</li>
+
+</ul>
+</li>
+
+</ul>
+<h3>Client/Server Paradigm</h3>
+<p>Client applications must:</p>
+<ul>
+<li><p>Know the server IP address and port number</p>
+</li>
+<li><p>Have its own IP address and port number</p>
+<ul>
+<li>Have a socket bound to these</li>
+<li>Through the socket, it can initiate contact with the server</li>
+
+</ul>
+</li>
+
+</ul>
+<p>Server applications must:</p>
+<ul>
+<li><p>Have an IP address and port number</p>
+<ul>
+<li>Must be known to clients</li>
+<li>Must have a socket bound to these</li>
+
+</ul>
+</li>
+<li><p>Accept service requests from clients and respond to them</p>
+</li>
+
+</ul>
+<p>The client and server can run on the same machine: 127.0.0.1 (localhost) maps a device to itself.</p>
+<h2>Socket Types</h2>
+<p>Differ by OS, but these are universal:</p>
+<ul>
+<li><p>Stream socket: TCP (usually)</p>
+<ul>
+<li>Reliable, in-sequence transmission of a byte stream</li>
+<li>The application does know what protocol is being used under the hood - usually TCP, but not guaranteed</li>
+<li>If delivery fails (for a prolonged time), the sending application is notified</li>
+<li>i.e. receiver not responding</li>
+<li>A <code>write()</code> does not guarantee a packet - the underlying protocol will determine on its own if it should send a packet or combine it with data from other <code>write()</code>s</li>
+<li>Receiver cannot detect the boundary between <code>write()</code>s - <strong>record boundaries not preserved</strong></li>
+
+</ul>
+</li>
+<li><p>Datagram socket: UDP (usually)</p>
+<ul>
+<li>Does not guarantee reliable or in-sequence delivery</li>
+<li>If delivery fails, sending application is not notified</li>
+<li>One <code>write()</code> of <em>x</em> bytes, one UDP packet</li>
+<li>A <code>read()</code> will return a block of at most <em>x</em> bytes (when no bits are lost)</li>
+<li>Record boundaries are preserved</li>
+
+</ul>
+</li>
+
+</ul>
+<h3>Example Workflow: TCP client</h3>
+<ul>
+<li><p><code>socket()</code></p>
+<ul>
+<li>Creates a socket, allocates resources (buffer, socket handle etc.)</li>
+<li>Initially assigned to a random, unused port number</li>
+<li>Can fail (e.g. lack of buffer space, not enough handles, need root)</li>
+
+</ul>
+</li>
+<li><p><code>connect()</code></p>
+<ul>
+<li>Specify IP address and port number of server</li>
+<li>(Tries to) establish connection with the server</li>
+
+</ul>
+</li>
+<li><p><code>read()/write()</code></p>
+<ul>
+<li>Or <code>sendto()</code>/<code>recvfrom()</code> - additional parameters</li>
+<li>Reads from/sends data to the server</li>
+
+</ul>
+</li>
+<li><p><code>close</code></p>
+<ul>
+<li>Closes the connection; frees up resources</li>
+
+</ul>
+</li>
+
+</ul>
+<h3>Example workflow: TCP Server</h3>
+<ul>
+<li><p><code>socket()</code> creates socket</p>
+</li>
+<li><p><code>bind()</code> binds to a particular port number and IP</p>
+</li>
+<li><p><code>listen()</code> declares the willingness to accept incoming connections and allocate resources for incoming connection requests</p>
+<ul>
+<li>Buffer size specified</li>
+
+</ul>
+</li>
+<li><p><code>accept()</code></p>
+<ul>
+<li>Accept an incoming connection request</li>
+<li>Takes the oldest connection request from the queue</li>
+<li>Generates a new socket with the same port number (as the socket <code>listen()</code> is using)</li>
+<li>Allows a separate thread to process it for parallel processing</li>
+
+</ul>
+</li>
+<li><p>On the new socket:</p>
+<ul>
+<li><code>read()</code>, <code>write()</code></li>
+<li><code>close()</code></li>
+
+</ul>
+</li>
+<li><p><code>close()</code> on the initial socket - to stop accepting all connections</p>
+</li>
+
+</ul>
+<h3>Example workflow: UDP client</h3>
+<ul>
+<li><p><code>socket()</code></p>
+</li>
+<li><p><code>rcvfrom()</code>, <code>sendto()</code></p>
+<ul>
+<li><code>sendto</code> requires you to explicitly specify the receiver address</li>
+<li><code>rcvfrom</code> gives you the IP address of the sender as well as the data</li>
+
+</ul>
+</li>
+<li><p><code>close()</code>
+<code>connect()</code>, then <code>read()</code>/<code>write()</code> can also be used. <code>connect()</code> gives you a default sender and receiver IP address, and can be called multiple times.</p>
+</li>
+
+</ul>
+<h3>Example workflow: UDP server</h3>
+<ul>
+<li><code>socket()</code></li>
+<li><code>bind()</code></li>
+<li><code>rcvfrom()</code>, <code>sendto()</code></li>
+<li><code>close()</code></li>
+
+</ul>
+<h2>Socket API Functions</h2>
+<pre><code class='language-c' lang='c'>#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;unistd.h&gt;
+</code></pre>
+<p>Returns an integer. If negative, error, and sets the <code>errno</code> variable.</p>
+<h3>Socket (non-blocking)</h3>
+<ul>
+<li>Creates a new socket structure</li>
+<li>Allocates resources e.g. socket buffer</li>
+<li>Assigns to random un-used port number</li>
+<li>Returns file descriptor representing the socket</li>
+
+</ul>
+<pre><code class='language-c' lang='c'>int socket(int domain, int type, int protocol);.
+</code></pre>
+<ul>
+<li><code>domain</code>: type of networking technology e.g. <code>AE_INET</code> (IPv4), <code>AF_NET6</code> (IPv6)</li>
+<li>type: type of socket e.g. <code>SOCK_STREAM</code> (TCP-like), <code>SOCK_DGRAM</code> (UDP-like), <code>SOCK_RAW</code></li>
+<li>protocol: protocol for given socket protocol. Usually only one sensible option. If in doubt, set to <code>0</code></li>
+
+</ul>
+<p>If successful, returns file descriptor (positive integer).  If fails, returns <code>-1</code> and sets <code>errno</code>.</p>
+<h3>Bind (non-blocking)</h3>
+<ul>
+<li>Links a socket to a particular IP address/port number/address family combination</li>
+
+</ul>
+<pre><code class='language-c' lang='c'>int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+</code></pre>
+<ul>
+<li><code>sockfd</code>: socket descriptor (returned from socket())</li>
+<li><code>addr</code>: pointer to struct containing address information. If IPv4, need to cast <code>sockaddr_in</code> to <code>sockaddr</code></li>
+<li><code>addrlen</code>: length of address</li>
+
+</ul>
+<p>Tries to be general, so is big enough to fit in any type of address. <code>sa_family</code> is the same value as used in protocol.</p>
+<pre><code class='language-c' lang='c'>struct sockaddr {
+ sa_family_t sa_family;
+ char sa_data[14];
+}
+</code></pre>
+<p>Need to cast <code>sockaddr_in</code> to a <code>char</code> array.</p>
+<pre><code class='language-c' lang='c'>struct sockaddr_in {
+ short sin_family;
+ unsigned short sin_port;
+ struct in_addr sin_addr;
+ char sin_zero[8];
+};
+
+struct in_addr {
+ unsigned long s_addr;
+};
+</code></pre>
+<h3>Listen (non-blocking)</h3>
+<pre><code class='language-c' lang='c'>int listen(int sockfd, int backlog);
+</code></pre>
+<p>Declares that you are willing to accept incoming steams (<code>SOCK_STREAM</code> or <code>SOCK_SEQPACKET</code> connections), and allocates resources (queue).</p>
+<ul>
+<li><code>backlog</code>: how long the queue can be</li>
+
+</ul>
+<h3>Accept (blocking)</h3>
+<ul>
+<li>Waits for incoming connection requests</li>
+<li>Return a new socket (with same port number) over which you can talk to the sender, and returns the socket descriptor</li>
+
+</ul>
+<pre><code class='language-c' lang='c'>int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+</code></pre>
+<ul>
+<li><code>addr</code>: pointer to address struct. It will fill in the address details of the sender</li>
+
+</ul>
+<h3>Connect (blocking)</h3>
+<pre><code class='language-c' lang='c'>int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+</code></pre>
+<ul>
+<li>For steam sockets: request establishment of connection with server</li>
+<li>For datagram sockets: used to specify default receiver for datagrams when <code>send()</code> or <code>write()</code> used</li>
+
+</ul>
+<p>Fate of connection setup must be known.</p>
+<p>Blocks until the fate of the connection setup is known:</p>
+<ul>
+<li>For stream sockets, the connection must be accepted using <code>accept</code> and that message must be received</li>
+<li>For datagram sockets, there is no confirmation of setup or anything, so it is non-blocking</li>
+
+</ul>
+<h3>Read</h3>
+<pre><code class='language-c' lang='c'>ssize_t recv(int sockfd, void *buf, size_t len, int flags); ssize_t recvfrom(int sockfd, void *buf, size_t len, int flags, struct sockaddr *src_addr, socklen_t *addrlen);
+ssize_t read(int fd, void *buf, size_t count);
+</code></pre>
+<p><code>read</code>: prepare buffer area, size of the buffer area, and pass it to <code>read</code>, which will fill it up with data.</p>
+<p><code>recvfrom</code>: the caller also provides memory for address structure and the function fills it in with the address/port/address family of the host.</p>
+<p>Read will be blocking if there is no data (unless a flag is set using <code>recv</code>/<code>recvfrom</code>, in which case it will return an error code).</p>
+<h3>Write</h3>
+<pre><code class='language-c' lang='c'>ssize_t send(int sockfd, const void *buf, size_t len, int flags);
+ssize_t sendto(int sockfd, const void *buf, size_t len, int flags, const struct sockaddr *dest_addr, socklen_t addrlen);
+ssize_t write(int fd, const void *buf, size_t count);
+</code></pre>
+<p><code>write</code>: pass it a buffer of data to send, and the number of bytes to send.</p>
+<p>If the underlying socket buffer is too full, it will be blocking (unless the flag is set, which will cause it to return an error code).</p>
+<p><code>send</code>/<code>write</code> require the addressee to be specified using connect.</p>
+<h3>Close</h3>
+<pre><code class='language-c' lang='c'>int close(int fd);
+</code></pre>
+<p>Frees up socket resources.</p>
+<h2>Endianness</h2>
+<p>For certain data types (e.g. 16 bit unsigned port number), the packet header in particular, there must be a canonical representation for data being transmitted - the <em>network byte order</em>. Hosts must convert between their own internal representation (<em>host byte order</em>) and network representation.</p>
+<p>The canonical representation for the internet is <em>big-endian</em> (most significant byte at lowest memory address). Intel hates it.</p>
+<p>Host (h) to network (n) conversion, or vice versa, available as helper functions for 16/32 bit integers.</p>
+<pre><code class='language-c' lang='c'>#include &lt;arpa/inet.h&gt;
+uint32_t htonl(uint32_t hostlong); // host to network long (32 bits)
+uint16_t htons(uint16_t hostshort); // host to network short (16 bits)
+
+uint32_t ntohl(uint32_t netlong); // network to host long
+uint16_t ntohs(uint16_t netshort); // network to host short
+</code></pre>
+<p>Helper functions for address manipulation.</p>
+<pre><code class='language-c' lang='c'>#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;arpa/inet.h&gt;
+
+int inet_aton(const char *cp, struct in_addr *inp);
+in_addr_t inet_addr(const char *cp);
+in_addr_t inet_network(const char *cp);
+char *inet_ntoa(struct in_addr in);
+struct in_addr inet_makeaddr(int net, int host);
+in_addr_t inet_lnaof(struct in_addr in);
+in_addr_t inet_netof(struct in_addr in);
+</code></pre>
+<h2>TCP Client Example</h2>
+<pre><code class='language-c' lang='c'>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;string.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;netdb.h&gt;
+
+int main() {
+  char[] server_name = &quot;localhost&quot;;
+  uint16_t portno = 80;
+  struct sockaddr_in_serv_addr; // Address structure for server
+  struct hostent *server; // Result of DNS resolver
+  char[] buffer[256] = &quot;A message to send&quot;; // Buffer for data to send
+
+  // Create socket with protocol 0 (default) for given address family - TCP
+  int sockfd = socket(AE_INET, SOCK_STREAM, 0);
+  if (sockfd &lt; 0) {
+    perror(&quot;ERROR opening socket&quot;);
+    exit(1);
+  }
+
+  server = gethostname(server_name); // DNS resolution
+  if (server == NULL) {
+    perror(&quot;ERROR no such host&quot;);
+    close(sockfd); // Not needed, but stylistically bad to not close the socket
+    exit(0);
+  }
+
+  bzero((char*) &amp;serv_addr, sizeof(serv_addr)); // Zero out the struct
+  serv_addr.sin_family = AE_NET;
+
+  // Copy IP address from DNS response
+  bcopy((char*)server-&gt;h_addr,
+    (char*)&amp;serv_addr.sin_addr.s_addr,
+    server-&gt;h_length
+  );
+
+  // Set port number
+  serv_addr.sin_port = htons(portno);
+
+  if (connect(sockfd, (struct sockaddr*) &amp;serv_addr, sizeof(serv_addr)) &lt; 0) {
+    perror(&quot;ERROR connecting&quot;);
+    close(sockfd);
+    exit(1);
+  }
+
+  int n = write(sockfd, buffer, strlen(buffer));
+  if (n &lt; 0) {
+    perror(&quot;ERROR writing to socket&quot;);
+    exit(1);
+  }
+
+  bzero(buffer, 256); // Zero out buffer; wait for response
+  n = read(sockfd, buffer, 255);
+  if (n &lt; 0) {
+    perror(&quot;ERROR reading from socket&quot;);
+    exit(1);
+  }
+
+  printf(&quot;%s\n&quot;, buffer);
+
+}
+</code></pre>
+<h3>TCP Server Example</h3>
+<pre><code class='language-c' lang='c'>int main() {
+  int portno = 80;
+  int sockfd = socket(AE_INET, SOCK_STREAM, 0);
+
+  struct sockaddr_in serv_addr;
+  struct sockaddr_in cli_addr;
+
+  if (sockfd &lt; 0) {
+    perror(&quot;ERROR opening socket&quot;);
+    exit(1);
+  }
+
+
+  bzero((char *) &amp;serv_addr, sizeof(serv_addr));
+  serv_addr.sin_family = IENET;
+  serv_addr.sin_addr.s_addr = INADDR_ANY; // Bound to all local interfaces. Otherwise, use the IP address of a specific interface
+  serv_addr.sin_port = htons(portno);
+
+  if (bind(sockfd, (struct sockaddr *) &amp;serv_addr, sizeof(serv_addr)) &lt; 0) {
+    eprint(&quot;ERROR on binding&quot;);
+    exit(1);
+  }
+
+  listen(sockfd, 5); // Allow maximum of 5 queued onnections
+
+  clilen = sizeof(cli_addr);
+  // Wait (blocking) for incoming connection request with `accept`
+  int newsockfd = accept(sockfd, (struct sockaddr *) &amp;cli_addr, &amp;clilen);
+
+  if (newsockfd &lt; 0) {
+    eprint(&quot;ERROR on accept&quot;);
+    exit(1);
+  }
+
+  bzero(buffer, 256);
+  n = read(newsockfd, buffer, 255);
+  if (n &lt; 0) {
+    eprint(&quot;ERROR reading from socket&quot;);
+    exit(1);
+  }
+
+  printf(&quot;%s\n&quot;, buffer);
+  n = write(newsocketfd, &quot;Message received&quot;, 17);
+  if (n &lt; 0) {
+    eprint(&quot;ERROR writing to socket&quot;);
+    exit(0);
+  }
+
+  close(newsockfd);
+  close(sockfd);
+  return 0;
+}
+</code></pre>
+</body>
+</html>

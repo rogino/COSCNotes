@@ -1,0 +1,522 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>3. SQL Queries</title></head>
+<body><h1>3. SQL Queries</h1>
+<h2>Oracle SQL Data Definition</h2>
+<p>SQL relations (tables) is a <em>multi-set</em>, NOT a <em>set</em> of tuples. Using <code>PRIMARY KEY</code> or <code>UNIQUE</code>, or the <code>DISTINCT</code> option in a query, constraints the result to a set. <code>DISTINCT</code> requires search to ensure duplicate tuples are not returned, so is slower than using <code>ALL</code> (the default).</p>
+<p>Naming:</p>
+<ul>
+<li>Databases up to 8 characters</li>
+<li>Other names up to 30 characters</li>
+<li>Table names cannot begin with <code>sys_</code></li>
+<li>Case insensitive</li>
+
+</ul>
+<h3>Expression</h3>
+<p>An attribute (i.e. column name) or combination of attributes, operators and functions.</p>
+<h3>Binary Operators</h3>
+<ul>
+<li>Comparisons: <code>&lt;</code> <code>&lt;=</code>, <code>=</code>, <code>!=</code>/<code>&lt;&gt;</code>, <code>&gt;=</code> and <code>&gt;</code></li>
+<li>Logical: <code>NOT</code>, <code>AND</code> and <code>OR</code>, in that order of priority. Use parentheses if needed</li>
+<li><code>+</code>, <code>-</code>, <code>*</code>, and <code>/</code> can be used for numeric values</li>
+<li>String concatenation: <code>||</code></li>
+
+</ul>
+<h3>Functions</h3>
+<p>Scalar:</p>
+<ul>
+<li>Type conversion: <code>TO_CHAR</code>, <code>TO_DATE</code>, <code>TO_NUMBER</code> etc.</li>
+<li>Numeric: <code>ABS</code>, <code>CEIL</code>, <code>FLOOR</code>, <code>EXP</code>, <code>LOG</code>, <code>MOD</code>, <code>POWER</code>, <code>ROUND</code>, SQRT` etc.</li>
+<li>String: <code>SUBSTRING</code>, <code>UPPER</code>, <code>LOWER</code>, <code>TRANSLATE</code>, <code>CONVERT</code>, <code>LENGTH</code>, <code>LPAD</code> etc.</li>
+<li>Date/time: <code>SYSDATE</code>, <code>ADD_MONTHS</code>, <code>MONTHS_BETWEEN</code>, <code>NEXT_DAY</code> etc.</li>
+
+</ul>
+<p>Aggregate/Set:</p>
+<ul>
+<li><code>SUM</code>, <code>COUNT</code>, <code>MAX</code>, <code>MIN</code>, <code>AVG</code> etc.</li>
+
+</ul>
+<h3>Predicates</h3>
+<ul>
+<li><code>LIKE</code>, <code>BETWEEN</code>, <code>IN</code>, <code>ANY</code>, <code>ALL</code>, <code>EXISTS</code>, <code>IS NULL</code></li>
+
+</ul>
+<h3>Misc.</h3>
+<p>SQL+:</p>
+<ul>
+<li><code>set autocommit on</code></li>
+<li><code>describe schema.tablename</code></li>
+<li><code>set linesize n</code></li>
+<li><code>@sql-script-path</code></li>
+
+</ul>
+<h3>Create Schema</h3>
+<p>Schemas are used to group tables together. Permissions are set on a per-schema level.</p>
+<pre><code class='language-sql' lang='sql'>CREATE SCHEMA schema-name
+AUTHORIZATION owner
+</code></pre>
+<h3>Create Table</h3>
+<pre><code class='language-sql' lang='sql'>CREATE TABLE [schema-name.]table-name
+(
+  column-name column-specification[,
+  column-name column-specification]*
+
+  [constraint-name constraint-specification]*
+)
+</code></pre>
+<p>Use <code>CREATE TABLE table-name AS (query)</code> to populate the table with data.</p>
+<h4>Notes</h4>
+<p>Constraints can be inline or defined after the columns. If the latter, multiple rows can be referenced.</p>
+<p>Inline:</p>
+<p><code>column-definition constraints</code> where <code>constraints</code> can be:</p>
+<ul>
+<li><p><code>NOT NULL</code></p>
+</li>
+<li><p><code>DEFAULT default-value</code></p>
+</li>
+<li><p><code>UNIQUE</code></p>
+</li>
+<li><p><code>REFERENCES table-name</code> (with the primary key being the foreign key)</p>
+</li>
+<li><p><code>CONSTRAINT constraint-name constraint-definition</code> where <code>constraint-definition</code> can be:</p>
+<ul>
+<li><p><code>PRIMARY KEY</code></p>
+</li>
+<li><p><code>REFERENCES referenced-table[.foreign-key-column]</code></p>
+</li>
+<li><p><code>CHECK (condition)</code></p>
+<ul>
+<li>e.g. <code>column-name &gt; 10</code>, <code>column-1 != column-2</code></li>
+<li>Value in array: <code>column-name IN (&#39;val1&#39;, &#39;val2&#39;)</code></li>
+<li>The condition can only involve the name of the current column if it is inline</li>
+
+</ul>
+</li>
+
+</ul>
+</li>
+
+</ul>
+<p>To define a primary key after column definitions: <code>PRIMARY KEY (column-name)</code>. A composite primary key can be made by passing multiple arguments.</p>
+<p>To define foreign keys after column definitions:
+`</p>
+<pre><code class='language-sql' lang='sql'>FOREIGN KEY (column-name)
+REFERENCES foreign-table (foreign-table-key)
+[ON DELETE integrity-option]
+[ON UPDATE integrity-option]
+</code></pre>
+<p>To add constraints after defining the table:</p>
+<pre><code class='language-sql' lang='sql'>ALTER TABLE table-name ADD CONSTRAINT constraint-name constraint-definition
+</code></pre>
+<p>Where <code>integrity-option</code> is one of <code>RESTRICT</code>, <code>CASCADE</code>, <code>SET NULL</code> or <code>SET DEFAULT</code>.</p>
+<p>Domain: basically <code>typedef</code> for SQL. NOT in Oracle:</p>
+<pre><code class='language-sql' lang='sql'>CREATE DOMAIN domain-name type-definition [CHECK check-statement]
+/* e.g. `check-statement` could be `(VALUE IS NOT NULL)` */
+</code></pre>
+<h3>Drop Table</h3>
+<p>Drops the relation (base table) and definition: <code>DROP TABLE table-name</code>.</p>
+<h3>Alter Table</h3>
+<p>Add, delete or modify attributes/constraints using <code>ALTER</code> commands.</p>
+<p>Add/modify: <code>ALTER TABLE table-name ADD|MODIFY column-name column-definition</code>. The <code>NOT NULL</code> constraint is only allowed if it also has a <code>DEFAULT default-value</code> constraint. Otherwise, the column must be added without the <code>NOT NULL</code> constraint then update all the rows, then alter the definition.</p>
+<p>Delete column and all constraints: <code>ALTER TABLE table-name DROP [COLUMN] column-name RESTRICT|CASCADE</code>.</p>
+<p>Delete constraint: <code>ALTER TABLE table-name DROP [CONSTRAINT] constraint-name RESTRICT|CASCADE</code>. If the constraint is a primary key or unique, <code>CASCADE</code> drops all referencing foreign keys; <code>RESTRICT</code> stops the operation if there are any referencing foreign keys.</p>
+<h3>Drop Schema</h3>
+<p><code>DROP SCHEMA schema-name RESTRICT|CASCADE</code>. <code>RESTRICT</code> only allows the operation to run if the schema is empty; <code>CASCADE</code> drops all children objects as well.</p>
+<h2>Oracle SQL Queries</h2>
+<h3><code>SELECT</code></h3>
+<pre><code class='language-sql' lang='sql'>SELECT [ALL|DISTINCT] attribute-list
+FROM table-list
+[WHERE condition]
+[GROUP BY grouping-attributes]
+[HAVING group-condition]
+[ORDER BY attribute-list]
+[OFFSET n]
+[FETCH NEXT m ROWS ONLY] /* Oracle specific */
+</code></pre>
+<p>Six clauses; the last four are optional:</p>
+<ul>
+<li><p><code>SELECT</code> is like the project, <span class="MathJax_SVG" tabindex="-1" style="font-size: 100%; display: inline-block;"><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="1.331ex" height="1.41ex" viewBox="0 -504.6 573 607.1" role="img" focusable="false" style="vertical-align: -0.238ex;"><defs><path stroke-width="0" id="E69-MJMATHI-3C0" d="M132 -11Q98 -11 98 22V33L111 61Q186 219 220 334L228 358H196Q158 358 142 355T103 336Q92 329 81 318T62 297T53 285Q51 284 38 284Q19 284 19 294Q19 300 38 329T93 391T164 429Q171 431 389 431Q549 431 553 430Q573 423 573 402Q573 371 541 360Q535 358 472 358H408L405 341Q393 269 393 222Q393 170 402 129T421 65T431 37Q431 20 417 5T381 -10Q370 -10 363 -7T347 17T331 77Q330 86 330 121Q330 170 339 226T357 318T367 358H269L268 354Q268 351 249 275T206 114T175 17Q164 -11 132 -11Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><use xlink:href="#E69-MJMATHI-3C0" x="0" y="0"></use></g></svg></span><script type="math/tex">\pi</script> operator</p>
+<ul>
+<li><p><code>ALL</code> is the default; <code>DISTINCT</code> removes duplicate tuples</p>
+<ul>
+<li>The latter requires comparisons for each tuple so may be slower</li>
+
+</ul>
+</li>
+<li><p><code>attribute-list</code> is a comma separated list where each item is:</p>
+<ul>
+<li><code>*</code> for all columns in the table</li>
+<li>A column name</li>
+<li>The result of some operation (e.g. <code>column_name * 10</code>)</li>
+
+</ul>
+</li>
+
+</ul>
+</li>
+<li><p><code>WHERE</code> is like the select, <span class="MathJax_SVG" tabindex="-1" style="font-size: 100%; display: inline-block;"><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="1.329ex" height="1.41ex" viewBox="0 -504.6 572 607.1" role="img" focusable="false" style="vertical-align: -0.238ex;"><defs><path stroke-width="0" id="E67-MJMATHI-3C3" d="M184 -11Q116 -11 74 34T31 147Q31 247 104 333T274 430Q275 431 414 431H552Q553 430 555 429T559 427T562 425T565 422T567 420T569 416T570 412T571 407T572 401Q572 357 507 357Q500 357 490 357T476 358H416L421 348Q439 310 439 263Q439 153 359 71T184 -11ZM361 278Q361 358 276 358Q152 358 115 184Q114 180 114 178Q106 141 106 117Q106 67 131 47T188 26Q242 26 287 73Q316 103 334 153T356 233T361 278Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><use xlink:href="#E67-MJMATHI-3C3" x="0" y="0"></use></g></svg></span><script type="math/tex">\sigma</script> operator</p>
+</li>
+<li><p><code>ORDER BY</code> does sorting</p>
+</li>
+
+</ul>
+<h3>Table Alias</h3>
+<p>Oracle uses the syntax, <code>tableName alias</code>.</p>
+<p>Other SQL implementations use <code>tableName AS alias</code>.</p>
+<p>This may be useful when referring to two entries in the a single table (e.g. find rows where the last names the same).</p>
+<p>The result of a nested select statement can also be aliased: <code>(SELECT clause that is probably using JOINs) alias</code>.</p>
+<h4>Attribute list</h4>
+<p>The attribute list can contain column names, aggregate functions and constants:</p>
+<ul>
+<li>Except for <code>COUNT(*)</code>, aggregate functions ignore <code>NULL VALUES</code></li>
+<li>Can also use <code>DISTINCT</code> within aggregate functions: <code>COUNT(DISTINCT origin)</code> will return the number of distinct origin values</li>
+<li>Can also be a nested select statement returning a single row and column</li>
+
+</ul>
+<h4>Some <code>WHERE</code> predicates</h4>
+<ul>
+<li><p>Range (inclusive): <code>column-name BETWEEN min AND max</code></p>
+<ul>
+<li>Can be used for numbers, dates and strings</li>
+
+</ul>
+</li>
+<li><p>Membership: <code>column-name IN (val_1, ..., val_n)</code></p>
+</li>
+<li><p>Pattern matching with <code>LIKE</code>: <code>column-name LIKE pattern</code></p>
+<ul>
+<li>Enclose <code>pattern</code> in single quotes</li>
+<li><code>%</code> acts like <code>.*</code> in a regular expression</li>
+<li><code>_</code> acts like <code>.</code> in a regular expression</li>
+<li>Can set custom escape character: <code>&#39;Pattern\_Using\_Underscore</code> ESCAPE &#39;&#39;</li>
+
+</ul>
+</li>
+<li><p>Pattern matching with regular expressions: <code>REGEXP_LIKE(column-name, pattern, [param])</code></p>
+<ul>
+<li><code>param</code>: <code>i</code> (case-insensitive), <code>c</code> (case-sensitive), <code>x</code> (ignore whitespace), &#39;m&#39; (multiline)</li>
+
+</ul>
+</li>
+<li><p><code>NULL</code>: <code>IS [NOT] NULL</code>; <code>NULL != NULL</code> so cannot use equality comparisons</p>
+</li>
+
+</ul>
+<h4><code>GROUP BY</code></h4>
+<p>For applying aggregate functions to <em>groups of tuples</em>; each group is a set of tuples where they have the same value for the grouping attribute(s) (comma-separated list). This is used for summary information, and is often phrased as <em>for each entity ...</em>.</p>
+<p>e.g. <code>SELECT origin, COUNT(origin) FROM routes GROUP BY origin</code> returns number of times each origin value appears.</p>
+<p>e.g. <code>SELECT COUNT(DISTINCT type), director FROM movie GROUP BY director</code> returns the number of genres of movies each director has directed.</p>
+<p>When using <code>GROUP BY</code>, all non-aggregate attributes need to be referenced. This is as the grouping reduces the result into a single tuple, which may not be possible if they are not all referenced. For example, if <code>(a, b) = (0, 0), (0, 1)</code> is grouped by <code>a</code>, it must either pick one of the values or pick both, neither of which are allowed.</p>
+<p>This can happen even if the primary key is used as the grouping attribute.</p>
+<h4><code>HAVING</code></h4>
+<p>Retrieves the values of these functions only for groups that satisfy certain conditions - i.e. it filters out groups.</p>
+<p>e.g. <code>SELECT origin, COUNT(origin) FROM routes GROUP BY origin HAVING COUNT(origin) &gt; 10</code>.</p>
+<p><code>COUNT(*)</code> gets the count for the group.</p>
+<h4><code>ORDER BY</code></h4>
+<p>Sorts tuples based on the values of some attributes:</p>
+<pre><code class='language-sql' lang='sql'>ORDER BY [column-name ASC|DESC] [, column-name ASC|DESC]*
+</code></pre>
+<p>Default is <code>ASC</code>. Sorts by the first column name first, and when the values are equal, it sorts by the second column etc. The sort is not stable.</p>
+<h4>Nested Queries</h4>
+<p>A nested query/sub-query be specified within the WHERE and HAVING clauses of an outer query. The sub-query must be enclosed within parentheses.</p>
+<ul>
+<li><p><code>ORDER BY</code> is not allowed</p>
+</li>
+<li><p>The sub-query <code>SELECT</code> list must consist of a single attribute/expression unless the outer query uses <code>EXISTS</code></p>
+<ul>
+<li>If using the <code>in</code> predicate, it should return a table with one column and <em>n</em> rows</li>
+<li>If using a equality predicate, it should return a table with one column and one row</li>
+
+</ul>
+</li>
+<li><p>Attributes from the outer query&#39;s table can be referenced in the sub-query; this is called <strong>correlation</strong>, and means that the result of the sub-query is different for each row of the outer query</p>
+<ul>
+<li>A table alias may need to be used</li>
+
+</ul>
+</li>
+<li><p>A sub-query can appear on both sides of a comparison</p>
+</li>
+
+</ul>
+<p>Examples:</p>
+<ul>
+<li><code>SELECT * FROM customer WHERE num_orders &gt; (SELECT AVG(num_orders) FROM customer)</code></li>
+<li><code>SELECT * FROM movie WHERE (SELECT id FROM director WHERE lname=&#39;Nolan&#39;)</code></li>
+<li><code>SELECT * FROM movie M1 WHERE M1.awards = (SELECT MAX(awards) FROM movie M2 WHERE M1.director = M2.director)</code> returns the movies that have one the most awards for a given director</li>
+
+</ul>
+<h5><code>EXISTS</code></h5>
+<p>Used to check if result of <em>correlated</em> sub-query is empty.</p>
+<p>e.g. <code>SELECT * FROM director D1 WHERE EXISTS (SELECT * FROM movie WHERE D1.id = director AND type=&#39;comedy&#39;)</code> finds directors that have directed at least one comedy.</p>
+<h4>Multi-table queries</h4>
+<p>Queries used nested queries using the <code>=</code> or <code>IN</code> conditions <strong>can always be expressed as a single query</strong>. This does a JOIN in the background, and so is much more efficient than correlated nested queries. The FROM clause may contain more than one table.</p>
+<p>e.g. <code>SELECT title FROM movie, director WHERE dnumber=director AND lname=&#39;Nolan&#39;</code>.</p>
+<p>In general, if you have <em>n</em> tables, will need <em>n-1</em> join conditions.</p>
+<p>If there is no WHERE clause, all tuples of the relations are selected and the result is equivalent to the <strong>Cartesian product</strong>, most of which will be nonsense.</p>
+<p>Multi-table query for the same table: <code>SELECT DISTINCT M1.director FROM movie M1, movie M2 WHERE M1.director = M2.director AND M1.type=&#39;comedy&#39; and M2.type=&#39;drama&#39;</code>. A similar result could be done using an <code>INTERSECT</code> operation.</p>
+<h4>Specifying Joins in SQL2</h4>
+<pre><code class='language-sql' lang='sql'>... FROM table1 JOIN_TYPE table2 ON col1=col2
+</code></pre>
+<p>Where the join type is one of:</p>
+<ul>
+<li><code>JOIN</code></li>
+<li><code>NATURAL JOIN</code></li>
+<li><code>LEFT OUTER JOIN</code></li>
+<li><code>RIGHT OUTER JOIN</code></li>
+<li><code>FULL OUTER JOIN</code></li>
+<li><code>CROSS JOIN</code> (Cartesian product)</li>
+
+</ul>
+<p>The result of a join statement can also be used as a table e.g.:</p>
+<pre><code class='language-sql' lang='sql'>SELECT title FROM
+  (SELECT * FROM movie JOIN director ON movie.director=director.id) movieDirector
+WHERE movieDirector.lname=&#39;Nolan&#39; /* single quotes only */
+</code></pre>
+<p>To select all from both tables, use <code>SELECT movie.*, director.*</code>.</p>
+<h4>Set operations</h4>
+<p><code>UNION</code>, <code>EXCEPT</code> (<code>MINUS</code> in Oracle) and <code>INTERSECT</code>. The results are sets - no duplicates, unless the keyword <code>ALL</code> is appended.</p>
+<p>The two operands - select statements (in brackets), must return a table with the same number of properties and compatible data types.</p>
+<h4><code>ANY</code>/<code>ALL</code></h4>
+<p>Used with comparison operators and nested queries.</p>
+<p><code>ANY</code> is equivalent to <code>IN</code>. It is sometimes called <code>SOME</code>.</p>
+<p><code>NOT ALL</code> is equivalent to <code>NOT IN</code>.</p>
+<p>The following will return movies that got more awards than all movies by a particular director:</p>
+<pre><code class='language-sql' lang='sql'>SELECT * FROM movie WHERE awards &gt; ALL (
+  SELECT awards FROM movie, director WHERE movie.director = director.id AND lname = &#39;Nolan&#39;
+)
+</code></pre>
+<h4>Division</h4>
+<div contenteditable="false" spellcheck="false" class="mathjax-block md-end-block md-math-block md-rawblock" id="mathjax-n254" cid="n254" mdtype="math_block"><div class="md-rawblock-container md-math-container" tabindex="-1"><div class="MathJax_SVG_Display" style="text-align: center;"><span class="MathJax_SVG" id="MathJax-Element-214-Frame" tabindex="-1" style="font-size: 100%; display: inline-block;"><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="14.381ex" height="2.577ex" viewBox="0 -806.1 6192 1109.7" role="img" focusable="false" style="vertical-align: -0.705ex; max-width: 100%;"><defs><path stroke-width="0" id="E225-MJMATHI-52" d="M230 637Q203 637 198 638T193 649Q193 676 204 682Q206 683 378 683Q550 682 564 680Q620 672 658 652T712 606T733 563T739 529Q739 484 710 445T643 385T576 351T538 338L545 333Q612 295 612 223Q612 212 607 162T602 80V71Q602 53 603 43T614 25T640 16Q668 16 686 38T712 85Q717 99 720 102T735 105Q755 105 755 93Q755 75 731 36Q693 -21 641 -21H632Q571 -21 531 4T487 82Q487 109 502 166T517 239Q517 290 474 313Q459 320 449 321T378 323H309L277 193Q244 61 244 59Q244 55 245 54T252 50T269 48T302 46H333Q339 38 339 37T336 19Q332 6 326 0H311Q275 2 180 2Q146 2 117 2T71 2T50 1Q33 1 33 10Q33 12 36 24Q41 43 46 45Q50 46 61 46H67Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628Q287 635 230 637ZM630 554Q630 586 609 608T523 636Q521 636 500 636T462 637H440Q393 637 386 627Q385 624 352 494T319 361Q319 360 388 360Q466 361 492 367Q556 377 592 426Q608 449 619 486T630 554Z"></path><path stroke-width="0" id="E225-MJMAIN-F7" d="M318 466Q318 500 339 518T386 537Q418 537 438 517T458 466Q458 438 440 417T388 396Q355 396 337 417T318 466ZM56 237T56 250T70 270H706Q721 262 721 250T706 230H70Q56 237 56 250ZM318 34Q318 68 339 86T386 105Q418 105 438 85T458 34Q458 6 440 -15T388 -36Q355 -36 337 -15T318 34Z"></path><path stroke-width="0" id="E225-MJMATHI-53" d="M308 24Q367 24 416 76T466 197Q466 260 414 284Q308 311 278 321T236 341Q176 383 176 462Q176 523 208 573T273 648Q302 673 343 688T407 704H418H425Q521 704 564 640Q565 640 577 653T603 682T623 704Q624 704 627 704T632 705Q645 705 645 698T617 577T585 459T569 456Q549 456 549 465Q549 471 550 475Q550 478 551 494T553 520Q553 554 544 579T526 616T501 641Q465 662 419 662Q362 662 313 616T263 510Q263 480 278 458T319 427Q323 425 389 408T456 390Q490 379 522 342T554 242Q554 216 546 186Q541 164 528 137T492 78T426 18T332 -20Q320 -22 298 -22Q199 -22 144 33L134 44L106 13Q83 -14 78 -18T65 -22Q52 -22 52 -14Q52 -11 110 221Q112 227 130 227H143Q149 221 149 216Q149 214 148 207T144 186T142 153Q144 114 160 87T203 47T255 29T308 24Z"></path><path stroke-width="0" id="E225-MJMAIN-3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path><path stroke-width="0" id="E225-MJMATHI-54" d="M40 437Q21 437 21 445Q21 450 37 501T71 602L88 651Q93 669 101 677H569H659Q691 677 697 676T704 667Q704 661 687 553T668 444Q668 437 649 437Q640 437 637 437T631 442L629 445Q629 451 635 490T641 551Q641 586 628 604T573 629Q568 630 515 631Q469 631 457 630T439 622Q438 621 368 343T298 60Q298 48 386 46Q418 46 427 45T436 36Q436 31 433 22Q429 4 424 1L422 0Q419 0 415 0Q410 0 363 1T228 2Q99 2 64 0H49Q43 6 43 9T45 27Q49 40 55 46H83H94Q174 46 189 55Q190 56 191 56Q196 59 201 76T241 233Q258 301 269 344Q339 619 339 625Q339 630 310 630H279Q212 630 191 624Q146 614 121 583T67 467Q60 445 57 441T43 437H40Z"></path><path stroke-width="0" id="E225-MJMAIN-28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path><path stroke-width="0" id="E225-MJMATHI-41" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"></path><path stroke-width="0" id="E225-MJMAIN-29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><use xlink:href="#E225-MJMATHI-52" x="0" y="0"></use><use xlink:href="#E225-MJMAIN-F7" x="981" y="0"></use><use xlink:href="#E225-MJMATHI-53" x="1981" y="0"></use><use xlink:href="#E225-MJMAIN-3D" x="2904" y="0"></use><use xlink:href="#E225-MJMATHI-54" x="3960" y="0"></use><use xlink:href="#E225-MJMAIN-28" x="4664" y="0"></use><use xlink:href="#E225-MJMATHI-41" x="5053" y="0"></use><use xlink:href="#E225-MJMAIN-29" x="5803" y="0"></use></g></svg></span></div><script type="math/tex; mode=display" id="MathJax-Element-214">R \div S = T(A)</script></div></div>
+<p><span class="MathJax_SVG" tabindex="-1" style="font-size: 100%; display: inline-block;"><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="1.763ex" height="1.994ex" viewBox="0 -755.9 759 858.4" role="img" focusable="false" style="vertical-align: -0.238ex;"><defs><path stroke-width="0" id="E52-MJMATHI-52" d="M230 637Q203 637 198 638T193 649Q193 676 204 682Q206 683 378 683Q550 682 564 680Q620 672 658 652T712 606T733 563T739 529Q739 484 710 445T643 385T576 351T538 338L545 333Q612 295 612 223Q612 212 607 162T602 80V71Q602 53 603 43T614 25T640 16Q668 16 686 38T712 85Q717 99 720 102T735 105Q755 105 755 93Q755 75 731 36Q693 -21 641 -21H632Q571 -21 531 4T487 82Q487 109 502 166T517 239Q517 290 474 313Q459 320 449 321T378 323H309L277 193Q244 61 244 59Q244 55 245 54T252 50T269 48T302 46H333Q339 38 339 37T336 19Q332 6 326 0H311Q275 2 180 2Q146 2 117 2T71 2T50 1Q33 1 33 10Q33 12 36 24Q41 43 46 45Q50 46 61 46H67Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628Q287 635 230 637ZM630 554Q630 586 609 608T523 636Q521 636 500 636T462 637H440Q393 637 386 627Q385 624 352 494T319 361Q319 360 388 360Q466 361 492 367Q556 377 592 426Q608 449 619 486T630 554Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><use xlink:href="#E52-MJMATHI-52" x="0" y="0"></use></g></svg></span><script type="math/tex">R</script>, <span class="MathJax_SVG" tabindex="-1" style="font-size: 100%; display: inline-block;"><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="1.498ex" height="2.11ex" viewBox="0 -806.1 645 908.7" role="img" focusable="false" style="vertical-align: -0.238ex;"><defs><path stroke-width="0" id="E54-MJMATHI-53" d="M308 24Q367 24 416 76T466 197Q466 260 414 284Q308 311 278 321T236 341Q176 383 176 462Q176 523 208 573T273 648Q302 673 343 688T407 704H418H425Q521 704 564 640Q565 640 577 653T603 682T623 704Q624 704 627 704T632 705Q645 705 645 698T617 577T585 459T569 456Q549 456 549 465Q549 471 550 475Q550 478 551 494T553 520Q553 554 544 579T526 616T501 641Q465 662 419 662Q362 662 313 616T263 510Q263 480 278 458T319 427Q323 425 389 408T456 390Q490 379 522 342T554 242Q554 216 546 186Q541 164 528 137T492 78T426 18T332 -20Q320 -22 298 -22Q199 -22 144 33L134 44L106 13Q83 -14 78 -18T65 -22Q52 -22 52 -14Q52 -11 110 221Q112 227 130 227H143Q149 221 149 216Q149 214 148 207T144 186T142 153Q144 114 160 87T203 47T255 29T308 24Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><use xlink:href="#E54-MJMATHI-53" x="0" y="0"></use></g></svg></span><script type="math/tex">S</script> has at least one common attribute e.g. The result of division with <span class="MathJax_SVG" tabindex="-1" style="font-size: 100%; display: inline-block;"><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="8.107ex" height="2.577ex" viewBox="0 -806.1 3490.7 1109.7" role="img" focusable="false" style="vertical-align: -0.705ex;"><defs><path stroke-width="0" id="E73-MJMATHI-52" d="M230 637Q203 637 198 638T193 649Q193 676 204 682Q206 683 378 683Q550 682 564 680Q620 672 658 652T712 606T733 563T739 529Q739 484 710 445T643 385T576 351T538 338L545 333Q612 295 612 223Q612 212 607 162T602 80V71Q602 53 603 43T614 25T640 16Q668 16 686 38T712 85Q717 99 720 102T735 105Q755 105 755 93Q755 75 731 36Q693 -21 641 -21H632Q571 -21 531 4T487 82Q487 109 502 166T517 239Q517 290 474 313Q459 320 449 321T378 323H309L277 193Q244 61 244 59Q244 55 245 54T252 50T269 48T302 46H333Q339 38 339 37T336 19Q332 6 326 0H311Q275 2 180 2Q146 2 117 2T71 2T50 1Q33 1 33 10Q33 12 36 24Q41 43 46 45Q50 46 61 46H67Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628Q287 635 230 637ZM630 554Q630 586 609 608T523 636Q521 636 500 636T462 637H440Q393 637 386 627Q385 624 352 494T319 361Q319 360 388 360Q466 361 492 367Q556 377 592 426Q608 449 619 486T630 554Z"></path><path stroke-width="0" id="E73-MJMAIN-28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path><path stroke-width="0" id="E73-MJMATHI-41" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"></path><path stroke-width="0" id="E73-MJMAIN-2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"></path><path stroke-width="0" id="E73-MJMATHI-42" d="M231 637Q204 637 199 638T194 649Q194 676 205 682Q206 683 335 683Q594 683 608 681Q671 671 713 636T756 544Q756 480 698 429T565 360L555 357Q619 348 660 311T702 219Q702 146 630 78T453 1Q446 0 242 0Q42 0 39 2Q35 5 35 10Q35 17 37 24Q42 43 47 45Q51 46 62 46H68Q95 46 128 49Q142 52 147 61Q150 65 219 339T288 628Q288 635 231 637ZM649 544Q649 574 634 600T585 634Q578 636 493 637Q473 637 451 637T416 636H403Q388 635 384 626Q382 622 352 506Q352 503 351 500L320 374H401Q482 374 494 376Q554 386 601 434T649 544ZM595 229Q595 273 572 302T512 336Q506 337 429 337Q311 337 310 336Q310 334 293 263T258 122L240 52Q240 48 252 48T333 46Q422 46 429 47Q491 54 543 105T595 229Z"></path><path stroke-width="0" id="E73-MJMAIN-29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><use xlink:href="#E73-MJMATHI-52" x="0" y="0"></use><use xlink:href="#E73-MJMAIN-28" x="759" y="0"></use><use xlink:href="#E73-MJMATHI-41" x="1148" y="0"></use><use xlink:href="#E73-MJMAIN-2C" x="1898" y="0"></use><use xlink:href="#E73-MJMATHI-42" x="2342" y="0"></use><use xlink:href="#E73-MJMAIN-29" x="3101" y="0"></use></g></svg></span><script type="math/tex">R(A, B)</script> and <span class="MathJax_SVG" tabindex="-1" style="font-size: 100%; display: inline-block;"><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="7.866ex" height="2.577ex" viewBox="0 -806.1 3386.7 1109.7" role="img" focusable="false" style="vertical-align: -0.705ex;"><defs><path stroke-width="0" id="E76-MJMATHI-53" d="M308 24Q367 24 416 76T466 197Q466 260 414 284Q308 311 278 321T236 341Q176 383 176 462Q176 523 208 573T273 648Q302 673 343 688T407 704H418H425Q521 704 564 640Q565 640 577 653T603 682T623 704Q624 704 627 704T632 705Q645 705 645 698T617 577T585 459T569 456Q549 456 549 465Q549 471 550 475Q550 478 551 494T553 520Q553 554 544 579T526 616T501 641Q465 662 419 662Q362 662 313 616T263 510Q263 480 278 458T319 427Q323 425 389 408T456 390Q490 379 522 342T554 242Q554 216 546 186Q541 164 528 137T492 78T426 18T332 -20Q320 -22 298 -22Q199 -22 144 33L134 44L106 13Q83 -14 78 -18T65 -22Q52 -22 52 -14Q52 -11 110 221Q112 227 130 227H143Q149 221 149 216Q149 214 148 207T144 186T142 153Q144 114 160 87T203 47T255 29T308 24Z"></path><path stroke-width="0" id="E76-MJMAIN-28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path><path stroke-width="0" id="E76-MJMATHI-42" d="M231 637Q204 637 199 638T194 649Q194 676 205 682Q206 683 335 683Q594 683 608 681Q671 671 713 636T756 544Q756 480 698 429T565 360L555 357Q619 348 660 311T702 219Q702 146 630 78T453 1Q446 0 242 0Q42 0 39 2Q35 5 35 10Q35 17 37 24Q42 43 47 45Q51 46 62 46H68Q95 46 128 49Q142 52 147 61Q150 65 219 339T288 628Q288 635 231 637ZM649 544Q649 574 634 600T585 634Q578 636 493 637Q473 637 451 637T416 636H403Q388 635 384 626Q382 622 352 506Q352 503 351 500L320 374H401Q482 374 494 376Q554 386 601 434T649 544ZM595 229Q595 273 572 302T512 336Q506 337 429 337Q311 337 310 336Q310 334 293 263T258 122L240 52Q240 48 252 48T333 46Q422 46 429 47Q491 54 543 105T595 229Z"></path><path stroke-width="0" id="E76-MJMAIN-2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"></path><path stroke-width="0" id="E76-MJMATHI-43" d="M50 252Q50 367 117 473T286 641T490 704Q580 704 633 653Q642 643 648 636T656 626L657 623Q660 623 684 649Q691 655 699 663T715 679T725 690L740 705H746Q760 705 760 698Q760 694 728 561Q692 422 692 421Q690 416 687 415T669 413H653Q647 419 647 422Q647 423 648 429T650 449T651 481Q651 552 619 605T510 659Q484 659 454 652T382 628T299 572T226 479Q194 422 175 346T156 222Q156 108 232 58Q280 24 350 24Q441 24 512 92T606 240Q610 253 612 255T628 257Q648 257 648 248Q648 243 647 239Q618 132 523 55T319 -22Q206 -22 128 53T50 252Z"></path><path stroke-width="0" id="E76-MJMAIN-29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><use xlink:href="#E76-MJMATHI-53" x="0" y="0"></use><use xlink:href="#E76-MJMAIN-28" x="645" y="0"></use><use xlink:href="#E76-MJMATHI-42" x="1034" y="0"></use><use xlink:href="#E76-MJMAIN-2C" x="1793" y="0"></use><use xlink:href="#E76-MJMATHI-43" x="2237" y="0"></use><use xlink:href="#E76-MJMAIN-29" x="2997" y="0"></use></g></svg></span><script type="math/tex">S(B, C)</script> will have <span class="MathJax_SVG" tabindex="-1" style="font-size: 100%; display: inline-block;"><svg xmlns:xlink="http://www.w3.org/1999/xlink" width="22.198ex" height="2.577ex" viewBox="0 -806.1 9557.6 1109.7" role="img" focusable="false" style="vertical-align: -0.705ex;"><defs><path stroke-width="0" id="E78-MJMAIN-28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path><path stroke-width="0" id="E78-MJMATHI-41" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"></path><path stroke-width="0" id="E78-MJMAIN-2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"></path><path stroke-width="0" id="E78-MJMATHI-42" d="M231 637Q204 637 199 638T194 649Q194 676 205 682Q206 683 335 683Q594 683 608 681Q671 671 713 636T756 544Q756 480 698 429T565 360L555 357Q619 348 660 311T702 219Q702 146 630 78T453 1Q446 0 242 0Q42 0 39 2Q35 5 35 10Q35 17 37 24Q42 43 47 45Q51 46 62 46H68Q95 46 128 49Q142 52 147 61Q150 65 219 339T288 628Q288 635 231 637ZM649 544Q649 574 634 600T585 634Q578 636 493 637Q473 637 451 637T416 636H403Q388 635 384 626Q382 622 352 506Q352 503 351 500L320 374H401Q482 374 494 376Q554 386 601 434T649 544ZM595 229Q595 273 572 302T512 336Q506 337 429 337Q311 337 310 336Q310 334 293 263T258 122L240 52Q240 48 252 48T333 46Q422 46 429 47Q491 54 543 105T595 229Z"></path><path stroke-width="0" id="E78-MJMAIN-29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path><path stroke-width="0" id="E78-MJMAIN-2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path><path stroke-width="0" id="E78-MJMATHI-43" d="M50 252Q50 367 117 473T286 641T490 704Q580 704 633 653Q642 643 648 636T656 626L657 623Q660 623 684 649Q691 655 699 663T715 679T725 690L740 705H746Q760 705 760 698Q760 694 728 561Q692 422 692 421Q690 416 687 415T669 413H653Q647 419 647 422Q647 423 648 429T650 449T651 481Q651 552 619 605T510 659Q484 659 454 652T382 628T299 572T226 479Q194 422 175 346T156 222Q156 108 232 58Q280 24 350 24Q441 24 512 92T606 240Q610 253 612 255T628 257Q648 257 648 248Q648 243 647 239Q618 132 523 55T319 -22Q206 -22 128 53T50 252Z"></path><path stroke-width="0" id="E78-MJMAIN-2018" d="M64 494Q64 548 86 597T131 670T160 694Q163 694 172 685T182 672Q182 669 170 656T144 625T116 573T101 501Q101 489 102 489T107 491T120 497T138 500Q163 500 180 483T198 440T181 397T139 379Q110 379 87 405T64 494Z"></path><path stroke-width="0" id="E78-MJMAIN-3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><use xlink:href="#E78-MJMAIN-28" x="0" y="0"></use><use xlink:href="#E78-MJMATHI-41" x="389" y="0"></use><use xlink:href="#E78-MJMAIN-2C" x="1139" y="0"></use><use xlink:href="#E78-MJMATHI-42" x="1583" y="0"></use><use xlink:href="#E78-MJMAIN-29" x="2342" y="0"></use><use xlink:href="#E78-MJMAIN-2212" x="2953" y="0"></use><use xlink:href="#E78-MJMAIN-28" x="3954" y="0"></use><use xlink:href="#E78-MJMATHI-42" x="4343" y="0"></use><use xlink:href="#E78-MJMAIN-2C" x="5102" y="0"></use><use xlink:href="#E78-MJMATHI-43" x="5546" y="0"></use><use xlink:href="#E78-MJMAIN-29" x="6306" y="0"></use><use xlink:href="#E78-MJMAIN-2018" x="6695" y="0"></use><use xlink:href="#E78-MJMAIN-3D" x="6973" y="0"></use><use xlink:href="#E78-MJMAIN-28" x="8029" y="0"></use><use xlink:href="#E78-MJMATHI-41" x="8418" y="0"></use><use xlink:href="#E78-MJMAIN-29" x="9168" y="0"></use></g></svg></span><script type="math/tex">(A, B) - (B, C)` = (A)</script>.</p>
+<p>Directors that have directed at least one movie of each type:</p>
+<pre><code class='language-sql' lang='sql'>SELECT fname, lname FROM director WHERE NOT EXISTS (
+  SELECT * FROM movie M1 WHERE NOT EXISTS (
+    SELECT * FROM movie M2 WHERE M2.director = director.id AND M2.type = M1.type
+  )
+)
+</code></pre>
+<p>The <code>M1.type = M2.type</code> is able to get every single type of movie as it is not constrained to any particular director.</p>
+<p>The following also gives the same result:</p>
+<pre><code class='language-sql' lang='sql'>SELECT fname, lname FROM DIRECTOR
+  JOIN movie ON director.id = movie.director
+  GROUP BY director, fname, lname
+  HAVING COUNT(DISTINCT type) = (
+    SELECT COUNT(DISTINCT type) FROM movie
+  )
+</code></pre>
+<p>The nested query is not correlated.</p>
+<h4><code>DUAL</code> table</h4>
+<p>In Oracle, it is a dummy table with a single column and row which is used to get scalar values e.g. <code>SELECT sysdate FROM DUAL</code>.</p>
+<h3><code>INSERT</code></h3>
+<p>Adds one or more tuples to a relation. The following requires all attributes to be listed in the same order they were specified when the table was created:</p>
+<pre><code class='language-sql' lang='sql'>INSERT INTO table_name VALUES (attr_1, ..., attr_n)
+</code></pre>
+<p>To specify the attributes to insert:</p>
+<pre><code class='language-sql' lang='sql'>INSERT INTO table_name (attr_name_1, ..., attr_name_n) VALUES (attr_1, ..., attr_n)
+</code></pre>
+<p>Both forms allow you to insert multiple tuples, separating them with commas.</p>
+<p>A select statement can be used to insert multiple tuples:</p>
+<pre><code class='language-sql' lang='sql'>INSERT INTO table_name (attr_name_list) select_statement
+</code></pre>
+<p>NB: two single quotes escape a quote in a string literal.</p>
+<h3><code>UPDATE</code></h3>
+<pre><code class='language-sql' lang='sql'>UPDATE table_name SET attr_name_1 = expression_1, ... WHERE where_condition
+</code></pre>
+<p>The where condition is optional.</p>
+<h3><code>DELETE</code></h3>
+<pre><code class='language-sql' lang='sql'>DELETE FROM table_name WHERE where_condition
+</code></pre>
+<p>You can only delete data from one table at a time (except if <code>CASCADE</code> is used on a foreign key).</p>
+<p>If the where condition is missing, every row gets deleted.</p>
+<h3>Views</h3>
+<p>Views are virtual tables - essentially a stored query that allows customized access to data (e.g. remove access to some sensitive attributes of a table).</p>
+<p>In general, for a view to be updatable (varies by implementation):</p>
+<ul>
+<li>Must be defined over a single table</li>
+<li>Must contain a primary or candidate key of the base relation</li>
+<li>Cannot use grouping or aggregate functions</li>
+
+</ul>
+<pre><code class='language-sql' lang='sql'>CREATE VIEW view_name AS select_statement
+</code></pre>
+<p>Once a view is created, it can be queried like a normal table.</p>
+<p>To drop a view:</p>
+<pre><code class='language-sql' lang='sql'>DROP VIEW view_name
+</code></pre>
+<p>In Oracle, to find out which views are updatable:</p>
+<pre><code class='language-sql' lang='sql'>SELECT column_name, updatable FROM user_updatable_columns WHERE table_name=upper(&#39;view_name&#39;)
+</code></pre>
+<h3>Indexes</h3>
+<p>Indexes are a physical-level feature; access structures to speed up queries.</p>
+<pre><code class='language-sql' lang='sql'>CREATE INDEX index_name ON table_name (attr_name_1, ...)
+</code></pre>
+<p>In older versions of Oracle, indexes would not be created for keys. In this case, a index would need to be created with the <code>UNIQUE</code> keyword.</p>
+<p><code>DROP INDEX index_name</code> is used to delete indexes.</p>
+<p>Notes:</p>
+<ul>
+<li>Indexes should be created <strong>before tables are populated</strong></li>
+<li>Indexes should not be created for attributes that are frequently updated</li>
+<li>Current versions of Oracle creates indexes for primary and secondary keys</li>
+<li>Indexes are often used in search and join conditions</li>
+
+</ul>
+<h3>Integrity Component</h3>
+<p>SQL 92 adds:</p>
+<ul>
+<li>Required data (<code>NOT NULL)</code></li>
+<li>Domain constraints</li>
+<li>Entity integrity (<code>PRIMARY KEY</code>, <code>UNIQUE</code>)</li>
+<li>Referential integrity (<code>FOREIGN KEY</code>, <code>REFERENCES</code>)</li>
+<li>Referential integrity constraint violation behaviour (<code>ON UPDATE</code>, <code>ON DELETE</code>)</li>
+<li>Enterprise constraints</li>
+
+</ul>
+<h4>Domain Constraints</h4>
+<p>Not in Oracle:</p>
+<pre><code class='language-sql' lang='sql'>CREATE DOMAIN domain_name AS data_type DEFAULT default_option CHECK (search_option)
+</code></pre>
+<p>Both <code>DEFAULT</code> and <code>CHECK</code> are optional, and <code>search_option</code> should reference the value of the value using <code>VALUE</code>.</p>
+<p>Use <code>DROP DOMAIN domain_name</code>, optionally appending <code>RESTRICT</code> or <code>CASCADE</code>.</p>
+<h4>Referential Integrity Violation</h4>
+<p>The qualifiers are <code>ON DELETE</code> and <code>ON UPDATE</code>.</p>
+<p>The options are <code>SET NULL</code>, <code>CASCADE</code> and <code>SET DEFAULT</code>.</p>
+<p>Oracle only supports <code>ON DELETE CASCADE</code> and <code>ON DELETE SET NULL</code>.</p>
+<h4>Enterprise Constraints</h4>
+<h5>Constraints</h5>
+<pre><code class='language-sql' lang='sql'>CONSTRAINT constraint_name CHECK (condition)
+</code></pre>
+<p>This is for a specific table, so the condition can reference multiple attributes. In SQL2, the condition may include a nested <code>SELECT</code> statement.</p>
+<h5>Assertions</h5>
+<p>Constraints spanning multiple tables can be made: these are called assertions.</p>
+<pre><code class='language-sql' lang='sql'>CREATE ASSERTION assertion_name CHECK (search_condition)
+</code></pre>
+<p>The search condition will be a SQL query, probably using the <code>EXISTS</code> keyword.</p>
+<p>This is not supported in Oracle.</p>
+<h5>Triggers</h5>
+<p>Triggers monitors the state of the database and performs some action when a specific condition occurs.</p>
+<p>Triggers can:</p>
+<ul>
+<li>Calculate/update values of derived attributes</li>
+<li>Enforce additional constraints</li>
+<li>Prevent invalid transactions</li>
+<li>Automatically perform actions</li>
+<li>Audit changes</li>
+<li>Maintain replicated tables </li>
+
+</ul>
+<p>A trigger has an <strong>event</strong> - a change that activates a trigger. This can be:</p>
+<ul>
+<li>A DML event such as <code>UPDATE</code>, <code>INSERT</code> or <code>DELETE</code></li>
+<li>A DDL event such as <code>CREATE</code></li>
+<li>A database event such as <code>SERVERERROR ON DATABASE</code></li>
+
+</ul>
+<p>For DML events, there are <strong>row-level</strong> and <strong>statement-level triggers</strong>; the former occurs for each modified row while the latter runs once for each statement.</p>
+<p>Once an appropriate event occurs, it must pass a <strong>condition</strong>; a query which determines if the trigger should be activated.</p>
+<p>If the condition is met, the <strong>action</strong> will occur. This can be one or more statements (procedures).</p>
+<p>The action can occur <code>BEFORE</code>, <code>AFTER</code>, or <code>INSTEAD OF</code>.</p>
+<pre><code class='language-sql' lang='sql'>CREATE|REPLACE TRIGGER [schema.]trigger_name
+BEFORE|INSTEAD OF|AFTER
+DELETE|INSERT|UPDATE OF attr_name_1, attr_name_2... OR DELETE|INSERT|UPDATE OF ...
+ON [schema.]table_name|view_name
+[REFERENCING OLD AS old_row_alias NEW AS new_row_alias]
+FOR EACH ROW|STATEMENT
+WHEN (condition)
+  body
+/
+</code></pre>
+<p>Within the SQL statements, if <code>REFERENCING</code> is not specified, <code>:new.attribute_name</code> and <code>:old.attribute_name</code> are used to reference attributes values for the row in question.</p>
+<p>The <code>/</code> is used to end the trigger action. It must be on a new line.</p>
+<p>Limitations:</p>
+<ul>
+<li>The name of the trigger must be unique</li>
+<li>The body cannot contain DDL or transaction statements</li>
+<li>The trigger cannot read from or modify the mutating table, with some exceptions</li>
+<li><code>INSTEAD OF</code> is only available for views</li>
+<li><code>WHEN</code> is only available for row-level triggers. The condition cannot be a query</li>
+
+</ul>
+<p>To alter the trigger:</p>
+<pre><code class='language-sql' lang='sql'>ALTER TRIGGER [schema.]trigger_name ENABLE|DISABLE|COMPILE [DEBUG]
+</code></pre>
+<p><code>SHOW ERRORS</code> shows any compilation errors.</p>
+<h6>PL-SQL Example Code</h6>
+<pre><code class='language-sql' lang='sql'>DECLARE
+  varname type := initial_value;
+  varname2 type;
+BEGIN
+  SELECT attribute INTO varname FROM table_name WHERE ...;
+  RAISE_APPLICATION_ERROR(num =&gt; error_code, msg =&gt; &#39;Message&#39;);
+  -- Error code between -20999 and -20000
+  ...;
+EXCEPTION
+  handlers;
+END;
+</code></pre>
+<p>Cannot use <code>EXISTS</code>: must store <code>COUNT(*)</code> into variable.</p>
+<h6>Example: Audit Trigger</h6>
+<pre><code class='language-sql' lang='sql'>CREATE [OR REPLACE] TRIGGER audit_trigger BEFORE INSERT OR DELETE OR UPDATE ON table_name
+FOR EACH ROW
+begin
+  if INSERTING then
+    INSERT INTO audit_table VALUES (USER || &#39;inserting&#39; || &#39;new id:&#39; || :new.id);
+  elsif DELETING then
+    INSERT INTO audit_table VALUES (USER || &#39;deleting&#39; || &#39;old id:&#39; || :old.id);
+  elsif UPDATING(&#39;attribute_name&#39;) then
+    INSERT INTO audit_table VALUES 
+      (USER || &#39;updating&#39; || &#39;old value:&#39; || :new.attribute_name || &#39;new value:&#39; || :new.attribute_name);
+  elsif UPDATING then
+    INSERT INTO audit_table VALUES 
+      (USER || &#39;updating&#39; || &#39;old id:&#39; || :old.id || &#39;new id:&#39; || :new.id);
+  end if;
+end;
+/
+</code></pre>
+<h5>Procedures</h5>
+<p>Collection of statements; basically functions:</p>
+<pre><code class='language-sql' lang='sql'>CREATE|REPLACE PROCEDURE [schema].procedure_name
+argument_name [IN|IN OUT|OUT] datatype, ...
+IS|AS
+  body
+</code></pre>
+<p>The body cannot contain DDL statements.</p>
+<p>Compiling a procedure: <code>ALTER PROCEDURE [schema.]procedure_name COMPILE</code>.</p>
+<h3>Database Security</h3>
+<p><strong>Discretionary</strong> and <strong>mandatory</strong> security mechanisms.</p>
+<p>Control measures:</p>
+<ul>
+<li>Access control: user accounts</li>
+<li>Inference control: operations a user can make</li>
+
+</ul>
+<p>The <strong>DBA</strong> is responsible for the overall security of the database. They have the responsibility to grant privileges to users and assign security levels users and data.</p>
+<p>They can set privileges at the <strong>account</strong> and <strong>relation</strong> level:</p>
+<ul>
+<li>Account: specifies operations that the account is allowed to run</li>
+<li>Relation: specifies operations the account is allowed to run on individual tables</li>
+
+</ul>
+<p>Each table is assigned an <strong>owner account</strong>; they have <strong>all</strong> privileges for the table, and can give privileges to other users.</p>
+<p>Privileges can also be specified using views, allowing, for example, users access to only some attributes of a table.</p>
+<pre><code class='language-sql' lang='sql'>GRANT account_privilege|table_privilege|ALL PRIVILEGES
+ON object
+TO user|role|PUBLIC
+WITH GRANT OPTION;
+
+
+REVOKE account_privilege|table_privilege|ALL PRIVILEGES
+ON object
+FROM user|role|PUBLIC;
+
+/* EXAMPLES */
+GRANT CREATE TABLE TO user WITH GRANT OPTION;
+GRANT INSERT, DELETE ON table1, table2 TO user;
+GRANT UPDATE ON table1(attribute1) TO user;
+</code></pre>
+<p>Table privileges: <code>SELECT; INSERT; UPDATE; ALTER; DELETE; INDEX; DEBUG; REFERENCES</code>. <code>INSERT</code>, <code>UPDATE</code> and <code>REFERENCES</code> (allows user to have a FK to the table) can be constraint to specific attributes.</p>
+<p>If <code>GRANT OPTION</code> is set, the user granted the privilege can grant the privileges to other users; <strong>propagation</strong>. However, if the privilege is revoked, <strong>all propagated privileges are automatically revoked</strong>.</p>
+</body>
+</html>

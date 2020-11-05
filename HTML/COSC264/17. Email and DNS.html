@@ -1,0 +1,315 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>17. Email and DNS</title></head>
+<body><h1>17. Email and DNS</h1>
+<h2>Email</h2>
+<p>Three major components:</p>
+<ul>
+<li><p>User agent</p>
+<ul>
+<li>Agent through which the user accesses and sends email</li>
+
+</ul>
+</li>
+<li><p>Mail server</p>
+<ul>
+<li>Has a <strong>mailbox</strong> containing incoming messages</li>
+<li>Has a <strong>message queue</strong> of outgoing messages to send</li>
+
+</ul>
+</li>
+<li><p>SMTP</p>
+<ul>
+<li>Protocol used to exchange information between mail servers</li>
+<li>Mail servers <strong>run both the client and server</strong></li>
+
+</ul>
+</li>
+
+</ul>
+<h3>Simple Mail Transfer Protocol (SMTP)</h3>
+<p>The standard protocol used to transfer email between servers.</p>
+<p>Basic operation:</p>
+<ul>
+<li><p>A uses a user agent (UA) to compose message</p>
+</li>
+<li><p>A&#39;s UA sends the message to their mail server and places it in a message queue</p>
+<ul>
+<li>Called a <strong>email submission</strong></li>
+
+</ul>
+</li>
+<li><p>A&#39;s mail server&#39;s SMTP client opens a TCP connection with B&#39;s mail server&#39;s SMTP server</p>
+<ul>
+<li>If multiple messages need to be sent, they are sent over a persistent TCP connection</li>
+
+</ul>
+</li>
+<li><p>B&#39;s mail server places the message in B&#39;s client</p>
+</li>
+<li><p>B uses his UA to read the message</p>
+</li>
+
+</ul>
+<p>SMTP uses telenet connection and runs on <strong>port 25</strong> by default.</p>
+<p>Sample telenet interaction:</p>
+<ul>
+<li><p>TCP connection established; server sends three digit reply code (probably <code>220</code>) and information about the server (host name, server name/version, date/time etc.)</p>
+</li>
+<li><p>Client sends <code>HELO client_host_name</code> message; server responds (with <code>250</code> if valid)</p>
+</li>
+<li><p>Client sends <code>MAIL FROM: &lt;user@client_host_name&gt;</code> message; server confirms validity</p>
+</li>
+<li><p>Client sends <code>RCPT TO: &lt;user@server_host_name&gt;</code> message; server confirms validity</p>
+</li>
+<li><p>Client sends <code>DATA</code> message; server responds with delimiter used to close the email</p>
+</li>
+<li><p>Client sends body content, ending it with the specified delimiter</p>
+<ul>
+<li>Body content <strong>typically restricted to 7-bit ASCII</strong></li>
+
+</ul>
+</li>
+<li><p>Server responds with status message</p>
+</li>
+<li><p>Client sends <code>QUIT</code> message</p>
+</li>
+
+</ul>
+<p>Mail message format:</p>
+<pre><code>From: user@client_host_name
+To: user@server_host_name
+Subject: subject_text
+[BLANK LINE]
+message_body
+</code></pre>
+<p>The receiving server appends a <code>Received:</code> header line to the top of the message as a record of the  mail servers the email passed through.</p>
+<h3>Multipurpose Internet Mail Extension (MIME)</h3>
+<p>For non-ASCII data, MIME is used. It specifies the type of content (e.g. jpeg, mp3) and the method in which it is encoded. For example:</p>
+<pre><code>...
+Subject: subject_text
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Type: image/jpeg
+[BLANK LINE]
+base64_encoded data
+</code></pre>
+<p>In base64 encoding, every three octets (24 bits) are divided into four bytes of 6 bits each - enough to fit into an ASCII character. The characters <code>A-Za-z0-9+/</code> is used, with <code>A</code> corresponding to <code>0</code> and <code>/</code> to 63. <code>=</code> is used as padding.</p>
+<h3>SMTP and Mail Access Protocols</h3>
+<p>Access protocols are used for communication between the receiver&#39;s mail server and user agent. Two mail protocols are:</p>
+<ul>
+<li><p>POP3 (Post Office Protocol):</p>
+<ul>
+<li>After authorization, the message is simply downloaded</li>
+
+</ul>
+</li>
+<li><p>IMAP (Internet Mail Access Protocol):</p>
+<ul>
+<li>More features</li>
+<li>Allows messages stored on the server to be manipulated</li>
+
+</ul>
+</li>
+
+</ul>
+<p>Web-based email is another alternative; the user agent uses HTTP to communicate with its remote mailbox.</p>
+<h4>POP3</h4>
+<p>TCP telenet connection running on port 110.</p>
+<p>During the <strong>authorization phase</strong>, the client sends two commands:</p>
+<ul>
+<li><code>user username</code></li>
+<li><code>pass password</code></li>
+
+</ul>
+<p>After each command is sent, the server responds with either <code>+OK</code> or <code>-ERR</code>.</p>
+<p>During the <strong>transaction phase</strong>, the client can send:</p>
+<ul>
+<li><code>list</code>: list message numbers</li>
+<li><code>retr mail_num</code>: retrieve message by that number</li>
+<li><code>dele mail_num</code>: delete message with that number</li>
+
+</ul>
+<h4>IMAP</h4>
+<p>IMAP:</p>
+<ul>
+<li>Keeps all messages in the server</li>
+<li>Allows the user to organize messages in folders</li>
+<li>Keeps state across sessions</li>
+<li>ALlows the user to obtain components of messages instead of the entire message</li>
+
+</ul>
+<h2>Domain Name System (DNS)</h2>
+<p>DNS is:</p>
+<ul>
+<li>a directory service</li>
+<li>a distributed database implemented in a hierarchy of DNS servers</li>
+<li>an application-layer protocol (UDP on port 53)</li>
+
+</ul>
+<p>Some DNS services:</p>
+<ul>
+<li><p>Hostname to IP address translation</p>
+<ul>
+<li>On Linux, this can be done using the command <code>gethostbyname</code></li>
+
+</ul>
+</li>
+<li><p>Host aliasing</p>
+<ul>
+<li>Canonical (<code>CNAME</code> records) and alias names (e.g. <code>www.</code>)</li>
+
+</ul>
+</li>
+<li><p>Mail server aliasing (<code>MX</code> records)</p>
+</li>
+<li><p><strong>Load distribution</strong></p>
+<ul>
+<li>Reply to DNS request can return a list of IP addresses. With DNS rotation, the list can rotate, and as clients typically pick the first address, the load can be distributed to multiple servers</li>
+
+</ul>
+</li>
+
+</ul>
+<p>DNS is not centralized:</p>
+<ul>
+<li>Acts as a single point of failure</li>
+<li>Traffic volume too large</li>
+<li>Latency: will be far away from most hosts</li>
+<li>Maintenance almost impossible</li>
+
+</ul>
+<h3>Hierarchy</h3>
+<p>DNS is composted of three main levels of DNS servers:</p>
+<ul>
+<li><p><strong>Root DNS</strong> servers</p>
+</li>
+<li><p><strong>Top-level domain</strong> (TLD) servers</p>
+<ul>
+<li><code>com</code>, <code>org</code> etc.</li>
+
+</ul>
+</li>
+<li><p><strong>Authoritative DNS</strong> servers</p>
+<ul>
+<li>May be provided by organization or service provider</li>
+<li>Non-authoritative DNS servers will cache responses from the latter, so may not be accurate</li>
+
+</ul>
+</li>
+
+</ul>
+<p>If a client wants the IP address for <code>www.google.com</code>, to a first approximation, it will:</p>
+<ul>
+<li>Query the root server for the <code>com</code> DNS server</li>
+<li>Query the <code>com</code> DNS server to get the <code>google.com</code> DNS server</li>
+<li>Query the <code>google.com</code> DNS server for the IP address for <code>www.google.com</code></li>
+
+</ul>
+<p>There are 13 root name servers worldwide (although each is a cluster of replicated servers).</p>
+<p><strong>Local name servers</strong> do not belong to the hierarchy, but are central to the DNS architecture. Each ISP has provides one and acts as the <strong>default name server</strong>.</p>
+<h3>Query Types and Caching</h3>
+<p>If a client wants the IP address for <code>www.google.com</code> through an <strong>iterated query</strong>:</p>
+<ul>
+<li>The client sends a query to the local DNS server</li>
+<li>The local DNS server sends a query to the root DNS server for the IP address of the <code>com</code> DNS server</li>
+<li>The local DNS server sends a query to the <code>com</code> DNS server for the IP address of the authoritative DNS server for <code>google.com</code> host</li>
+<li>The local DNS server sends a query to the authoritative DNS server for the <code>google.com</code> host for the IP address of <code>www.google.com</code></li>
+<li>The local DNS forwards the reply back to the client</li>
+
+</ul>
+<p>A <strong>recursive query</strong> puts the burden of name resolution to the contacted name server:</p>
+<ul>
+<li>The client sends a query to the local DNS server</li>
+<li>The local DNS server sends a query to the root DNS server for the IP address of <code>www.google.com</code></li>
+<li>The root DNS server sends a query to the <code>com</code> DNS server for the IP address of <code>www.google.com</code></li>
+<li>The <code>com</code> DNS server sends a query to the authoritative DNS server for the <code>google.com</code> host for the IP address of <code>www.google.com</code></li>
+<li>The response recursive through the stack back to the client</li>
+
+</ul>
+<p>Both queries require 8 messages. Hence, caching is used:</p>
+<ul>
+<li>Once any name server learns a mapping, it caches it</li>
+<li>TTL ensures cache entries expire</li>
+
+</ul>
+<p>Hence, root name servers are usually not consulted.</p>
+<h3>DNS records</h3>
+<p>Each <strong>resource record</strong> stores the <code>name</code>, <code>value</code>, <code>type</code>, <code>ttl</code> and <code>class</code> (although that is always <code>IN</code> (internet)).</p>
+<p>Some <code>types</code> values:</p>
+<ul>
+<li><p><code>A</code>: <code>name</code> is hostname; <code>value</code> is the IP address</p>
+<ul>
+<li>IPv6 uses the <code>type</code> <code>AAAA</code> as the IPv6 addresses use four times as many bits</li>
+
+</ul>
+</li>
+<li><p><code>NS</code>: <code>name</code> is the domain, <code>value</code> is the hostname of the authoritative name server for the domain</p>
+</li>
+<li><p><code>CNAME</code>: <code>name</code> is the alias name  for the canonical name stored in <code>value</code></p>
+</li>
+<li><p><code>MX</code>: <code>value</code> is the canonical name of the mail server associated with the <strong>alias name</strong></p>
+</li>
+
+</ul>
+<h3>DNS Messages</h3>
+<p>Both query and rely messages use the same message format:</p>
+<pre><code>|       16 bits      |       16 bits       |
+|   Identification   |       Flags         |
+|   Num. questions   |   Num. answer RPs   |
+| Num. authority RPs | Num. additional RPs |
+|        Questions (variable num.)         |
+|       Answers (variable num. RRs)        |
+|      Authority (variable num. RRs)       |
+|    Additional info (variable num. RRs)   |
+</code></pre>
+<p>The query and reply to the corresponding query have the same identification number.</p>
+<p>The flags indicate;</p>
+<ul>
+<li><p>If the message is a query (<code>0</code>) or reply (<code>1</code>)</p>
+</li>
+<li><p>If the query is recursive or not</p>
+<ul>
+<li>If a reply, it will indicate if the server supports it</li>
+
+</ul>
+</li>
+
+</ul>
+<p>The additional fields:</p>
+<ul>
+<li><p>Questions (<code>(Name, Type)</code>)</p>
+<ul>
+<li>Reply will repeat these</li>
+
+</ul>
+</li>
+<li><p>Answers (<code>(Type, Value, TTL)</code>)</p>
+</li>
+<li><p>Authority: records for authoritative servers</p>
+</li>
+<li><p>Additional information (e.g. IP address of authoritative DNS server)</p>
+</li>
+
+</ul>
+<h3>Adding New Records</h3>
+<p>Example: registering a domain name at a <strong>registar</strong>:</p>
+<ul>
+<li><p>Need to provide registar with host names and IP addresses of primary/secondary authoritative DNS servers</p>
+</li>
+<li><p>Registar inserts two RRs into the TLD server for each authoritative name server</p>
+<ul>
+<li><code>(host_name, authoritative_DNS_server_host_name, NS)</code></li>
+<li><code>(authoritative_DNS_server_host_name, authoritative_DNS_server_IP_address, A)</code></li>
+
+</ul>
+</li>
+<li><p>Go to the authoritative name server and insert records pointing to your server there</p>
+</li>
+
+</ul>
+<p>&nbsp;</p>
+</body>
+</html>

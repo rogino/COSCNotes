@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>1. Data Modelling</title></head>
+<body><h1>1. Data Modelling</h1>
+<h2>Phases of Database Design</h2>
+<ul>
+<li>Conceptual design: ER/EER diagrams</li>
+<li>Logical design: conversion into DBMS-specific form (SQL schema)</li>
+<li>Physical design: hardware the data is stored on</li>
+
+</ul>
+<h2>Entity-Relationship</h2>
+<p>Attributes:</p>
+<ul>
+<li><p><strong>Composite</strong> attributes: <code>Name(Sub, Property)</code></p>
+<ul>
+<li>Decompose into <strong>atomic</strong> attributes</li>
+
+</ul>
+</li>
+<li><p><strong>Multivalued</strong>: <code>{ attributeName }</code></p>
+<ul>
+<li>Double eclipse</li>
+
+</ul>
+</li>
+<li><p><strong>Derived</strong>: dotted eclipse</p>
+</li>
+<li><p><strong>Primary Key</strong></p>
+<ul>
+<li>Can be composite</li>
+<li><strong>Must be single valued</strong></li>
+<li>Underlined</li>
+
+</ul>
+</li>
+
+</ul>
+<p>Relationships:</p>
+<ul>
+<li><p><strong>Degree</strong>: number of participating entity types</p>
+<ul>
+<li><p><strong>Recursive</strong> relationships are unary</p>
+<ul>
+<li>Require labels for the roles</li>
+
+</ul>
+</li>
+
+</ul>
+</li>
+<li><p>Can have attributes, but <strong>not key attributes</strong></p>
+</li>
+<li><p>Relationship <strong>type</strong>: description of schema, constraints etc.</p>
+</li>
+<li><p>Relationship <strong>set</strong>: current set of relationships</p>
+</li>
+
+</ul>
+<p>Weak Entities:</p>
+<ul>
+<li><p>Exactly <strong>one partial key</strong></p>
+<ul>
+<li>May be composite</li>
+<li>Unique for a given owner</li>
+
+</ul>
+</li>
+<li><p>Can have <strong>multiple owners</strong> in its identifying relationship</p>
+</li>
+
+</ul>
+<p>Cardinality Ratio:</p>
+<ul>
+<li>&#39;{A} can be in {B cardinality} relationships with {B}&#39;</li>
+
+</ul>
+<p>Structural Constraints:</p>
+<ul>
+<li><code>(min, max)</code>. <code>max</code> can be <code>n</code> (or <code>m</code>)</li>
+<li>Read the opposite way to cardinality constraints</li>
+<li>Use for n-ary relationships</li>
+
+</ul>
+<h2>Enhanced Entity-Relation</h2>
+<ul>
+<li><code>Subclass ----\subset ---- Superclass</code>: optional subclass</li>
+<li><code>(Subclass1 ----\subset, Subclass2 ----\subset)----d----Superclass</code>: partial disjoint specialization</li>
+<li><code>(Subclass1 ----\subset, Subclass2 ----\subset)----d====Superclass</code>: total disjoint specialization</li>
+<li><code>(Subclass1 ----\subset, Subclass2 ----\subset)----o----Superclass</code>: partial overlapping specialization</li>
+
+</ul>
+<p>Two subclasses can merge if they have the same unique identifier - <strong>they share a root superclass</strong>. In this case, the structure that is formed is called a <strong>lattice</strong>.</p>
+<ul>
+<li><code>Category====\subset====u----(Class1-----, Class2=====)</code>: class 1 is partial, class 2 is total</li>
+
+</ul>
+<p>Union: each instance of the category is a member of <em>one</em> of the superclasses. The category will have an artificial <strong>surrogate</strong> key.</p>
+</body>
+</html>

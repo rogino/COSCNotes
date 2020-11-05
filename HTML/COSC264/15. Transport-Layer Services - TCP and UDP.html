@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>15. Transport-Layer Services - TCP and UDP</title></head>
+<body><h1>15. Transport-Layer Services - TCP and UDP</h1>
+<p>Transport protocols provide <strong>logical communication</strong> between application processes running on different hosts.</p>
+<p>The sender side breaks the application messages into <strong>segments</strong> and passes it to the network layer, while the receiver reassembles segments into messages and passes it to the application layer.</p>
+<p>Multiple transport layer protocols are available, the most common being TCP and UDP.</p>
+<p>The internet transport layer extends IP&#39;s host-to-host delivery to process-to-process delivery (hence requiring multiplexing and demultiplexing), with TCP specifically adding reliable delivery, flow control and congestion control.</p>
+<h2>Multiplexing and Demultiplexing</h2>
+<p>Demultiplexing: the host receives IP datagrams; each has source/destination IP addresses and carries a single transport-layer segment. Inside each segment is the source/destination port number.</p>
+<h3>Connectionless-demultiplexing</h3>
+<p>With connectionless-demultiplexing (e.g. UDP), a two-tuple of the destination IP and port number can be used to identify the socket. Packets with different source IP and/or port numbers will be directed to the same socket.</p>
+<h3>Connection-oriented demux</h3>
+<p>TCP sockets are identified by a 4-tuple: all four of the <strong>source and destination IP addresses and port numbers</strong> are required to direct the segment to the appropriate socket.</p>
+<p>Hence, the server host may support many simultaneous TCP sockets through a single port number.</p>
+<h2>UDP</h2>
+<p>A bare bones, best effort service: segments can be lost or delivered out of order.</p>
+<p>UDP is often used for streaming multimedia applications as this use case is loss-tolerate and rate-sensitive. UDP is also used in RIP, DNS, SNMP.</p>
+<p>Segment structure:</p>
+<pre><code class='language-' lang=''>|   16 bits   |      16 bits     |
+| Source port | Destination port |
+|   Length    |     Checksum     |
+|              Data              |
+</code></pre>
+<p>The length is the length in bytes of the segment, including the header.</p>
+<p>Advantages:</p>
+<ul>
+<li>No connection establishment - no delay</li>
+<li>Simple: no connection state at sender or receiver</li>
+<li>Small header - 8 bytes</li>
+<li>No congestion control - sender can send as fast as possible</li>
+
+</ul>
+<p>The UDP socket for an incoming packet can be identified by its <strong>destination</strong> IP and port.</p>
+<h2>TCP</h2>
+<p>Properties:</p>
+<ul>
+<li><p>Point-to-point: one sender, one receiver</p>
+</li>
+<li><p>Provides a reliable, in-order <em>byte stream</em></p>
+<ul>
+<li>No application-layer message boundaries</li>
+
+</ul>
+</li>
+<li><p>Pipelined: TCP congestion/flow control sets the window size</p>
+</li>
+<li><p>Full-duplex data: bi-directional data flow</p>
+</li>
+<li><p>Connection-oriented: handshaking to initialize sender/receiver state</p>
+</li>
+<li><p>Flow-controlled: sender will not overwhelm the receiver</p>
+</li>
+
+</ul>
+<p>Packet structure:</p>
+<pre><code>| 16 bits     | 16 bits           |
+| Source port | Destination port  |
+|         Sequence Number         |
+|      Acknowledgement Number     |
+| Flags       | Receive window    |
+| Checksum    | Urg. data pointer |
+|     Options (variable)          |
+|        Application Data         |
+</code></pre>
+<p>Notes:</p>
+<ul>
+<li>Sequence number: byte stream number of the first byte in the segment&#39;s data</li>
+<li>Acknowledgement: sequence number of next byte expected from the other side (cumulative ACK and hence acknowledges that all bytes prior to that have arrived)</li>
+<li>Urgent data pointer field rarely used</li>
+<li>Options can be padded with zeros to ensure its size is a multiple of 4 bytes.</li>
+
+</ul>
+<p>Flags:</p>
+<ul>
+<li>Header length (4 bits) - number of bytes in header divided by 4</li>
+<li>Reserved (3 bits)</li>
+<li><code>NS</code>: ECE-nonce</li>
+<li><code>CWR</code>: congestion window reduced</li>
+<li><code>ECE</code>: ECN-echo; if <code>SYN</code> ECN capable else packet with congestion experienced flag set</li>
+<li><code>URG</code>: urgent pointer field significant</li>
+<li><code>ACK</code>: acknowledgement field significant - all packets sent by the client should have this set to true, excluding the initial <code>SYN</code></li>
+<li><code>PSH</code>: push function: asks to push buffered data to the application</li>
+<li><code>RST</code>: reset connection</li>
+<li><code>SYN</code>: synchronize sequence number: only the first packet sent by each end should have this sent</li>
+<li><code>FIN</code>: last packet from the sender</li>
+
+</ul>
+<h3>TCP Connection Management</h3>
+<h4>Opening: three-way handshake</h4>
+<p>NB: <strong>segments with <code>SYN</code> or <code>FIN</code> flags are treated as if they have a 1 byte payload</strong>.</p>
+<p>Step 1:</p>
+<ul>
+<li>Client host sends TCP <code>SYN</code> segment (<code>SYN = 1</code>) to server</li>
+<li>Randomly picks initial sequence number: <code>client_isn</code></li>
+<li>No application data</li>
+
+</ul>
+<p>The second step both acknowledges the segment and sends the server&#39;s ISN:</p>
+<ul>
+<li><p>Server host receives <code>SYN</code>, replies with <code>SYNACK</code> segment</p>
+<ul>
+<li>Allocates buffers</li>
+<li>Randomly picks initial sequence number: <code>server_isn</code></li>
+<li><code>SYN= 1</code>, <code>ACK = 1</code>, <code>ACK_number = client_isn + 1</code>, <code>sequence_number = server_isn</code></li>
+
+</ul>
+</li>
+
+</ul>
+<p>This third step is needed to confirm that the client has received the server&#39;s ISN:</p>
+<ul>
+<li><p>Client host receives <code>SYNACK</code>, replies with <code>ACK</code></p>
+<ul>
+<li>Response may contain data</li>
+<li><code>SYN = 0</code>, <code>ACK = 1</code>, <code>ACK_number = server_isn + 1</code>; <code>sequence_number = client_isn + 1</code></li>
+
+</ul>
+</li>
+
+</ul>
+<h4>Termination</h4>
+<ul>
+<li>Step 1: client host sends <code>FIN</code> to server</li>
+<li>Step 2: server host receives <code>FIN</code>, responds with <code>ACK</code></li>
+<li>Step 3: once server successfully closes connection (freeing buffers etc.), sends <code>FIN</code></li>
+<li>Step 4: client receives <code>FIN</code>, responds with <code>ACK</code></li>
+
+</ul>
+<p>Client waits for double the maximum segment lifespan to ensure the ACK arrives.</p>
+</body>
+</html>

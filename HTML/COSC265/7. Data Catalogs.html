@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>7. Data Catalogs</title></head>
+<body><h1>7. Data Catalogs</h1>
+<p>Data catalogs store metadata for database objects such as relations, attributes, domains, constraints, authorization and security information, owners, indexes.</p>
+<p>The catalog is stored as a set of <strong>read-only relations and views</strong> (system tables).</p>
+<p>The catalog is used:</p>
+<ul>
+<li><p>By the DDL and SDL compilers</p>
+</li>
+<li><p>By the query and DML parsers</p>
+<ul>
+<li>These convert high-level queries and DML statements into low-level file access commands</li>
+<li>They use the internal schema to determine an optimal way to execute the query/command</li>
+
+</ul>
+</li>
+<li><p>By the DBA for authorization and security checking, who has privileges to update the catalog</p>
+</li>
+<li><p>For external-to-conceptual mapping of queries/DML commands</p>
+</li>
+
+</ul>
+<p>The catalog consists of base tables and user-accessible views. The latter consists of:</p>
+<ul>
+<li><p>USER views (objects owned by user)</p>
+<ul>
+<li>e.g. <code>USER_CATALOG</code>, <code>USER_TAB_COLUMNS</code>, <code>USER_CONSTRAINTS</code></li>
+
+</ul>
+</li>
+<li><p>ALL views (objects the user has privileges to view)</p>
+<ul>
+<li>e.g. <code>ALL_CATALOG</code>, <code>ALL_OBJECTS</code></li>
+
+</ul>
+</li>
+<li><p>DBA views (all objects)</p>
+</li>
+
+</ul>
+<h2>Examples</h2>
+<p>Some interesting catalog tables:</p>
+<h3><code>ALL_TABLES</code></h3>
+<p>Contains information about all tables you have view permissions for. To view the number of rows for a specific table:</p>
+<pre><code class='language-sql' lang='sql'>SELECT NUM_ROWS FROM ALL_TABLES WHERE OWNER = &#39;owner_name&#39; AND TABLE_NAME = &#39;table_name&#39;
+</code></pre>
+<p>Number of blocks used is also stored.</p>
+<p>The catalog is updated regularly, so it may contain stale data. The <code>LAST_ANALYZED</code> row contains the time it was last updated. To force an update, use the command <code>ANALYZE TABLE table_name COMPUTE_STATISTICS</code>.</p>
+<h3><code>ALL_USERS</code></h3>
+<p>Contains information about all users you have view permissions for. The password is not viewable.</p>
+<p><code>USER_USERS</code> contains information about your own user.</p>
+<h3><code>ALL_INDEXES</code></h3>
+<p>Contains information about indexes: metadata such as the number of distinct keys, if it is primary/secondary etc.</p>
+<h3><code>ALL_VIEWS</code></h3>
+<p>Contains the definition (SQL query) for the view and other metadata. The definition cannot be modified directly as the catalog is read-only.</p>
+<h3><code>ALL_CONS_COLUMNS</code></h3>
+<p>Check constraints for all tables: constraint name, table name, owner, name of the column the constraint is for etc.</p>
+<h3><code>ALL_CONSTRAINTS</code></h3>
+<p>Contains more information about constraints including the search condition (SQL constraint definition) and constraint type (stored as a char - can be check constraint, primary/unique key, referential integrity constraint etc.).</p>
+<h3><code>TABLE_PRIVILEGES</code></h3>
+<p>Grantee, owner, grantor, table name and privileges (select, insert etc.) for each grantee.</p>
+</body>
+</html>

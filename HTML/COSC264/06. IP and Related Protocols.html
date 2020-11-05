@@ -1,0 +1,415 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>06. IP and Related Protocols</title></head>
+<body><h1>06. IP and Related Protocols</h1>
+<h2>The Internet</h2>
+<p>A packet-switched network of networks. The networks and links follow the end-to-end principle:</p>
+<ul>
+<li><p>Keep routers dumb, put intelligence in hosts</p>
+<ul>
+<li>Routers know how to deliver packets</li>
+<li>Making deliveries reliable is done by the end host</li>
+
+</ul>
+</li>
+
+</ul>
+<h2>IPv4</h2>
+<p>Terminology:</p>
+<ul>
+<li>IP Packets are called <strong>datagrams</strong> unless fragmentation/reassembly is being used - they are called <strong>fragments</strong> in this case</li>
+<li>End stations are called <strong>hosts</strong></li>
+<li>IP routers are called <strong>routers</strong></li>
+<li>IP addresses are assigned to <strong>network interfaces</strong>, not hosts</li>
+
+</ul>
+<p>Best-Effort, Datagram Delivery:</p>
+<ul>
+<li>Connectionless: no connection/shared state</li>
+<li>Unacknowledged</li>
+<li>Unreliable: no retransmissions</li>
+<li>Unordered: no in-sequence guarantees</li>
+
+</ul>
+<h3>Packet Format</h3>
+<p>Big endian byte ordering.</p>
+<figure><table>
+<thead>
+<tr><th>Length</th><th>Name</th></tr></thead>
+<tbody><tr><td>4</td><td>Version</td></tr><tr><td>4</td><td>Hdr Len</td></tr><tr><td>6</td><td>TOS/DSCP</td></tr><tr><td>2</td><td>Unused</td></tr><tr><td>16</td><td>TotalLength</td></tr><tr><td>Bytes 0-3</td><td>&nbsp;</td></tr><tr><td>16</td><td>Identification</td></tr><tr><td>3</td><td>Flags</td></tr><tr><td>13</td><td>Fragment Offset</td></tr><tr><td>Bytes 4-7</td><td>&nbsp;</td></tr><tr><td>8</td><td>Time-To-Live</td></tr><tr><td>8</td><td>Protocol Type</td></tr><tr><td>16</td><td>Header Checksum</td></tr><tr><td>Bytes 8-11</td><td>&nbsp;</td></tr><tr><td>32</td><td>Source Address</td></tr><tr><td>Bytes 12-15</td><td>&nbsp;</td></tr><tr><td>32</td><td>Destination Address</td></tr><tr><td>Bytes 16+</td><td>&nbsp;</td></tr><tr><td>32<em>n</em></td><td>Options + Padding</td></tr><tr><td>&nbsp;</td><td>Data</td></tr></tbody>
+</table></figure>
+<h4>Version (4)</h4>
+<p>Version of IP protocol. <code>4</code> for IPv4.</p>
+<h4>Header Length (4)</h4>
+<p>Length of header in multiples of 4 bytes. Without options, the header is 20 bytes long so the value would be <code>5</code>.</p>
+<h4>TOS/DSCP (2)</h4>
+<p>Stands for Type of Service/DiffServ Code Point. Allows the priority for each packet to be defined (usually by the ISP depending on how much you pay) - mostly ignored.</p>
+<p>Fill with zero.</p>
+<h4>Unused (2)</h4>
+<p>Fill with zero.</p>
+<h4>Total Length (16)</h4>
+<p>Total length (in bytes) of the datagram - required since some MAC layers may add padding to meet minimum length requirements.</p>
+<p>This may be modified during fragmentation and reassembly.</p>
+<h4>Identification (16)</h4>
+<p>Identifies each IP payload accepted from higher layers for a given interface - a sequence number.</p>
+<h4>Flags (3)</h4>
+<p>Contains two flags for fragmentation and reassembly (DF = don&#39;t fragment; MF = more fragments).</p>
+<h4>Fragmentation Offset (13)</h4>
+<p>Gives the offset of the current fragment within the entire datagram, in multiples of 8 bytes.</p>
+<h3>Time-to-Live (8)</h3>
+<p>Last resort to deal with loops - IP does not specify routing protocols and so there is a possibility that loops can occur.</p>
+<p>This value is the upper limit on number of routers a packet can traverse, and is decremented by each router (hence routers must recalculate checksum) the packet passes through. Once the TTL values reaches 0, the packet is discarded and the sender is notified via an ICMP message.</p>
+<p>TTL is typically 32 or 64.</p>
+<h4>Protocol Type (8)</h4>
+<p>Determines which higher-level protocol generated the payload - provides different SAPs to allow protocol multiplexing.</p>
+<figure><table>
+<thead>
+<tr><th>Value</th><th>Protocol</th></tr></thead>
+<tbody><tr><td><code>0x01</code></td><td>ICMP</td></tr><tr><td><code>0x02</code></td><td>IGMP</td></tr><tr><td><code>0x04</code></td><td>IP-in-IP Encapsulation</td></tr><tr><td><code>0x06</code></td><td>TCP</td></tr><tr><td><code>0x11</code></td><td>UDP</td></tr></tbody>
+</table></figure>
+<h4>Header Checksum (16)</h4>
+<p>Checksum for the IP header (NOT the data) - for some types of data, a few bad bits may not matter.</p>
+<h4>Source/Destination Address (32)</h4>
+<p>Indicates the initial sender and final receiver of the datagram. Internally structured into two sections: the <strong>network and host ID</strong>. The network ID refers to some local network, and the host ID must be unique within that network.</p>
+<h3>Routing and Forwarding</h3>
+<h4>Routing/Forwarding Tables</h4>
+<p>IP routers have several network interfaces - these are called ports. When a router receives a packet on some input port, it looks at the <code>DestinationAddress</code> field to determine the output port using the <strong>forwarding table</strong>.</p>
+<p>The forwarding table is a table of all networks the router knows about, identified by their network ID, and the output port to send the packet through to reach that network. A <strong>table lookup</strong> is used to then select the output port for every incoming packet.</p>
+<p>Notes:</p>
+<ul>
+<li>The time of the lookup is dependent on the number of entries. Expensive routers often implement this in hardware</li>
+<li>The table is filled by a separate routing protocol</li>
+<li>It is the responsibility of the last router on a path to deliver an IP datagram to the host.</li>
+
+</ul>
+<p>Important: <strong>a host address is tied to its location in the network; there is no mobility support</strong> - if a host switches to another network, it obtains another address, breaking ongoing TCP connections.</p>
+<h4>Classless Inter-Domain Routing</h4>
+<p>How many bits should be allocated to the network ID? Classful addressing used to be used, allocating exactly 8, 16 or 24 bits to the network ID.</p>
+<p>CIDR was introduced in 1993 and is now mandatory, and allows an arbitrary number of bits to be allocated to the network.</p>
+<h5>Netmask</h5>
+<p>The netmask specifies which bits belong to the network ID. It is a 32 bit value, with the leftmost <em>k</em> bits being 1s, and the remaining bits 0. A <code>/k</code> netmask will have <code>k</code> bits allocated to the network ID. The network ID is calculated using a logical AND with the IP address.</p>
+<h5>Private host addresses</h5>
+<p>There are two special host addresses:</p>
+<ul>
+<li>The host address with all 0s (32-<em>k</em> zeroes) signifies that the network as a whole is being referred to</li>
+<li>The host address with all 1s ((32-<em>k</em> ones) is the broadcast address - all hosts on the network will receive the packet</li>
+
+</ul>
+<p>There are also some reserved IP blocks:</p>
+<figure><table>
+<thead>
+<tr><th>Block</th><th>Usage</th></tr></thead>
+<tbody><tr><td><code>10.0.0.0/8</code></td><td>Private-use IP networks</td></tr><tr><td><code>127.0.0.0/8</code></td><td>Host loopback network</td></tr><tr><td><code>169.254.0.0/16</code></td><td>Link-local for point-to-point links</td></tr><tr><td><code>172.16.0.0/12</code></td><td>Private-use IP networks</td></tr><tr><td><code>192.168.0.0/16</code></td><td>Private-use IP networks</td></tr></tbody>
+</table></figure>
+<p>These addresses can be used within the provider network; packets with private addresses are not routed in the public internet.</p>
+<p>The loopback address is usually denoted as <code>127.0.0.1</code>, but any valid address in <code>127.0.0.0/8</code> can be used.</p>
+<h4>Simplified Packet Processing</h4>
+<p>IP input:</p>
+<ul>
+<li><p>Run sanity check on packet</p>
+</li>
+<li><p>Insert packet into IP input queue</p>
+</li>
+<li><p>Process IP options (extremely rare - not discussed)</p>
+</li>
+<li><p>Check if destined to its own IP address or the broadcast address:</p>
+<ul>
+<li>Protocol demultiplexing: check <code>Protocol</code> field, pass TCP/UDP/whatever to the right high-layer protocol</li>
+
+</ul>
+</li>
+<li><p>If not:</p>
+<ul>
+<li>Check if forwarding enabled; if not, the device is not a router so drop the packet</li>
+<li>Pass to IP output</li>
+
+</ul>
+</li>
+
+</ul>
+<p>IP output:</p>
+<ul>
+<li><p>Check if the packet is an immediate neighbour/directly reachable (e.g. directly via Ethernet)</p>
+<ul>
+<li>If so, attempt to deliver over a single hop</li>
+
+</ul>
+</li>
+<li><p>Else:</p>
+<ul>
+<li><p>Calculate next hop using forwarding table lookup</p>
+<ul>
+<li>Forwarding table filled and maintained by a routing daemon</li>
+
+</ul>
+</li>
+<li><p>Decrement <code>TTL</code></p>
+</li>
+<li><p>Recompute <code>HdrChksum</code></p>
+</li>
+<li><p>Hand over packet to outgoing interface</p>
+</li>
+
+</ul>
+</li>
+
+</ul>
+<h4>Forwarding Table Contents and Lookup (rough approximation)</h4>
+<p>Each entry contains:</p>
+<ul>
+<li><p>Destination IP address: one of</p>
+<ul>
+<li>Full host address (i.e. non-zero host-id)</li>
+<li>Network address with netmask (more common)</li>
+
+</ul>
+</li>
+<li><p>Information about next hop: one of</p>
+<ul>
+<li>IP address of next-hop router (which is directly reachable)</li>
+<li>IP address of directly-connected network (network address/netmask)</li>
+
+</ul>
+</li>
+<li><p>Flags</p>
+<ul>
+<li>If destination IP is host or network</li>
+<li>If next hop is router or directly attached to the network</li>
+
+</ul>
+</li>
+<li><p>Specification of <strong>outgoing interface</strong></p>
+</li>
+
+</ul>
+<p>A router only knows the next hop, not the entire remaining route. The forwarding table lookup has three stages:</p>
+<ul>
+<li><p>Look for an entry that is a <strong>full host address completely matching <code>dst</code></strong>. If found, send packet to indicated next hop/outgoing interface and stop processing</p>
+<ul>
+<li>Extremely uncommon</li>
+
+</ul>
+</li>
+<li><p>Look for an entry that is a network address matching <code>dst</code>&#39;s network address. If found, send packet to indicated next hop/outgoing interface and stop processing</p>
+<ul>
+<li><p><code>dst &amp; netmask == net-addr &amp; netmask</code></p>
+<ul>
+<li>Usually, the network address already has the host bits set to zero, so slightly overkill</li>
+
+</ul>
+</li>
+
+</ul>
+</li>
+<li><p>Look for a special <strong>default</strong> entry - if found, send packet to indicated next hop - the <strong>default router</strong> and stop processing</p>
+</li>
+<li><p>Drop packet and send ICMP message back to original sender of the datagram</p>
+</li>
+
+</ul>
+<h5>In End-Hosts</h5>
+<p>Forwarding tables in end hosts generally contain two or more entries:</p>
+<ul>
+<li>The default route, typically configured via DHCP</li>
+<li>An entry for each network it is directly connected to - this way, it can communicate with other hosts on the network</li>
+
+</ul>
+<h5>In Routers</h5>
+<p>Most routers at the &#39;border&#39; of the Internet (close to the customer) usually have small a forwarding table, often filled with other networks belonging to the same owner. For all other networks, they rely on the default router.</p>
+<p><strong>Core routers</strong>:</p>
+<ul>
+<li>Do not have a default router</li>
+<li>Are the default routers of other routers</li>
+<li>Know (almost) all of the Internet networks</li>
+
+</ul>
+<h3>Fragmentation and Reassembly</h3>
+<p>The link-layer technologies used by IP have different maximum packet sizes, called the <strong>maximum transmission unit</strong>. For several reasons, IP abstracts these concerns:</p>
+<ul>
+<li>For separation of concerns</li>
+<li>A packet could use different link-layer technologies in transit</li>
+<li>The route could change due to link failures/restores</li>
+
+</ul>
+<p>Hence, IP offers its own maximum message length of 65515: <code>(2^16 - 1) - 20</code>, where 20 is the minimum IP header size.</p>
+<p>The overall process is as follows:</p>
+<ul>
+<li><p>The sender IP instance partitions the the message into <strong>fragments</strong></p>
+</li>
+<li><p>Each fragment is transmitted individually as a full IP packet</p>
+<ul>
+<li>Header information specifies that this is a fragment, and stores the position of the fragment in the message</li>
+
+</ul>
+</li>
+<li><p>Each fragment has a size <strong>no larger than the MTU of the outgoing link</strong></p>
+<ul>
+<li>Hence, <strong>intermediate routers can fragment a full message or split fragments further</strong>, but never re-assemble them (as it is not guaranteed all packets will follow the same path)</li>
+
+</ul>
+</li>
+<li><p>The destination IP instance buffers the received fragments, re-assembles the message, then delivers it to the higher layer</p>
+<ul>
+<li>When the first fragment arrives, a buffer large enough for the whole message is allocated and a timer is started</li>
+
+</ul>
+</li>
+
+</ul>
+<p>All fragments datagrams belonging to the same message have:</p>
+<ul>
+<li><p>A full IP header</p>
+</li>
+<li><p>The same value in the <code>Identification</code> field (unique identifier set by the higher layer protocol)</p>
+</li>
+<li><p>A <code>TotalLength</code> field reflecting the size of the fragment</p>
+</li>
+<li><p><code>FragmentOffset</code> field, specifying the offset (in units of 8 bytes) relative to the original, un-fragmented IP datagram</p>
+</li>
+<li><p>All but the last fragment will have the <code>MF</code> (more-fragments) bit set</p>
+<ul>
+<li>The last fragment does not have this set. It also has a non-zero <code>FragmentOffset</code> to differentiate it from an un-fragmented packet</li>
+
+</ul>
+</li>
+
+</ul>
+<p>The sender can set the <code>DF</code> (don&#39;t fragment) bit in the IP header to forbid fragmentation by intermediate routers. If the outgoing link&#39;s MTU is too small, the intermediate router may return an ICMP message.</p>
+<h2>Address Resolution Protocol</h2>
+<p>IP datagrams are encapsulated into Ethernet frames, and Ethernet stations pick up a packet only if the destination MAC address matches its own. Hence, stations must know which MAC address a given IP address refers to.</p>
+<p>ARP allows a host to map a given IP address to an MAC address. ARP is dynamic:</p>
+<ul>
+<li>The MAC address for a given IP address does not need to be statically configured</li>
+<li>Nodes can be moved or equipped with new network adapters without any re-configuration</li>
+
+</ul>
+<p>This trades the downsides of static configuration for the complexity of running a separate protocol.</p>
+<h4>Basic Operation</h4>
+<ul>
+<li><p>Two stations, A and B, are attached to the same Ethernet network</p>
+<ul>
+<li>Each has an IP and MAC address</li>
+<li>Each maintains an ARP cache</li>
+
+</ul>
+</li>
+<li><p>Station A wishes to send an IP packet to station B&#39;s IP address, but does not know B&#39;s MAC address</p>
+</li>
+<li><p>Station A <strong>broadcasts</strong> an <strong>ARP-request</strong> message containing:</p>
+<ul>
+<li>Its own IP and MAC address</li>
+<li>Stations B&#39;s IP address</li>
+
+</ul>
+</li>
+<li><p>Hence, the packet is sent to the <strong>Ethernet broadcast address</strong>. The length/type field of the Ethernet frame has a value of <code>0x0806</code></p>
+</li>
+<li><p>Any other host recognizes that the IP address is not its own, and discards the packet</p>
+<ul>
+<li>If it cached every binding it ever heard, its ARP cache would get full quickly</li>
+
+</ul>
+</li>
+<li><p>When Station B receives this, it:</p>
+<ul>
+<li><p>Stores a binding between A&#39;s IP address and MAC address in its own cache</p>
+</li>
+<li><p>Responds with a <strong>unicast</strong> <strong>ARP-reply</strong> packet including:</p>
+<ul>
+<li>Its own MAC and IP address</li>
+<li>A&#39;s MAC and IP address</li>
+
+</ul>
+</li>
+
+</ul>
+</li>
+<li><p>A then stores the binding between B&#39;s IP and MAC address in its ARP cache</p>
+</li>
+
+</ul>
+<p>ARP makes no retransmissions if an request is not answered.</p>
+<p>If a sender wants to send an IP packet to a local destination, it first checks its ARP cache for a binding to the IP address. If not, it starts the address resolution procedure. Once this is finished, it will encapsulate the IP packet in an Ethernet frame and direct it to the MAC address.</p>
+<p>Entries in the ARP cache are <strong>soft-state</strong>; they get discarded some fixed time (usually 20 minutes) after it is inserted into the cache. Some implementations restart the timer after using the entry.</p>
+<p>This ensures that stale information gets flushed out (this is much more reliable than that device of interesting notifying everyone that its binding has changed).</p>
+<h4>Frame format</h4>
+<ul>
+<li><p>Standard Ethernet Header</p>
+<ul>
+<li><code>DstAddr</code>, <code>SrcAddr</code>, <code>FrameType</code></li>
+
+</ul>
+</li>
+<li><p><code>HardType</code></p>
+<ul>
+<li>Type of MAC addresses used</li>
+<li><code>0x0001</code> for Ethernet&#39;s 48 bit addresses</li>
+
+</ul>
+</li>
+<li><p><code>ProtType</code></p>
+<ul>
+<li>Identifier for the higher-layer protocol that requires the address resolution</li>
+<li><code>0x0800</code> for IPv4</li>
+
+</ul>
+</li>
+<li><p><code>HardSize</code>, <code>ProtSize</code></p>
+<ul>
+<li>Size in bytes of hardware and protocol addresses</li>
+<li>6 and 4 for Ethernet and IPv4</li>
+
+</ul>
+</li>
+<li><p><code>Op</code></p>
+<ul>
+<li>Type of ARP packet; differentiates between and ARP-request and ARP-reply</li>
+
+</ul>
+</li>
+<li><p>Sender Ethernet/IP address</p>
+</li>
+<li><p>Target Ethernet/IP address</p>
+</li>
+
+</ul>
+<p>ARP is a protocol working an a higher-level than Ethernet, so although the destination and source address is included in the packet, it needs to be included again in the Ethernet payload.</p>
+<h2>Internet Control Message Protocol</h2>
+<p>Allows routers or the destination host to inform the sender of error conditions such as when:</p>
+<ul>
+<li>No route to the destination</li>
+<li>Destination host is not reachable</li>
+<li>Fragmentation required, but <code>DF</code> set</li>
+
+</ul>
+<p>ICMP messages are encapsulated into regular IP datagrams and like IP, has no error control mechanisms.</p>
+<p>ICMP messages are not required, and are often filtered out by firewalls even if they are sent. Thus, the sending host <strong>must not rely on ICMP messages</strong>.</p>
+<h3>Message Format</h3>
+<ul>
+<li><code>type</code>: 8-bit ICMP message type</li>
+<li><code>code</code>: 8-bit ICMP sub-type</li>
+<li><code>checksum</code>: 16-bit checksum covering the header and data (calculated with <code>checksum</code> being zero)</li>
+<li>Data: depends on the <code>type</code>/<code>code</code> combination, but often includes the first few bytes of the offending IP datagram (including its header)</li>
+
+</ul>
+<h3>Some common <code>type</code>/<code>code</code> Combinations</h3>
+<figure><table>
+<thead>
+<tr><th>Type</th><th>Code</th><th>Meaning</th></tr></thead>
+<tbody><tr><td><code>0</code></td><td><code>0</code></td><td>Echo reply (ping)</td></tr><tr><td><code>3</code></td><td><code>0</code></td><td>Destination network unreachable</td></tr><tr><td><code>3</code></td><td><code>1</code></td><td>Destination host unreachable</td></tr><tr><td><code>3</code></td><td><code>2</code></td><td>Destination protocol unreachable</td></tr><tr><td><code>3</code></td><td><code>3</code></td><td>Destination port unreachable</td></tr><tr><td><code>3</code></td><td><code>4</code></td><td>Fragmentation required but <code>DF</code> set</td></tr><tr><td><code>3</code></td><td><code>6</code></td><td>Destination network unknown</td></tr><tr><td><code>3</code></td><td><code>7</code></td><td>Destination host unknown</td></tr><tr><td><code>4</code></td><td><code>0</code></td><td>Source-quench</td></tr><tr><td><code>8</code></td><td><code>0</code></td><td>Echo request (ping)</td></tr><tr><td><code>11</code></td><td><code>0</code></td><td>TTL expired in transit</td></tr><tr><td><code>11</code></td><td><code>1</code></td><td>Fragment reassembly time exceeded</td></tr></tbody>
+</table></figure>
+<p>Destination Unreachable (<code>type=3</code>):</p>
+<ul>
+<li><code>code=0</code>: router has no matching entry (or default entry) for the non-directly connected destination address in its forwarding table</li>
+<li><code>code=1</code>: reached last router before reaching destination, but that router could not reach the directly connected host (e.g. no ARP response)</li>
+<li><code>code=2</code>: reached final destination, but value of <code>protocol</code> field not implemented by receiving host</li>
+<li><code>code=3</code>: used with TCP/UDP when no socket is bound to a port number</li>
+
+</ul>
+<p>Source-quench (<code>type=4</code>, <code>code=0</code>): if IP router drops packet due to congestion. The intention is to let the source host throttle itself, but the act of sending the packet adds more work to the router.</p>
+<p>TTL expiration (<code>type=11</code>, <code>code=0</code>): if IP router drops packet due to TTL reaching zero. <code>tracert</code> uses this, incrementing the <code>TTL</code> each time it sends a packet.</p>
+<p>Fragmentation reassembly timeout (<code>type=11</code>, <code>code=1</code>): if not all fragments of a message received within a timeout. This invites the higher-level protocol to re-transmit the message.</p>
+</body>
+</html>

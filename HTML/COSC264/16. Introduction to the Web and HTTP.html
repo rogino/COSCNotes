@@ -1,0 +1,267 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>16. Introduction to the Web and HTTP</title></head>
+<body><h1>16. Introduction to the Web and HTTP</h1>
+<h2>Network Applications</h2>
+<p>Network applications are programs that run on different end-systems and communicate with each other over the network (e.g. web browser and server).</p>
+<p>Application <em>protocols</em> are a small part of a network application, and different network applications may share the same application protocol.</p>
+<p>Services applications need:</p>
+<ul>
+<li><p>Reliable data transfer (except some loss-tolerant applications like multimedia streaming)</p>
+</li>
+<li><p>Bandwidth</p>
+<ul>
+<li>Some are rate-sensitive such as audio calls</li>
+<li>Some are elastic e.g. email, FTP</li>
+
+</ul>
+</li>
+<li><p>Latency</p>
+<ul>
+<li>Some interactive real-time apps such as audio calls, VR, multi-player games etc. have tight end-to-end delay constraints</li>
+
+</ul>
+</li>
+
+</ul>
+<p>TCP provides a reliable transport service, flow control and congestion control, but no guarantees for latency or transmission rate.</p>
+<p>UDP provides none of these guarantees.</p>
+<h3>Application Structure</h3>
+<p>Client-server:</p>
+<ul>
+<li><p>Server:</p>
+<ul>
+<li>Always-on</li>
+<li>Permanent IP address</li>
+<li>May use server farms for scaling</li>
+
+</ul>
+</li>
+<li><p>Clients:</p>
+</li>
+<li><p>Communicate with the server</p>
+</li>
+<li><p>May be intermittently connected</p>
+</li>
+<li><p>May have dynamic IP addresses</p>
+</li>
+<li><p>Do not communicate directly with each other</p>
+</li>
+
+</ul>
+<p>Peer-to-peer:</p>
+<ul>
+<li>No always-on server</li>
+<li>Arbitrary end systems directly communicate</li>
+<li>Peers intermittently connected and can change IP addresses</li>
+<li>Highly scalable</li>
+<li>Difficult to manage</li>
+
+</ul>
+<p>Hybrid. Napster is an example:</p>
+<ul>
+<li>File transfer uses peer-to-peer</li>
+<li>File search is centralized; peers register content at central server and query it to locate content</li>
+
+</ul>
+<h2>The Web</h2>
+<ul>
+<li>On-demand service, compared to TV or radio which were scheduled</li>
+
+</ul>
+<h2>Hypertext Transfer Protocol (HTTP)</h2>
+<p>A web page consists of a base HTML-file and several referenced <strong>objects</strong>:</p>
+<ul>
+<li>Can be a HTML file (<code>iframe</code>), image (<code>img</code>) etc.</li>
+<li>Each object is addressable by a URL</li>
+
+</ul>
+<p>HTTP uses the client-server model:</p>
+<ul>
+<li>The browser requests, receives and displays web objects</li>
+<li>The server sends objects in response to requests</li>
+
+</ul>
+<p>Uses TCP:</p>
+<ul>
+<li>Client initiates a TCP connection to the server on <strong>port 80</strong></li>
+<li>Server accepts the TCP connection</li>
+<li>HTTP messages exchanged between the browser and server</li>
+<li>TCP connection closed</li>
+
+</ul>
+<p>HTTP is stateless: the server <em>can</em> work without maintaining any information about past client requests.</p>
+<h3>HTTP Connections</h3>
+<p><strong>Non-persistent HTTP</strong>: At most <em>one object</em> is sent over a TCP connection. Used by HTTP/1.0.</p>
+<p><strong>Persistent HTTP</strong>: multiple objects can be sent over a single TCP connection; used by HTTP/1.1 by default.</p>
+<p>The client will initialize the TCP connection, send an HTTP <em>request message</em> (containing some URL); the server will receive this response and form a <em>response message</em> containing the requested object.</p>
+<p>HTTP/1.0 will close the TCP connection after the object is delivered, while persistent HTTP will leave the connection open and use the same connection for subsequent HTTP requests.</p>
+<p><strong>Response Time Modelling (RTT)</strong>: time to send a small packet to travel from the client to the server and back.</p>
+<p>For HTTP/1.0:</p>
+<ul>
+<li>1 RTT to initiate the TCP connection (first two parts)</li>
+<li>1 RTT for the HTTP request (and third part of handshake) and the request back</li>
+
+</ul>
+<p>Hence, the total time is 2 RTTs, plus the transmission time for the file. After the file is received, the TCP connection must also be closed.</p>
+<p>In addition to this, the OS must allocate resources for each TCP connection; browsers will often use parallel TCP connections to fetch referenced objects.</p>
+<p><strong>Persistent HTTP with pipelining</strong> is the default behaviour in HTTP/1.1; the client sends requests as soon as it encounters a referenced file.</p>
+<h3>HTTP Messages</h3>
+<p>The HTTP request consists of the following ASCII-encoded text:</p>
+<ul>
+<li><p>Request line (the tree values are separated by a space):</p>
+<ul>
+<li>Method (<code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>HEAD</code> etc.)</li>
+<li>URL</li>
+<li>Version (<code>HTTP/1.0</code>, <code>HTTP/1.1</code> etc.)</li>
+<li><code>\r\n</code> to end the request line</li>
+
+</ul>
+</li>
+<li><p>Header lines:</p>
+<ul>
+<li><code>header_field_name: header_value\r\n</code> (space required after the colon)</li>
+<li>Order of headers not significant, but fields sending control data should be sent field</li>
+<li><code>\r\n</code> after all header lines to indicate the end of the header section</li>
+
+</ul>
+</li>
+<li><p>Entity body</p>
+<ul>
+<li>Used for <code>POST</code> and <code>PUT</code> requests</li>
+
+</ul>
+</li>
+
+</ul>
+<p>Some methods:</p>
+<ul>
+<li><code>GET</code>: get object</li>
+<li><code>HEAD</code>: get the headers that would be returned if it was a <code>GET</code> request</li>
+<li><code>POST</code>: filling out a form</li>
+<li><code>PUT</code> (1.1+): upload file in entity body to path specified in URL field</li>
+<li><code>DELETE</code> (1.1+): delete file specified in URL field</li>
+
+</ul>
+<p>Some headers:</p>
+<ul>
+<li><p><code>User-agent</code></p>
+</li>
+<li><p><code>Connection: close|keep-alive</code>: defaults to <code>keep-alive</code> for HTTP/1.1</p>
+</li>
+<li><p><code>Accept-language</code>: comma-separated list of languages and optional quality value for each language</p>
+<ul>
+<li>Language code can be language or language and region (e.g. <code>en</code>, <code>en-gb</code>)</li>
+<li>Weight: estimate of user&#39;s preference for that language. <code>lang-code;q=weight,</code>. Defaults to <code>q=1</code>, can be any fraction between <code>0</code> and <code>1</code> (larger is better)</li>
+
+</ul>
+</li>
+
+</ul>
+<p>The response message follows this format:</p>
+<ul>
+<li><p>Status line (space-separated):</p>
+<ul>
+<li>Version</li>
+<li>Status code (e.g. <code>200</code>, <code>400</code>)</li>
+<li>Phrase (text description of status code (e.g. <code>OK</code>))</li>
+<li><code>\r\n</code></li>
+
+</ul>
+</li>
+<li><p>Header lines:</p>
+<ul>
+<li><code>header_field_name: header_value\r\n</code> (space required after the colon)</li>
+<li><code>\r\n</code> after all header lines to indicate the end of the header section</li>
+
+</ul>
+</li>
+<li><p>Entity body</p>
+</li>
+
+</ul>
+<p>Some HTTP status codes:</p>
+<ul>
+<li><p><code>1xx</code>: request received, continuing process</p>
+</li>
+<li><p><code>2xx</code>: request successful</p>
+<ul>
+<li><code>200</code>: OK</li>
+
+</ul>
+</li>
+<li><p><code>3xx</code>: redirection</p>
+<ul>
+<li><code>301</code>/<code>308</code>: permanent redirect. The latter enforces that the request method (e.g. <code>GET</code>, <code>POST</code>) cannot change</li>
+<li><code>302</code>/<code>307</code>: temporary redirect. The latter enforces that the request method (e.g. <code>GET</code>, <code>POST</code>) cannot change</li>
+<li><code>304</code>: not modified since <code>If-Modified-Since</code> value</li>
+
+</ul>
+</li>
+<li><p><code>4xx</code>: client error</p>
+<ul>
+<li><code>400</code>: bad request</li>
+<li><code>404</code>: not found</li>
+
+</ul>
+</li>
+<li><p><code>5xx</code>: server error</p>
+<ul>
+<li><code>500</code>: internal server error</li>
+<li><code>502</code>: bad gateway (proxy/gateway received invalid response from upstream server)</li>
+<li><code>503</code>: service unavailable (e.g. overloaded)</li>
+<li><code>505</code>: HTTP version not supported</li>
+
+</ul>
+</li>
+
+</ul>
+<h3>Cookies: User-Server State</h3>
+<p>HTTP is stateless, so to identify users <em>cookies</em> are used. There are four components:</p>
+<ul>
+<li><p>Cookie header line in HTTP response message</p>
+<ul>
+<li><p>Multiple <code>Set-cookie</code> lines can be sent</p>
+</li>
+<li><p>The header format is <code>Set-cookie: cookie_name=cookie_value</code></p>
+<ul>
+<li>By default, cookies are <em>session cookies</em> which are deleted after the current session ends</li>
+<li><code>; Expires = DoW, dd mmm yyyy, hh:mm:ss ttt;</code> can be appended to make it a <em>permanent cookie</em></li>
+<li><code>; Secure;</code> ensures it is only sent on HTTPS connections</li>
+<li><code>; HttpOnly</code> ensures it is not accessible through JS</li>
+
+</ul>
+</li>
+
+</ul>
+</li>
+<li><p>Cookie header line in HTTP request message</p>
+<ul>
+<li><code>cookie: cookie1_name=cookie1_value; cookie2_name=cookie2_value...</code></li>
+
+</ul>
+</li>
+<li><p>Cookie file kept on the client and managed by the browser</p>
+</li>
+<li><p>Server&#39;s database storing cookies</p>
+</li>
+
+</ul>
+<h3>Web Caches (Proxy Servers)</h3>
+<p>Proxy servers sit between the origin server and client. There can be multiple proxy servers, one of which will hopefully be closer to the client than the origin server.</p>
+<p>The proxy server/cache acts as both a client and server. It helps to:</p>
+<ul>
+<li>Reduce response time</li>
+<li>Reduce traffic on an institution&#39;s access link</li>
+<li>Lower bandwidth costs</li>
+
+</ul>
+<p>If the requested object is in the cache, the browser will use it. Otherwise, it will make a request to the proxy server (and if the proxy does not have the resource, it will in turn make a request to the origin server).</p>
+<h4>Conditional GET</h4>
+<p>The server will not send the object if the cache has an up-to-date copy of the object.</p>
+<p>Request header: <code>If-modified-since: some_date</code>.</p>
+<p>If the object has not been modified since the given date, a <code>304 Not Modified</code> response will be sent and there will be no body. Otherwise, it will generate a normal <code>200 OK</code> response.</p>
+</body>
+</html>

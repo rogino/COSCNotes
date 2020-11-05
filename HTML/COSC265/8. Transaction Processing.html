@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>8. Transaction Processing</title></head>
+<body><h1>8. Transaction Processing</h1>
+<p>A logical unit of work consisting of one or more statements. The effects of the transaction only becomes permanent when the transaction is completed successfully.</p>
+<p>An <strong>application program</strong> may contain several transactions.</p>
+<p>The basic data operations are <strong>read</strong> and <strong>write</strong>. A read operation will:</p>
+<ul>
+<li>Find the address of the disk block that contains the item</li>
+<li>Copy that block into a buffer in main memory</li>
+<li>Copy the item from the buffer to a program variable</li>
+
+</ul>
+<p>A write operation will:</p>
+<ul>
+<li>Find the address of the disk block that contains the item</li>
+<li>Copy the block into a buffer in main memory</li>
+<li>Copy the item from the program variable into the correct location in the buffer</li>
+<li>Copy the updated buffer back to disk, either immediately or at some later point in time</li>
+
+</ul>
+<p>A transaction can be in the following states:</p>
+<ul>
+<li>Active: running read/write operations</li>
+<li>Partially committed: all writes to memory finished; DBMS performs housekeeping (logs changes etc.)</li>
+<li>Committed: all changes copied from memory to disk</li>
+
+</ul>
+<p>The transaction can be aborted when in the active or partially committed states.</p>
+<h2>Concurrent Execution of Transactions</h2>
+<p>Multi-user systems:</p>
+<ul>
+<li>Single-user system: at most one user can use the system at a time</li>
+<li>Multi-user system: many users can access the system concurrently</li>
+
+</ul>
+<p>Concurrency:</p>
+<ul>
+<li>Interleaved processing: transactions run interleaved in a single CPU</li>
+<li>Parallel processing: transactions concurrently executed in multiple CPUs</li>
+
+</ul>
+<h3>Lost Update Problem</h3>
+<p>When two transactions that update the same database items have their operations interleaved in a way that makes the value of some database item incorrect.</p>
+<p>Example:</p>
+<pre><code>Transaction 1  |  Transaction 2
+               |
+read_item(X)   |
+X := X - N     |
+               |  read_item(X)
+               |  X := X + M
+               |
+write_item(X)  &lt;-- This is lost!
+               |  write_item(X)
+</code></pre>
+<h3>Temporary Update Problem</h3>
+<p>One transaction updates a database item but the transaction fails. Another transaction accesses the updated item before it is reverted to its original value.</p>
+<p>Reading the uncommitted value is called a <strong>dirty read</strong>.</p>
+<p>Example:</p>
+<pre><code>Transaction 1  | Transaction 2
+read_item(X)   |
+X := X - N     |
+write_item(X)  |
+               |  read_item(X) &lt;- Dirty Read
+               |  X := X + M
+               |  write_item(X)
+throw_error()  |
+undo_change()  |
+</code></pre>
+<h3>Incorrect Summary Problem</h3>
+<p>While one transaction is running an aggregate function while other transactions update some of the records, causing the aggregate function to read values both before and after they are updated.</p>
+<h2>ACID Properties</h2>
+<p><strong>Atomic</strong>: a transaction is either performed entirely or not at all.</p>
+<p><strong>Consistent</strong>: the transaction will move the database from one consistent state to another.</p>
+<p><strong>Isolated</strong>: the transaction&#39;s changes should not be visible to other transactions until it is committed - this can solve the temporary update problem.</p>
+<p><strong>Durable</strong>: once a transaction is committed, system failures will not cause the changes to be lost.</p>
+<p>The concurrency system is the primary means by which the isolation property is preserved, and supports the atomicity and consistency properties.</p>
+<p>The recovery system is the primary means by which the atomicity and durability properties are preserved, and supports the consistency and isolation properties.</p>
+<h2>Concurrency Control and Recovery</h2>
+<p>Not covered due to time limitations.</p>
+</body>
+</html>
