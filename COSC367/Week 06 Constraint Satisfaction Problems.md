@@ -40,11 +40,11 @@ It is exponential in the number of variables.
 
 Systematically explore *D* by instantiating variables one at a time, evaluating each constraint as all its variables are bound.
 
-Thus, any partial assignment that doesn't satisfy the constraints can be pruned (e.g. if $A \neq B$, can prune these even if $C$, $D$ etc. have not been instantiated yet)
+Thus, any partial assignment that doesn't satisfy the constraints can be pruned (e.g. if $A \neq B$, can prune these even if $C$, $D$ etc. have not been instantiated yet).
 
 ### CSP as graph search
 
-A node is an assignment of values to some of the variables
+A node is an assignment of values to some of the variables.
 
 Search:
 
@@ -125,7 +125,7 @@ There are three possible outcomes of this algorithm:
 
 Split a problem into a number of disjoint cases and solve each case separately: the set of solutions is the union of all solutions to each case
 
-e.g. if $X \in {0,1}$, find all solutions where $X=0$, then where $X=1$
+e.g. if $X \in {0,1}$, find all solutions where $X=0$, then where $X=1$.
 
 #### Algorithm
 

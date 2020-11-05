@@ -31,14 +31,15 @@ Hence, the heuristic function to to be minimized will be the number of conflicts
 
 Put *n* queens on an *n* by *n* board such that no two queens can attack each other.
 
-Heurstic: number of pairs of queens that can attack each other.
+Heuristic: number of pairs of queens that can attack each other.
 
-One queen on each column, queens can move up and down only. For each state there will be `(n-1) * n` neighbours (each can move to *n-1* locations).
+One queen on each column, queens can move up and down only. For each state there will be $n(n-1)$ neighbours (each can move to $n-1$ locations).
 
 ### Variants of Greedy Descent
 
 - Find the variable-value pair that minimises the number of conflicts at each step
-- Select the variable that participates in the most number of conflicts,and find the value of that variable that minimizes this
+
+- Select the variable that participates in the most number of conflicts, and find the value of that variable that minimizes this
 - Select a variable that appears in any conflict and find the value of that variable that minimizes this
 
 ### Issues
@@ -52,7 +53,7 @@ These two make the search global.
 
 ## Parallel Search
 
-A total assignment is called an **individual**
+A total assignment is called an **individual**.
 
 Maintain a population of *k* individuals instead of one and update each individual at every stage. If an individual is a solution, it can be reported (and the search can stop).
 

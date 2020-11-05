@@ -1,6 +1,6 @@
 # Prolog
 
-## Prolog - **pro**gramming in **log**ic
+## Prolog - *pro*gramming in *log*ic
 
 ### Intro
 
@@ -31,7 +31,7 @@
 
 ### Variables
 
-Variables start with an underscore or upper case letter, and may contain upper, lower, digits or underscores. `happy(X).` returns a term that replaces `X` such that the rule is met. Typing `;` tries to find another term that satisfies the rule.
+Variables start with an underscore or upper case letter, and may contain upper, lower, digits or underscores. `happy(X).` returns a term that replaces `X` such that the rule is met. Typing `j` tries to find another term that satisfies the rule.
 
 Conjunction can also be used e.g. `happy(X), listensToMusic(X).`.
 
@@ -109,7 +109,7 @@ Any female is their own sister so the `dif` predicate is required: append `X \= 
 
 ### Predicate description - argument mode indicator
 
-Character prepended to argument:
+Character prepended to argument when describing a functor:
 
 - A `+` argument must be fully instantiated: must be input
 - A `-` argument must be unbound: must be an variable
@@ -141,7 +141,7 @@ The `|` operator decomposes a list into a head and tail:
 
 ### Anonymous variables
 
-Of you do not need the value of a variable, use `_` - the anonymous variable. Two instances of `_` may not be equal.
+If you do not need the value of a variable, use `_` - the anonymous variable. Two instances of `_` may not be equal.
 
 ### Membership
 
@@ -245,4 +245,4 @@ These force the left and right hand arguments to be evaluated.
 
 If `Goal` unifies, it gets to `!` so can never backtrack. Then it gets to `fail` an fails. If the `!` was not there, it would attempt to evaluate `Goal` again.
 
-As this is so common, there is a built in operator that does this: `\+`
+As this is so common, there is a built in operator that does this: `\+`.

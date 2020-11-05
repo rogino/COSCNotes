@@ -29,7 +29,7 @@ q,\\
 r \leftarrow s
 \end{cases}
 $$
-$m = (p = true, q = true, r = false, s = false)$ would be a model of $KB$
+$m = (p = true, q = true, r = false, s = false)$ would be a model of $KB$.
 
 
 ### Proof Procedures
@@ -45,9 +45,9 @@ $m = (p = true, q = true, r = false, s = false)$ would be a model of $KB$
 
 If $h \leftarrow b_1 \land \cdots \land b_m$ is a clause in the knowledge base and each $b_i$ has been derived (all are consequences), then can be derived. This method is called **forward chaining**.
 
-First, set $c:=\{\}$. Then, select a clause $h \leftarrow b_1 \land \cdots \land b_m$ in $KB$ such that:
+First, set $c:=\{\}$. Then, select a clause $h \leftarrow \; b_1 \land \cdots \land b_m$ in $KB$ such that:
 
-- $b_i \in C \forall i$
+- $b_i \in C \;\forall i$
 - $h \notin C$
 
 Then set $C := C \cup \{h\}$
@@ -90,7 +90,7 @@ An **answer clause**: $yes \leftarrow a_1 \land \dots \land a_m$
 The **SLD resolution** of the answer clause on atom $a_i$ with the clause $a_i \leftarrow b_1 \land \dots \land b_p$ is another answer clause:
 
 $$
-yes \leftarrow a_1 \land \dots \land a_{i-1} \land b_1 \land \dots \land b_p \land a_{i+1} \land \dots \land a_m
+yes \leftarrow \; a_1 \land \dots \land a_{i-1} \land b_1 \land \dots \land b_p \land a_{i+1} \land \dots \land a_m
 $$
 
 Basically: replace the atom with its clause, repeating until no more replacements can be made

@@ -71,7 +71,7 @@ def search(graph, start_nodes, is_goal_node):
 - Time complexity as function of length of the selected path:
   - $O(b^d)$, where $b$ is the branching factor and $d$ is the depth
 - Space complexity as a function of the length of the selected path:
-  - $O(d)$ for a given depth - there can only be $d$ frontier paths (plus the branching of the current node that was explored?)
+  - $O(d)$ for a given depth - there can only be $d$ frontier paths (plus the branching of the current node that was explored)
 
 ### Explicit graphs
 
@@ -84,10 +84,9 @@ Tracing the frontier
 - Each line starts with a plus or minus
   - `+` to indicate that this will be added to the frontier
   - `-` to indicate that something has been selected and returned from the frontier
-  - Optional `!` at the end - means pruning has occurred
-  - When adding from the frontier, but it fails
-  - When removing from the frontier, but the end-node is already expanded
   - List of nodes with no separator character
+  - Optional `!` at the end - means pruning has occurred
+    - When adding or removing from the frontier but the end node is already expanded
 
 ### BFS
 
@@ -183,7 +182,7 @@ $$
 h(n) \leq cost(n, n^′) + h(n^′)
 $$
 
-That is, the estimated cost from $n$ to the goal must be less than the estimated cost of going to the goal via $n'$.
+That is, the estimated cost from $n$ to the goal must be less than the estimated cost of going to the goal via $n'$. Where $s$ is the start node:
 
 $$
 \begin{aligned}
@@ -227,15 +226,15 @@ The bottom of the lattice is the zero heuristic - makes A* search just a LCFS.
 
 ## Bounded Depth-First Search
 
-- Takes a bound (cost or depth) and does not expand paths that exceed the bound
-  
-  - Explores part of the search tree
-  - Uses space linear in the depth of the search
-  - Kind of acts like BFS while using little memory
+Takes a bound (cost or depth) and does not expand paths that exceed the bound:
+
+- Explores part of the search tree
+- Uses space linear in the depth of the search
+- Kind of acts like BFS while using little memory
 
 ### Iterative-deepening Search
 
-Uses less memory but more CPU:
+Uses less memory but more CPU when compared to BFS:
 
 - Start with bound $b = 0$
 - Do a bounded depth-first search with bound $b$

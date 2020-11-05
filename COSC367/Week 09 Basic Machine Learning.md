@@ -28,14 +28,19 @@ Given the following as input:
 
 This is fed to a learning algorithm to build a **predictive model** that takes a new **instance** and returns/predicts the value for the target feature.
 
-For continuous target variables, regression is used
+For continuous target variables, regression is used.
 
 ### Measuring performance
 
 Common performance measures:
 
-- $\textrm{error} = \frac{\textrm{number of incorrectly classified instances}}{\textrm{total number of instances}}$
-- $\textrm{accuracy} = 1 - \textrm{error} = \frac{\textrm{number of correctly classified instances}}{\textrm{total number of instances}}$
+$$
+\textrm{error} = \frac{\textrm{number of incorrectly classified instances}}{\textrm{total number of instances}}
+$$
+
+$$
+\textrm{accuracy} = 1 - \textrm{error} = \frac{\textrm{number of correctly classified instances}}{\textrm{total number of instances}}
+$$
 
 In binary classification problems, one class is called *positive* (*p*) and the other *negative* (*n*).
 
@@ -75,15 +80,15 @@ Thus, **assume input features are conditionally independent** given the class mo
 
 ### Example: Building a Classifier
 
-Determine if the patient is susceptible to heart disease (y/n) given family history (t/f), fasting blood sugar level (l/h), BMI (l, n, h)
+Determine if the patient is susceptible to heart disease (y/n) given family history (t/f), fasting blood sugar level (l/h), BMI (l, n, h).
 
-Model it as $Hist$, $BG$, $BMI$ all having $Class$ as a parent (not the opposite!)
+Model it as $Hist$, $BG$, $BMI$ all having $Class$ as a parent:
 
 $$
 P(Class | Hist, BG, BMI) = \alpha \cdot P(Class) \cdot P(Hist | Class) \cdot P(BG | Class) \cdot P(BMI | Class)
 $$
 
-The class can take two values, so there are two tables per feature and two rows for $\frac{Hist}{BG}$ per table (three for $BMI$ as it has three values).
+The class can take two values, so there are two tables per feature and two rows for $Hist$/$BG$ per table (three for $BMI$ as it has three values).
 
 NB: in the quiz, you only store value for when class is true.
 
@@ -130,7 +135,7 @@ Non-parametric models are not characterized by parameters - a family of this is 
 
 An example of a instance-based learning algorithm is *k*-nearest neighbours:
 
-- It uses the local neighbourhood to obtain a prediction - the *K* memorized examples most similar to the one being classified is retrieved
+- It uses the local neighbourhood to obtain a prediction - the *k* memorized examples most similar to the one being classified is retrieved
 - A distance function is used to compare similarity (e.g. Euclidean or Manhattan distance)
 - If the distance function is changed, how examples are classified changes
 
@@ -139,7 +144,7 @@ Training only requires storing all the examples
 Prediction: $H(x_new)$:
 
 - Let $x_1, ..., x_k$ be the *k* most similar examples to $x_new$
-- $h(x_new) = combine\_predictions(x_1, ..., x_k)$; given the *k* nearest neighbours to $x_new$, calculate which value it should have
+- $h(x_{new}) = combine\_predictions(x_1, ..., x_k)$; given the *k* nearest neighbours to $x_{new}$, calculate which value it should have
 
 If *k* is too high, it will be under-fit.
 

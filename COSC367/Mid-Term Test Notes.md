@@ -148,6 +148,8 @@ $$
 P(x_1, ..., x_n) = \prod_{i=1}^{n}{P(x_i | parents(X_i))}
 $$
 
+If it is the probability over all variables, it is called the **joint probability distribution**
+
 ## Basic Machine Learning
 
 - Error = num incorrect / total

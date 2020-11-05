@@ -48,8 +48,7 @@ P(x|y) &= \frac{P(x, y)}{P(y)} \\
 \end{aligned}
 $$
 
-**Chain rule**: $P(x_1,  x_2, x_3) = P(x_1) \cdot P(x2|x_1) \cdot P(x_3|x1, x2)$. More generally:
-
+**Chain rule**: $P(x_1,  x_2, x_3) = P(x_1) \cdot P(x_2|x_1) \cdot P(x_3|x_1, x_2)$. More generally:
 $$
 P(x_1, ... x_n) = \prod_{i=1}^{n}{P(x_i|x_1, ..., x_{i-1})}
 $$
@@ -169,7 +168,7 @@ Nodes:
 Distributions:
 
 - A collection of distributions (CPTs) over each node; one for each combination of the parents' values
-  - $P(X|a_1, ..., a_n)$ for all combinations of $a$s
+  - $P(X|a_1, ..., a_n)$ for all combinations of $a$
 
 D-separation can be used to decide if a set of nodes $X$ is independent of $Y$ given $Z$.
 
@@ -230,4 +229,4 @@ Answering $P(Y)$: no evidence; all variables except the query are hidden
 
 Answering $P(y|e)$: answer $P(Y|e)$, then pick result for $Y=y$
 
-Answering $P(Y_1=y_1, Y_2=y_2 | e)$: $P(y_1|y_2, e) \cdot P(y_2, e)$
+Answering $P(Y_1=y_1, Y_2=y_2 | e)$: $P(y_1|y_2, e) \cdot P(y_2|e)$
