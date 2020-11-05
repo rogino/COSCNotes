@@ -1,4 +1,4 @@
-# Constraint Satisfaction Problems
+# Week 06: Constraint Satisfaction Problems
 
 These problems are characterized by:
 
@@ -123,7 +123,7 @@ There are three possible outcomes of this algorithm:
 
 ### Domain Splitting
 
-Split a problem into a number of disjoint cases and solve each case separately: the set of solutions is the union of all solutions to each case
+Split a problem into a number of disjoint cases and solve each case separately: the set of solutions is the union of all solutions to each case.
 
 e.g. if $X \in {0,1}$, find all solutions where $X=0$, then where $X=1$.
 
@@ -157,7 +157,7 @@ def CSPSolver(variables, domains, constraints, todo):
 
 ### Variable Elimination
 
-Eliminate variables one-by-one, passing constraints onto their neighbours
+Eliminate variables one-by-one, passing constraints onto their neighbours.
 
 Constraints can be thought of as a relation containing tuples for all possible valid values.
 

@@ -1,6 +1,8 @@
+# Test Notes
+
 ### Distance-Vector
 
-Periodically send $D_x$, node $x$'s estimates of the least cost path to all nodes in the networks: $D_x(y) = min([C(x, v) + D_v(y) \mbox{ for } v \mbox{ in } neighbours(x)])$, to its neighbours
+Periodically send $D_x$, node $x$'s estimates of the least cost path to all nodes in the networks: $D_x(y) = min([C(x, v) + D_v(y) \mbox{ for } v \mbox{ in } neighbours(x)])$, to its neighbours.
 
 Poisoned reverse: if $x$ routes to $z$ through $y$, $x$ will say that $D_x(z) = \infty$, ensuring $y$ will not route to $z$ through $x$ if the link cost changes. This reduces the time to converge when link cost increases.
 
@@ -108,7 +110,7 @@ def check_checksum(shorts, checksum):
 
 ### Go-Back-*N*
 
-No more than *N* unacknowledged packets. Receiver sends cumulative ACK. On timeout, all packets reset
+No more than *N* unacknowledged packets. Receiver sends cumulative ACK. On timeout, all packets reset.
 
 #### Selective Repeat
 
@@ -138,7 +140,7 @@ To prevent this from being interpreted as a new packet, the sender base number m
 |              Data              |
 ```
 
-Identified by destination port and IP,
+Identified by destination port and IP.
 
 ### TCP
 
@@ -160,7 +162,7 @@ Identified by destination port and IP,
 
 #### Handshake and Termination
 
-Segments with `SYN` or `FIN` treated as if they have a 1 byte payload
+Segments with `SYN` or `FIN` treated as if they have a 1 byte payload.
 
 Three-way handshake:
 
@@ -177,7 +179,7 @@ Termination:
 
 #### Acknowledgements
 
-ACK: **largest byte received** (cumulative ACK)
+ACK: **largest byte received** (cumulative ACK).
 
 Sender events:
 
@@ -192,7 +194,7 @@ Receiver events:
 - If in-order segment arrives, wait 500 ms. If another in-order segment arrives in this window, send the ACK immediately
 - If out-of-order packet arrives, buffer and send duplicate ACK
 
-Timeout value requires finding round trip time: use exponential weighted moving average
+Timeout value requires finding round trip time: use exponential weighted moving average:
 
 - $EstimatedRTT = EstimatedRTT (1 - \alpha) + SampleRTT * \alpha$
 - $DevRTT = devRTT (1 - \beta) + \beta|SampleRTT - EstimatedRTT|$
@@ -206,7 +208,7 @@ Timeout value requires finding round trip time: use exponential weighted moving 
 
 #### Congestion Control
 
-Overflowing router buffers
+Overflowing router buffers:
 
 Slow start:
 
@@ -218,9 +220,9 @@ AIMD (after first loss):
 - Increase by 1 after every RTT (window += 1/window)
 - Half after every loss
 
-After 3 duplicate ACKs, half window and move to AIMD
+After 3 duplicate ACKs, half window and move to AIMD.
 
-After timeout, slow start until it reaches half of window size before timeout. Then move to AIMD
+After timeout, slow start until it reaches half of window size before timeout. Then move to AIMD.
 
 `LastByteSent - LastByteAcked <= min(CongestionWindow, ReceiveWindow)`
 

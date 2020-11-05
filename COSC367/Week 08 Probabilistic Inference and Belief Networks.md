@@ -1,4 +1,4 @@
-# Week 8: Probabilistic Inference and Belief Networks
+# Week 08: Probabilistic Inference and Belief Networks
 
 In the real world, there will be uncertainty and randomness due to several factors:
 
@@ -19,13 +19,13 @@ RVs are denoted with a capital letter and have an associated domain.
 
 Unobserved RVs have distributions; a table of probabilities of values. A probability is a single number e.g. $P(W = rain) = 0.1$. The probabilities sum to 1 and none are negative.
 
-Joint distribution over a set of RVs: a map from assignments/outcomes/atomic events to reals; $P(X_1 = x_1, ..., X_n = x_n)$
+Joint distribution over a set of RVs: a map from assignments/outcomes/atomic events to reals; $P(X_1 = x_1, ..., X_n = x_n)$.
 
-Event: set *E* of assignments; $P(E) = \sum_{(x_1, ..., x_n \in E)}{P(x_1, ..., x_n)}$
+Event: set *E* of assignments; $P(E) = \sum_{(x_1, ..., x_n \in E)}{P(x_1, ..., x_n)}$.
 
-Marginalization (summing out): projecting a joint distribution to a sub-distribution over subset of variables: $P(X_1 = x_1) = \sum_{x_2 \in domain(X_2)}{P(X_1 = x_1, X_2 = x_2)}$
+Marginalization (summing out): projecting a joint distribution to a sub-distribution over subset of variables: $P(X_1 = x_1) = \sum_{x_2 \in domain(X_2)}{P(X_1 = x_1, X_2 = x_2)}$.
 
-Conditional probability: $P(a|b) = \frac{P(a, b)}{P(b)}$
+Conditional probability: $P(a|b) = \frac{P(a, b)}{P(b)}$.
 
 Conditional distribution: probability distribution over some variables given fixed values of others. If $W$ and $T$ take binary values, $P(W, T)$ is a 2 by 2 table, $P(W|T)$ is two 2-row tables, each summing to 1.
 
@@ -40,7 +40,7 @@ P(x_1|x_2) &= \frac{P(x_1, x_2)}{P(x_2)} \\
 \end{aligned}
 $$
 
-**Product rule**: 
+**Product rule**:
 $$
 \begin{aligned}
 P(x|y) &= \frac{P(x, y)}{P(y)} \\
@@ -89,9 +89,9 @@ A more general procedure: $P(Y_1, ..., Y_m|e_1, ..., e_k)$ where:
 - $Y_1, ..., Y_m$ are query variables
 - $H_1, ..., H_r$ are hidden variables
 
-These variables can be referred to as $X_1, ..., X_n$
+These variables can be referred to as $X_1, ..., X_n$.
 
-First, select entries consistent with the evidence
+First, select entries consistent with the evidence.
 
 Then, sum out $H$:
 
@@ -174,7 +174,7 @@ D-separation can be used to decide if a set of nodes $X$ is independent of $Y$ g
 
 ### Encoding
 
-BNs implicitly encode joint distributions; this can be calculated as a product of local conditional distributions
+BNs implicitly encode joint distributions; this can be calculated as a product of local conditional distributions.
 
 Example:
 
@@ -223,10 +223,8 @@ $$
 
 (NB: $\sum_H$ means $\sum_{H_1}{\sum_{H_2}{...}}$)
 
-This has to be computed for every value in the domain of $Y$
+This has to be computed for every value in the domain of $Y$.
 
-Answering $P(Y)$: no evidence; all variables except the query are hidden
-
-Answering $P(y|e)$: answer $P(Y|e)$, then pick result for $Y=y$
-
-Answering $P(Y_1=y_1, Y_2=y_2 | e)$: $P(y_1|y_2, e) \cdot P(y_2|e)$
+- Answering $P(Y)$: no evidence; all variables except the query are hidden
+- Answering $P(y|e)$: answer $P(Y|e)$, then pick result for $Y=y$
+- Answering $P(Y_1=y_1, Y_2=y_2 | e)$: $P(y_1|y_2, e) \cdot P(y_2|e)$

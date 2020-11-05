@@ -38,7 +38,7 @@ EER:
 
 ## Relational Data Model
 
-Domain constraint: value must be in their domain
+Domain constraint: value must be in their domain.
 
 Key constraint:
 
@@ -46,9 +46,9 @@ Key constraint:
 - Key: minimal superkey
 - Prime attributes: attributes in any candidate key
 
-Referential integrity constraint: foreign key matches existing primary key of relation, or is null
+Referential integrity constraint: foreign key matches existing primary key of relation, or is null.
 
-Semantic integrity constraint: domain-specific constraints
+Semantic integrity constraint: domain-specific constraints.
 
 ### EER To Relation
 
@@ -99,30 +99,27 @@ From these, the following can be generated:
 
 $F$ covers $G$ if $G^+ \subseteq F^+$. Equivalent if $F$ covers $G$ and $G$ covers $F$.
 
-To test if $F$ covers $G$, for each FD $X \rightarrow Y$ in $G$, check if $Y \subseteq \{X\}_F^+$
+To test if $F$ covers $G$, for each FD $X \rightarrow Y$ in $G$, check if $Y \subseteq \{X\}_F^+$.
 
 #### Minimal Sets
 
-Minimal if RHS of all FDs is a single element and
+Minimal if RHS of all FDs is a single element and:
 
 - Removing any dependency OR
-- Removing any element from the LHS 
+- Removing any element from the LHS
 
 leads to a set that is not equivalent.
 
 ### Normal Forms
 
-If elements can be removed from the RHS, then it is a **partial** FD. Otherwise, it is called a **full** FD
+If elements can be removed from the RHS, then it is a **partial** FD. Otherwise, it is called a **full** FD.
 
 If $X \rightarrow Y$ and $Y \rightarrow Z$, $X \rightarrow Z$ is a **transitive functional dependency**.
 
-1NF: every attribute single and atomic
-
-2NF: every non-prime attribute fully functionally dependent on every key
-
-3NF: LHS superkey OR RHS prime attribute
-
-BCNF: LHS superkey
+- 1NF: every attribute single and atomic
+- 2NF: every non-prime attribute fully functionally dependent on every key
+- 3NF: LHS superkey OR RHS prime attribute
+- BCNF: LHS superkey
 
 ### Minimal Cover Algorithm
 
@@ -162,7 +159,7 @@ for fd in G:
 - Files divided into buckets; function on hash key determines which bucket a record goes in
 - Bucket has pointer to overflow buckets
 
-RAID 0: striping data; 1: mirroring
+RAID 0: striping data; 1: mirroring.
 
 ### Indexing
 
@@ -193,5 +190,4 @@ ACID:
 
 ## Misc.
 
-Materialized evaluation: result of temporary relation stored (e.g. comparing value to max value from nested operation). c.f. pipelined evaluation
-
+Materialized evaluation: result of temporary relation stored (e.g. comparing value to max value from nested operation). c.f. pipelined evaluation.

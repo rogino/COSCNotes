@@ -1,10 +1,10 @@
-# 1. Searching the State Space
+# Weeks 01-02: Searching the State Space
 
 ## State Space
 
-State: object representing a possible configuration of the world (**agent and environment**)
+State: object representing a possible configuration of the world (**agent and environment**).
 
-State space: set of all possible states (cross product of all elements of the state)
+State space: set of all possible states (cross product of all elements of the state).
 
 ## State Space Graphs
 
@@ -14,7 +14,7 @@ State space: set of all possible states (cross product of all elements of the st
 
 ## Directed Graph
 
-Many problems can be abstracted into the problem of finding a path in a directed graphs
+Many problems can be abstracted into the problem of finding a path in a directed graphs.
 
 - Node: state (vertices)
 - Arc: action (edges)
@@ -79,7 +79,7 @@ def search(graph, start_nodes, is_goal_node):
 - Nodes are specified as a set - order does not matter
 - Edges are in a list: (tail, head, cost?) - order does matter
 
-Tracing the frontier
+Tracing the frontier:
 
 - Each line starts with a plus or minus
   - `+` to indicate that this will be added to the frontier
@@ -132,11 +132,11 @@ Prune when:
 - When **adding a path to a frontier** but the end node has **already been expanded**
 - When the **frontier is asked for the path**, but the end node of that path has **already been expanded**
 
-LCFS finds an optimal solution, but it explores options in **every direction**, and knows nothing about the goal location
+LCFS finds an optimal solution, but it explores options in **every direction**, and knows nothing about the goal location.
 
 ## Heuristics
 
-Extra knowledge that can be used to guide a search
+Extra knowledge that can be used to guide a search:
 
 - $h(n)$ is an *estimate* of the cost of the shortest path from a given node $n$ to a goal node
 - **An underestimate (or equal)**: if there is no path to a goal node, any estimate it gives will be an underestimate
@@ -198,14 +198,14 @@ Thus, **$f(n)$ is non-decreasing along any path**.
 
 ## Finding good heuristics
 
-Solve a simpler version of the problem
+Solve a simpler version of the problem:
 
 - Finding admissible heuristics is hard
   - Admissible heuristics are usually consistent. Yay!
 - Inadmissible heuristics are often quite effective, although that sacrifices optimality 
   - Multiplying by some constant is a hacky way of making it admissible
 
-Example: sliding puzzle
+Sliding puzzle example:
 
 - Number of misplaced tiles: admissible as only one tile can move at a time and if *n* tiles are in the wrong spot, it needs at least *n* steps
 - Total Manhattan distance: closer to the actual value, so improves performance

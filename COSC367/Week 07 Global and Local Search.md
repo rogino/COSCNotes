@@ -1,4 +1,4 @@
-# Week 7: Local and Global Search
+# Week 07: Local and Global Search
 
 An optimization problem has:
 
@@ -76,14 +76,16 @@ Given:
 - The current **temperature parameter** is $T$
 
 The probability of adopting the new value is:
+
 $$
 e^{(h(n) - h(n'))/T}
 $$
+
 As temperature gets reduced, the probability of accepting a change decreases.
 
 ## Gradient Descent
 
-Objective function must be (mostly) differentiable
+Objective function must be (mostly) differentiable:
 
 ```python
 def gradient_descent(f, initial_guess):
@@ -168,9 +170,9 @@ Keeps at least one copy of the fittest solution so far for the next generation -
 
 Two parents produce two offspring. 1, 2 or *n* **crossover points** are generated:
 
-One point crossover: child has parent one's chromosomes up until the random cross over point; after that is the other parent's chromosomes
+One point crossover: child has parent one's chromosomes up until the random cross over point; after that is the other parent's chromosomes.
 
-*n* point crossover: at *n* separate points, it swaps from getting chromosomes from one parent to the other
+*n* point crossover: at *n* separate points, it swaps from getting chromosomes from one parent to the other.
 
 #### Mutation
 
@@ -184,9 +186,9 @@ Mutation brings in diversity as compared to combining candidates to (hopefully) 
 - Pick children for that element, either a terminal or non-terminal
 - Repeat
 
-Mutation: pick a random node and replace the subtree with a randomly-generated subtree
+Mutation: pick a random node and replace the subtree with a randomly-generated subtree.
 
-Crossover: pick a random node in each parent and exchange them
+Crossover: pick a random node in each parent and exchange them.
 
 
 

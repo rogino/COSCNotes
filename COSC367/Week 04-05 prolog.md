@@ -1,4 +1,4 @@
-# Prolog
+# Weeks 04-05: Prolog
 
 ## Prolog - *pro*gramming in *log*ic
 
@@ -39,7 +39,7 @@ Variables can be in the knowledge base as well e.g. `jealous(X,Y) :- loves(X,Z),
 
 ### Atoms
 
-A sequence of characters (upper, lower, digits, underscore) starting with a lowercase letter OR a sequence of special characters (`:`, `,`, `;`, `.`, `:-`). Atoms can be enclose in single quotes if it does not meet the naming requirements (e.g. `'Yolanda'`)
+A sequence of characters (upper, lower, digits, underscore) starting with a lowercase letter OR a sequence of special characters (`:`, `,`, `;`, `.`, `:-`). Atoms can be enclose in single quotes if it does not meet the naming requirements (e.g. `'Yolanda'`).
 
 ### Complex terms
 
@@ -55,9 +55,7 @@ Two terms unify if they are the same term or contain variables that can be unifo
 
 e.g. `woman(mia) = woman(mia).` `woman(Z)` and `woman(mia)` will be unified, with `Z` taking the value of `mia`.
 
-`horizontal(line(point(X,Y), point(X,Z))).`
-
-`horizontal(line(point(1,2), point(X,3))).` will give `X=1`.
+e.g. defining `horizontal(line(point(X,Y), point(X,Z))).` and running `horizontal(line(point(1,2), point(X,3))).` will unify to `X=1`.
 
 ### Search Tree
 
@@ -90,7 +88,7 @@ numeral(0).
 numeral(succ(X)):-numeral(X).
 ```
 
-Where `succ(X)` returns `X + 1`: 3 could be defined as `numeral(succ(succ(succ(0)))).` `numeral(X).` will continue going on forever. Beware of running out of memory e.g. `p:-p.`
+Where `succ(X)` returns `X + 1`: 3 could be defined as `numeral(succ(succ(succ(0)))).` `numeral(X).` will continue going on forever. Beware of running out of memory e.g. `p:-p.`.
 
 ### Addition
 
@@ -117,7 +115,7 @@ Character prepended to argument when describing a functor:
 
 ### Logical quantification
 
-Variables that appear in the head of a rule are universally quantified
+Variables that appear in the head of a rule are universally quantified.
 
 Variables that appear only in the body are existentially quantified.
 
@@ -125,7 +123,7 @@ Variables that appear only in the body are existentially quantified.
 
 ## Lists
 
-A finite sequence of elements e.g. `[[], dead(z), [2, [b, c]], Z, 3]`
+A finite sequence of elements e.g. `[[], dead(z), [2, [b, c]], Z, 3]`.
 
 Lists as implemented as linked lists. A non-empty list has two parts:
 
@@ -171,7 +169,7 @@ append([H|L1], L2, [H|L3]) :- append(L1, L2, L3).
 % If L3 is result, first elements of L1 and L3 must be the same. Hence, remove the first element from both L1 and L3 until L1 is empty.
 ```
 
-Concatenating a list is done by traversing down one of the lists; hence, it is inefficient
+Concatenating a list is done by traversing down one of the lists; hence, it is inefficient.
 
 #### Prefix and Suffix
 
@@ -183,7 +181,9 @@ Concatenating a list is done by traversing down one of the lists; hence, it is i
 
 Sublists are prefixes of suffixes of the list:
 
-`sublist(Sub, List) :- suffix(Suffix, List), prefix(Sub, Suffix).`
+```prolog
+sublist(Sub, List) :- suffix(Suffix, List), prefix(Sub, Suffix).
+```
 
 ### Reversing a list
 
@@ -241,7 +241,9 @@ These force the left and right hand arguments to be evaluated.
 
 `!` is the cutback operator - it supresses backtracking. The `fail` predicate always fails. Using these two allows us to invert the result:
 
-`neg(Goal) :- Goal, !, fail.`
+```prolog
+neg(Goal) :- Goal, !, fail.
+```
 
 If `Goal` unifies, it gets to `!` so can never backtrack. Then it gets to `fail` an fails. If the `!` was not there, it would attempt to evaluate `Goal` again.
 

@@ -1,4 +1,4 @@
-# Week 12 Concluding Remarks
+# Week 12: Concluding Remarks
 
 Final Exam:
 

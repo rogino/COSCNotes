@@ -42,7 +42,7 @@ Properties:
   - Hence, one player tries to **maximize** the utility and the other **minimize**
   - **Each level of the tree switches between a max and min node** as the players switch turns
 
-These properties creates adversary
+These properties creates adversary.
 
 #### Optimal Strategy: Min-Max Function
 
@@ -182,9 +182,9 @@ def alpha_beta_search(tree, is_max_node = True, alpha = -inf, beta = inf):
 - Pruning does not affect the final result
 - An entire sub-tree can be pruned
 
-Worst case: if branches are ordered, no pruning takes place
+Worst case: if branches are ordered, no pruning takes place.
 
-Best case: each player's best move is the left-most child/evaluated first
+Best case: each player's best move is the left-most child/evaluated first.
 
 Good move ordering improves effectiveness. Examples:
 
@@ -192,11 +192,11 @@ Good move ordering improves effectiveness. Examples:
 - Expand captures first, then treats, then forward moves etc.
 - Run iterative deepening search, sort by value last iteration
 
-Alpha-beta search often gives us $O(b^\frac{d}{2})$; an improvement over $O(b^d)$ (i.e. take the square root of the branching factor)
+Alpha-beta search often gives us $O(b^\frac{d}{2})$; an improvement over $O(b^d)$ (i.e. take the square root of the branching factor).
 
 #### Static (Heuristic Evaluation) Function
 
-Estimates how good the current board configuration (a non-terminal state) is for a player
+Estimates how good the current board configuration (a non-terminal state) is for a player.
 
 A typical function could evaluate how good the state is for the player subtract the opponent's score. If the board evaluation is $X$ for one player, it is $-X$ for its opponent.
 

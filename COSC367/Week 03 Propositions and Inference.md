@@ -1,4 +1,4 @@
-# Week 2: Propositions and Inference
+# Week 03: Propositions and Inference
 
 ## Simple Language: Propositional Definite Clauses
 
@@ -50,7 +50,7 @@ First, set $c:=\{\}$. Then, select a clause $h \leftarrow \; b_1 \land \cdots \l
 - $b_i \in C \;\forall i$
 - $h \notin C$
 
-Then set $C := C \cup \{h\}$
+Then set $C := C \cup \{h\}$.
 
 Repeat until no more clauses can be selected. (Only atomic clauses can be added to the set at the beginning).
 
@@ -60,7 +60,7 @@ $KB \vdash g$ if $g \in C$ at the end of the procedure.
 
 If there is a $g$ such that $KB \vdash g$ but $KB \nvDash g$, there must be some atoms added to $C$ which aren't true in every model of $KB$. Call the first such atom  $h$.
 
-Thus, there must be clause of the form $h \leftarrow b_2 \land \dots \land b_m$ . As $h$ is the first wrong atom, each $b_i$ must be true in some interpretation $I$. Thus, this clause must be false in $I$; thus, cannot be a model of $KB$. 
+Thus, there must be clause of the form $h \leftarrow b_2 \land \dots \land b_m$ . As $h$ is the first wrong atom, each $b_i$ must be true in some interpretation $I$. Thus, this clause must be false in $I$; thus, cannot be a model of $KB$.
 
 #### Fixed Point
 
@@ -85,7 +85,7 @@ If $I$ is the interpretation in which every element of the fixed point is true, 
 
 Search backwards from a query to determine if it is a logical consequence of $KB$ (i.e. asking if an atom is true).
 
-An **answer clause**: $yes \leftarrow a_1 \land \dots \land a_m$
+An **answer clause**: $yes \leftarrow a_1 \land \dots \land a_m$.
 
 The **SLD resolution** of the answer clause on atom $a_i$ with the clause $a_i \leftarrow b_1 \land \dots \land b_p$ is another answer clause:
 
@@ -93,9 +93,9 @@ $$
 yes \leftarrow \; a_1 \land \dots \land a_{i-1} \land b_1 \land \dots \land b_p \land a_{i+1} \land \dots \land a_m
 $$
 
-Basically: replace the atom with its clause, repeating until no more replacements can be made
+Basically: replace the atom with its clause, repeating until no more replacements can be made.
 
-An **answer** is an answer clause $m=0$ with $m=0$; that is, the answer clause is $yes \leftarrow$
+An **answer** is an answer clause $m=0$ with $m=0$; that is, the answer clause is $yes \leftarrow$.
 
 ### Derivations
 
@@ -118,6 +118,6 @@ To solve the query $? q_1 \land \dots \land q_k$:
 
 Either **don't-care non-determinism**, in which case if a selection does not lead to a solution, there is no point in trying other alternatives, or **don't-know-non-determinism**, in which other choices may lead to a solution.
 
-A successful derivation would return  $ac := yes$
+A successful derivation would return  $ac := yes$.
 
 A failing derivation would return something in the form $ac := yes \leftarrow a_0 \land \dots \land a_n$. This does not mean it cannot be derived, just that it failed. Use DFS; backtrack.

@@ -1,4 +1,4 @@
-# Week 9: Basic Machine Learning
+# Week 09: Basic Machine Learning
 
 Learning: improving behaviour based experience. This could be:
 
@@ -70,9 +70,9 @@ Where:
 - $P(X_i | C)$: likelihood conditional distributions
 - $P(C | X_1, ..., X_n)$: posterior distribution
 
-Conditional probabilities can be estimated from labelled data
+Conditional probabilities can be estimated from labelled data.
 
-Find $P(Class | an\_input\_vector)$ for different classes and **pick the class with the highest probability**
+Find $P(Class | an\_input\_vector)$ for different classes and **pick the class with the highest probability**.
 
 Problem: hard to learn $P(Class | Evidence)$ as there needs to be **examples for every possible assignment**. As the number of features increases, the number of assignments grows exponentially.
 
@@ -96,9 +96,9 @@ To calculate $\alpha$, calculate the sum of $P(Class | Hist, BG, BMI)$ for all v
 
 ### Laplace Smoothing
 
-Zero counts in small data sets lead to zero probabilities - this is too strong a claim based on only a sample. 
+Zero counts in small data sets lead to zero probabilities - this is too strong a claim based on only a sample.
 
-To fix this, add a **non-negative pseudo-count** to the counts - this can **reduce the confidence**
+To fix this, add a **non-negative pseudo-count** to the counts - this can **reduce the confidence**.
 
 $domain(A)$ is the set of values $A$ can take; $|domain(A)|$ is the number of values $A$ can take
 
@@ -119,7 +119,7 @@ $$
 P(A=a | B=b) \approx \frac{count(A=a | B=b) + pseudo\_count}{count(B=b) + pseudo\_count \cdot |domain(A)|}
 $$
 
-The greater the pseudo-count is, the closer the probabilities will even out (closer to $\frac{1}{|domain(A)|}$)
+The greater the pseudo-count is, the closer the probabilities will even out (closer to $\frac{1}{|domain(A)|}$).
 
 ### Parametric vs Non-Parametric Models
 
@@ -139,7 +139,7 @@ An example of a instance-based learning algorithm is *k*-nearest neighbours:
 - A distance function is used to compare similarity (e.g. Euclidean or Manhattan distance)
 - If the distance function is changed, how examples are classified changes
 
-Training only requires storing all the examples
+Training only requires storing all the examples.
 
 Prediction: $H(x_new)$:
 
