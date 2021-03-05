@@ -31,6 +31,7 @@ When map is called, every key-value pair is passed to a map lambda which outputs
 
 - `groupByKey`: combines all key-value pairs with the same key into an array
 - `reduceByKey` is used to summarize the values for a particular key
+  - Passed two values and return the reduced value
 
 ### Example: Word Counting
 
@@ -65,7 +66,9 @@ Actions generate **a local data structure at the driver**:
 Returns a **reference to a new RDD**:
 
 - Single RDD as input: `map`, `flatMap`, `filter` etc.
-- Joins; multiple RDDs as input: `union`, `difference` etc.
+- Joins; multiple RDDs as input
+  - `sc.union`: simply adds all key-value pairs from all passed RDDs (duplicate keys are allowed)
+  - `rdd_1.join(rdd_2)`: for keys present in both RDDs, value becomes tuple of values from both RDDs: `(key, (val_1, val_2))`. See also `subtract`, `intersection`, `union` from set theory.
 
 #### Coordination
 
@@ -95,7 +98,9 @@ If the master fails, the task is aborted and the client is notified.
 
 `takeOrdered(n, sortFunction)` may be used if it is not already sorted or if the RDD is already in a particular order. `takeOrdered` is much faster than running `sort()` and then `take()`.
 
-`countByValue` returns the count of each key: see the word count example.
+`countByValue` returns the count of each key: see the word count example. Returns a Python dictionary, not an RDD.
+
+`lookup(key)` returns the value for a given key in an RDD.
 
 Reduction functions must be **associative/commutative**; otherwise, the results will be wrong and non-deterministic.
 
