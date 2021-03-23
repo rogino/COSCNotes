@@ -4,21 +4,33 @@
 - URL: Uniform Resource Locator; URI + access mechanism (e.g. HTTP)
 - scheme://user:password@host:port/path?query#fragment
 
-HTTP request:
-
 ```
+// REQUEST
 {METHOD_NAME} {URL} HTTP/{VERSION}
-{HEADER_NAME}: {HEADER_VALUE}
 
-Example: Set-cookie: {NAME}={VALUE}; Expires={DATE}
+//RESPONSE
+HTTP/{VERSION} {STATUS_CODE} {STATUS_DESCRIPTION}
+
+// HEADERS
+{HEADER_NAME}: {HEADER_VALUE}
+// EXAMPLE
+Set-cookie: {NAME}={VALUE}; Expires={DATE}
 
 {BODY}
 ```
 
 - 1xx: info
 - 2xx: success
+  - 200: okay
+  - 201: created
 - 3xx: redirection
+  - 301: permanent redirect
+  - 307: temporary redirect
 - 4xx: client error
+  - 400: bad request
+  - 401: unauthorized
+  - 403: forbidden
+  - 404: not found
 - 5xx: server error
 
 Body:
