@@ -108,15 +108,18 @@ To solve this, simply teleport: with probability $1 - \beta$, teleport out to so
 
 The equation:
 $$
-r_j = \sum_{i\rightarrow j}{\Beta \frac{r_i}{d_i}} + (1-\beta) \left[\frac{1}{N}\right]_{N\times N}
+r_j = \sum_{i \rightarrow j}{\Beta \frac{r_i}{d_i}} + (1-\beta) \left[\frac{1}{N}\right]_{N \times N}
 $$
 
-Where $\left[\frac{1}{N}\right]_{N\times N}$ is a $N$ by $N$ matrix where all entries are $1/N$.
+Where $\left[\frac{1}{N}\right]_{N\times N}$ is a $N$ by $N$ matrix where all entries are $1/N$ - this represents the probability of a random teleport.
 
 The matrix:
 $$
 A = \beta M + (1 - \beta)\left[\frac{1}{N}\right]_{N\times N}
 $$
+
+Where $\beta$ is $0.8$ to $0.9$.
+
 The recursive problem:
 $$
 r = A \cdot r
