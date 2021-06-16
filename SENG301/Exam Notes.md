@@ -121,10 +121,10 @@ Tracking:
 
 - Sprint burn-down chart
 - Alternative release burn-down chart
-  - To predict number of sprints until release - bar chart with bar for each sprint.
-  - Scope likely to increase each sprint.
-  - Top of each bar = initial story points (for release) - story points completed towards release
-  - Bottom of each bar = added scope
+  - To predict number of sprints until release - bar chart with bar for each sprint
+  - Scope likely to increase each sprint
+  - Height from origin to top of each bar = initial story points (for release) - story points completed towards release
+  - Height from bottom of bar to origin = total added scope
   - Release likely when lines connecting top and bottom of bars meet
 - Interference: hours spent/sprint on unplanned tasks - should not go up
 - Remedial focus chart:
