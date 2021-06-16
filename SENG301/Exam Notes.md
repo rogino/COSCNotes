@@ -76,6 +76,17 @@ Initial startup:
   - Communication
   - 'ready' and 'done'
 
+Backlog:
+
+- Product
+  - Prioritized, but order can change
+  - No tasks
+  - May have estimates
+- Sprint
+  - Ordered
+  - Only high-priority items can modify the sprint backlog
+  - Must have estimates, tasks
+
 ##### Process
 
 Before SP:
@@ -115,8 +126,12 @@ Tracking:
   - Top of each bar = initial story points (for release) - story points completed towards release
   - Bottom of each bar = added scope
   - Release likely when lines connecting top and bottom of bars meet
-- Interference: hours spent/sprint on admin (e.g. email, meetings) should not go up
-- Velocity: story points/sprint. Scope changes should trend towards zero
+- Interference: hours spent/sprint on unplanned tasks - should not go up
+- Remedial focus chart:
+  - Velocity: story points completed/sprint
+  - Scope changes should be in a different color
+  - Scope changes should trend towards zero
+  - Total height should not go down; likely means code quality is bad
 
 Misc:
 
@@ -139,6 +154,8 @@ Retro. Discuss:
 - Action items:
   - Bubble method: list issues alone, pair with team member, discuss, repeat
   - Circle method: list items, sorted good to bad. Group related items together
+- SM decides on action items to take on in the next sprint
+- Follow up on items frequently e.g. stand-ups
 
 Smells:
 
@@ -192,11 +209,12 @@ OR:
 ###### INVEST
 
 - Independent: tasks can be done in any order
-- Negotiable: with PO
+- Negotiable: with PO; high-level enough that dev team has some freedom with what to do and discuss experiments with PO
 - Valuable: to customer e.g. frame database-layer work in terms of value to the customer
 - Estimable: good enough to allow PO to schedule/prioritize. Possibly have spike at start to estimate
 - Small: big tasks hard to estimate
 - Testable: ACs clear enough to write tests for
+  - Alternative: feature is deterministic
 
 #### Kanban
 
@@ -265,7 +283,7 @@ Unit testing:
 - Test every feature
   - Identify edge cases, domain boundaries
 - Code should be self-sufficient
-- Prevent misuse of methods (TODO contracts?):
+- Prevent misuse of methods
   - Asserts
     - Incoming values
     - Invariants
@@ -312,10 +330,10 @@ Working as designed: specifications may be wrong (not what the user wants) or er
 Improving reliability:
 
 - Fault avoidance: good design, process, tools
-  - Visibility: need-to-know principle
+  - **Visibility**: need-to-know principle
   - Capture exceptions to prevent system failures
   - Erring: avoiding or encapsulating dangerous constructs (e.g. untyped variables)
-- Detection: testing and debugging, validation
+- Detection: testing and debugging, **validation** (boundaries, input values)
   - Assert statements
 - Fault tolerance
   - Protection systems that monitor the rest of the system
@@ -325,6 +343,7 @@ Improving reliability:
     - Multiple dev teams
     - Voting systems
   - Recoverable milestones
+  - Constants: clearer code, compile-time verification
 
 4 Rs:
 
@@ -545,6 +564,7 @@ Prototype: limited functional implementation (e.g. mocking) but with a functioni
       - Don't use 'obviously'/'clearly'
       - Be clear - assume low-context culture
     - If code needs to be explained by author, it probably needs to be rewritten to be more clear
+    - Code reviewer has power. If abused, can lead to current contributors to become de-motivated and scares away new contributors. Leads to fewer, less diverse set of contributors and slower progress on the code front
 18. Writing Pull Requests
     - Plan the change
       - Talk to others - gives them context and allows solutions to be brainstormed
@@ -606,8 +626,9 @@ Composition over Inheritance:
 - Avoid inheritance for:
   - 'is a role of': store role in a separate object (and maybe have a list of roles)
   - 'becomes'
+    - Inheritance isn't dynamic; changing class when some trivial detail changes is not great
   - Changing the superclass contract
-  - *If it can change, it isn't inheritance*
+  - *If it can change, it ain't inheritance*
 - Inheritance should be for 'is a' relationship
 - Composition hides implementation details
 
@@ -619,6 +640,47 @@ SOLID:
   - Every module/class should have responsibility over one part of the functionality (and should be fully encapsulated)
   - Bigger = more reasons to change, bigger blast radius when changes are made
 - Open-closed: make your system open for extension, closed for modification
-- Liskov-substitution principle: subclasses inherit contracts
-- I
+- Liskov-substitution principle: behaviour shouldn't change depending on subclass
+- Interface-Segregation Principle: clients shouldn't need to depend on methods/interfaces they don't use
+  - Split interfaces into smaller, more cohesive interfaces
+  - e.g. class implementing interface having lots of `UnsupportedOperationException`s
 - Dependency-inversion: big things should not rely on little things (and vice-versa) - depend on abstractions instead
+  - New is glue
+
+## Design Patterns
+
+A **solution** to a **problem** in a **context**. They are:
+
+- Distilled wisdom about a specific problem
+- A reusable design micro-architecture
+
+Defining a pattern:
+
+- Empirical evidence
+  - Rule of 3: at least three independent usages before calling it a pattern
+- Comparison with other solutions
+- Independent authorship
+- Reviewed by pattern/domain experts
+
+Documenting:
+
+- Name
+- Intent: a brief synopsis
+- Motivation: context of the problem
+- Applicability: circumstances under which the pattern applies
+- Structure: class diagram of solution
+- **Participants**: explanation of classes/objects and their roles
+- Collaboration: explanation of how classes/objects cooperate
+- Consequences: impact, benefits, liabilities
+- Implementations: techniques, traps, language-dependent issues
+- Sample code
+- Known uses: well-known systems already using the pattern
+
+Documenting instances:
+
+- Map each participant in the GoF pattern to its corresponding element
+- Interface/abstract
+- Concrete
+- Association
+- Name
+- Intent
