@@ -208,8 +208,11 @@ OR:
 
 ###### INVEST
 
-- Independent: tasks can be done in any order
-- Negotiable: with PO; high-level enough that dev team has some freedom with what to do and discuss experiments with PO
+- Independent:
+  - Tasks can be done in any order
+  - No overlap between stories; features not implemented twice
+  - Mock features if necessary
+- Negotiable: with PO; high-level enough that dev team has freedom to discuss details with PO
 - Valuable: to customer e.g. frame database-layer work in terms of value to the customer
 - Estimable: good enough to allow PO to schedule/prioritize. Possibly have spike at start to estimate
 - Small: big tasks hard to estimate
@@ -333,7 +336,7 @@ Improving reliability:
   - **Visibility**: need-to-know principle
   - Capture exceptions to prevent system failures
   - Erring: avoiding or encapsulating dangerous constructs (e.g. untyped variables)
-- Detection: testing and debugging, **validation** (boundaries, input values)
+- Fault Detection: testing and debugging, **validation** (boundaries, input values)
   - Assert statements
 - Fault tolerance
   - Protection systems that monitor the rest of the system
@@ -345,12 +348,18 @@ Improving reliability:
   - Recoverable milestones
   - Constants: clearer code, compile-time verification
 
-4 Rs:
+4 Rs for Resilience Engineering:
 
 - Recognition of how resources may be attacked
 - Resistance: strategies to resist threats
 - Recovery: data, software, hardware recovery procedures
-- Reinstatements: process of bringing the system back
+- Reinstatement: process of bringing the system back
+
+Security:
+
+- Avoidance: avoid storing sensitive data in plain text
+- Detection: monitor for possible system attacks
+- Recovery: backup, deployment, insurance
 
 ## CI/CD
 
