@@ -1,6 +1,4 @@
-# Exam Notes
-
-[Past Papers Google Doc](https://docs.google.com/document/d/1rQk0n1WkfACXvxLPkhN4qGVoCxaKivnxtAZhXiBxV50/edit?fbclid=IwAR3tdVjC7hZbJ2-WHHm58UfUTMcVZFpxz8JgCuG2iasEGDDxQUYXa_UXHNY)
+# Exam Notes (01-13)
 
 ## Methodologies
 
