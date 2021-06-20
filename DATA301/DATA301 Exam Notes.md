@@ -388,3 +388,99 @@ Where $t$ is the Jaccard similarity.
 The shape of the curve can be modified by picking the values of $r$ and $b$ for a given $s$ (threshold for document similarity), dependent on how many false positives and negatives you are willing to get.
 
 Note that this outputs **candidate pairs** and so a proper Jaccard similarity calculation should be doe to confirm their similarity.
+
+## PageRank
+
+More in-links = page is more important.
+
+In-links from important page = link worth more.
+
+Page's importance split between its out-links:
+
+- If a page $j$ with importance $r_j$ has $n$ out-links, each link gets $r_j/n$ votes
+
+### Flow Model
+
+Start with base-model which uses the number of in-links for page importance.
+
+Page rank, $r$ given by:
+
+$$
+r_j = \sum_{i \rightarrow j}\frac{r_i}{d_i}
+$$
+
+Where $d_i$ is the out-degree of $i$.
+
+Under this current implementation there is no unique solution. Hence, a constraint is added: the sum of page ranks sums to $1$. However, Gaussian elimination does not work well in large graphs.
+
+#### Matrix Formulation
+
+Matrix $M$ is a square matrix where for each row $j$, column $i$ ($M_{ji}$) is $1/d_i$ if there is a in-link from $i$ to $j$.
+
+$$
+M_{ji} =
+\begin{cases}
+  \frac{1}{d_i}, & i \rightarrow j\\
+  0            , & \textrm{otherwise}
+\end{cases}
+$$
+
+$M$ is an column stochastic adjacency matrix; columns sum to 1.
+
+The rank vector $r$ stores the page importance, $r_i$ being the importance of page $i$.
+
+The importance of all pages sum to $1$:
+
+$$
+\sum_i{r_i} = 1
+$$
+
+At time $0$, the importance of each page can be set to $1/n$, $n$ being the number of pages.
+
+At time $t$, the importance of page $r_j$ for time $t + 1$ can be calculated as:
+
+$$
+r_j = \sum_{i \rightarrow j}{\frac{r_i}{d_i}}
+$$
+
+Hence, for the entire rank vector:
+
+$$
+r = M \cdot r
+$$
+
+If enough iterations are done and the Markov chain is **strongly connected** (every state accessible from any state), the **stationary distribution** will be unique and be reached regardless of the initial probability distribution.
+
+#### Random Walk Interpretation
+
+Model it as having a 'surfer' on some page $i$ at time $t$, following a random out-link on the page at random at time $t + 1$.
+
+$p(t)$ is a vector where $p(t)_i$ is the probability of the surfer being on page $i$ at time $t$.
+
+#### Teleports
+
+Dead ends: some pages have no out-links. Random walker gets stuck and importance of page increases.
+
+Spider-traps: all out-links within a group; all importance eventually absorbed by the trap.
+
+Solution to both solutions (and to graph not being strongly connected): teleport to a random page with probability $1 - \beta$ where $\beta \approx 0.8-0.9$.
+
+This leads us to the actual equations.
+
+If $N$ is the number of of pages, $r_j$ is given by:
+$$
+r_j = \frac{1 - \beta}{N} + \beta \sum_{i \rightarrow j}{\frac{r_i}{d_i}}
+$$
+
+The first term is from the page the walker is currently on teleporting (with probability $1 - \beta$) to page $j$ (probability $1/N$). The multiplication by $\beta$ in the second term reflects that fact the the walker can only reach $j$ from an out-link $\beta$ of the time.
+
+If $\left[\frac{1}{N}\right]_{N\times N}$ is a $N$ by $N$ matrix where all entries are $1/N$ :
+$$
+A = \beta M + (1 - \beta)\left[\frac{1}{N}\right]_{N\times N}
+$$
+
+PageRank can then be applied iteratively using:
+
+$$
+r = A \cdot r
+$$
