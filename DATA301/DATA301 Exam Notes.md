@@ -279,15 +279,42 @@ If set $I$ appears as least $s$ times, every subset $J$  must also appear at lea
 
 Finding neighbours in a high-dimensional space.
 
-Given vector of data-points (possibly a flattened matrix) and a distance function $d(x_1, x_2)$, find all points closer than some threshold $s$.
+Problem: given vector of data-points (possibly a flattened matrix) and a distance function $d(x_1, x_2)$, find all points closer than some threshold $s$.
 
 ### Distance Measures
+
+Axioms:
 
 - Greater than zero, unless points are the same
 - Commutative: $d(x, y) = d(y, x)$
 - Triangle inequality: direct path never longer
 
-### Jaccard Distance
+#### Cosine Distance
+
+$$
+p_1 \cdot p_2 = |p_1||p_2| \cdot cos(\theta)
+$$
+
+Hence cosine distance is:
+
+$$
+d(p_1, p_2) = cos^{-1}\left(\frac
+    {p_1 \cdot p_2}
+    {|p_1||p_2|}
+\right)
+$$
+
+#### L_2 Norm/Euclidean Distance
+
+Root of sum of squares of differences. If the vectors have $n$ dimensions:
+
+$$
+d(x, y) = \sqrt{\sum_{i=1}^{n}{(x^2 - y^2)}}
+$$
+
+#### Jaccard Distance
+
+For sets - dimensions are Boolean values.
 
 Jaccard Similarity:
 
@@ -303,25 +330,61 @@ $$
 d(C_1, C_2) = 1 - \textrm{sim}(C_1, C_2)
 $$
 
-### Cosine Distance
+Jaccard bag similarity:
+
+- Duplicates not removed; if element appears multiple times, count it multiple times
+- Divide number of pairs in intersection by sum of sizes of the two sets
+- Max similarity of $0.5$
+
+### Finding Similar Documents
+
+$O(n)$ approach to finding similar documents.
+
+#### Shingling
+
+A $k$-shingle is any sequence of length $k$ of tokens (character, words) appearing in a document.
+
+The shingles are sets, not bags, so there should be no repeated shingles within the set of shingles.
+
+Pick $k$ such that the probability of any one shingle appearing in any particular document is low - if it is too small, it is likely to appear in most documents. Values of 5-10 are good starting points.
+#### Hashing
+
+Out of the domain of all possible shingles, only a small subset are likely to appear.
+
+Hence, hashing can be used to map shingles to a bucket via a hash function with a smaller range (and hence require less memory). A bucket may contain multiple shingles.
+
+With this, a document can be represented as a Boolean vector - one Boolean for every bucket (element in the hash range), true if the document contains a shingle in the bucket.
+
+Hence, a set of documents can be represented as a matrix, rows being buckets and columns documents.
+
+Since most documents are unlikely to contain most shingles, store this as an sparse matrix.
+
+#### Min-Hashing
+
+If a permutation of rows is picked, the min-hash of the document is the first element that is true (e.g. if permutation is $2, 1, 0$ and document is $<1, 1, 0>$, output is $1$).
+
+If this is done with $n$ permutations, each document can be mapped to a $n$-wide vector - the document **signature**.
+
+This can be done to every document to get a signature matrix.
+
+The probability of two sets having the same min-hash value is the Jaccard similarity.
+
+#### Locality-Sensitive Hashing
+
+The signature matrix can be partitioned into $b$ bands of $r$ rows each (splitting the document signature).
+
+For each band, group documents into the same bucket if their signatures are the same for that band.
+
+With min-hashes, the probability of two documents sharing a bucket grows linearly with their Jaccard similarity.
+
+With $b$ bands of $r$ rows, this becomes:
 
 $$
-p_1 \cdot p_2 = |p_1||p_2| \cdot cos(\theta)
+P(\textrm{bucket shared}) = 1 - (1 - t^r)^b
 $$
 
-Hence cosine distance is:
+Where $t$ is the Jaccard similarity.
 
-$$
-d(p_1, p_2) = cos^{-1}\left(\frac
-    {p_1 \cdot p_2}
-    {|p_1||p_2|}
-\right)
-$$
+The shape of the curve can be modified by picking the values of $r$ and $b$ for a given $s$ (threshold for document similarity), dependent on how many false positives and negatives you are willing to get.
 
-### L_2 Norm/Euclidean Distance
-
-Root of sum of squares of differences. If the vectors have $n$ dimensions:
-
-$$
-d(x, y) = \sqrt{\sum_{i=1}^{n}{(x^2 - y^2)}}
-$$
+Note that this outputs **candidate pairs** and so a proper Jaccard similarity calculation should be doe to confirm their similarity.
