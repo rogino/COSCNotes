@@ -316,7 +316,7 @@ $$
 
 For sets - dimensions are Boolean values.
 
-Jaccard Similarity:
+Jaccard similarity:
 
 $$
 \textrm{sim}(C_1, C_2) =
@@ -324,7 +324,7 @@ $$
      {\left| C_1 \cup C_2 \right|}
 $$
 
-Jaccard Distance:
+Jaccard distance:
 
 $$
 d(C_1, C_2) = 1 - \textrm{sim}(C_1, C_2)
@@ -484,3 +484,125 @@ PageRank can then be applied iteratively using:
 $$
 r = A \cdot r
 $$
+
+#### Performance
+
+The matrix, if encoded as sparse matrix, will fit on disk but not memory.
+
+Store a list of page IDs, the out-degree of the page, and the IDs of out-links from that page.
+
+Assume the vector does fit in memory.
+
+- Initialize all entries of $r_\textrm{new}$ to $(1 - \beta)/N$.
+- For each page $i$:
+  - For each out-link $j = 1, ..., d_i$:
+    - $r_\textrm{new}(\textrm{out-page}_j) \mathrel{{+}{=}}  \beta \cdot r_\textrm{old}(i)/d_i$
+
+Lots of random writes.
+
+#### Topic-Specific PageRank
+
+Teleports only go to page relevant to a topic - this leads to a different vector $r_S$ for each teleport set $S$.
+
+#### Spam
+
+Issue 1: **term spam** - add relevant keywords to the page (visible only to the search engine), and/or copy text from top results.
+
+Solution 1: statistical text analysis, duplicate page detection
+
+Solution 2: use text content of the in-links and surrounding text - trust what others say about you, know what you say.
+
+Issue 1: the internet banding together for jokes
+
+Issue 2: **spam farms** - spammer link to target page from popular websites they have some access to (e.g. forums) and from sites they fully control (which the target page links to).
+
+Solution 1: detecting and blacklisting spam farm-like structures.
+
+Solution 2: **TrustRank** - topic-specific PageRank with a manually-selected set of trusted pages. Uses **approximate isolation** - trusted sites unlikely to link to untrustworthy sites.
+
+## Recommendation Systems
+
+Utility matrix - rows are users, columns are things they have 'rated' (e.g. movies).
+
+Need to:
+
+- Gather known ratings
+- Extrapolate unknown ratings
+- Evaluate performance
+
+### Content-Based Recommendations
+
+Recommend items similar to what the customer has previously liked.
+
+### Collaborative Filtering
+
+Find a set of users $N$ whose ratings are 'similar' to the target user $x$ and extrapolate $x$'s ratings based on those in $N$.
+
+Issues:
+
+- Cold start: need lots of users
+- Sparsity: content catalog may be large and hence have few users that have rated the same items
+- First rater: need ratings for the item before it can be recommended
+- Popularity bias: tends to recommend popular items
+
+### Community Detection
+
+#### Girvan-Newman
+
+**Edge betweenness**:
+
+- Number of shortest paths going through an edge
+- If two nodes have $n$ shortest paths, each is counted as $1/n$
+
+Girvan-Newman decomposes undirected, unweighted networks into a hierarchical network using the **strength of weak ties** - if the edge betweenness is large, it is probably at the border between communities and hence should be removed. The order in which the network is split determines the hierarchy.
+
+##### Part 1
+
+Pick starting node $A$ and run BFS; compute number of shortest paths (number of hops) to every other node.
+
+Parent nodes are nodes one hop closer to $A$ it has an edge with; the sum of the parents' values (number of shortest paths) is the node's value.
+
+##### Part 2
+
+Betweenness can be calculated by working up the tree from the leaf nodes:
+
+- Each leaf has a node flow of $1$
+- Each node splits its node flow among its parents - the edge betweenness:
+  - Edge betweenness is proportional to the number of shortest paths the parent has
+- Each non-leaf node has a flow of $1$ plus the sum of edge betweenness from edges to its children
+
+This process has a complexity of $O(mn)$ ($m$ = edges, $n$ = nodes)
+
+This can be repeated with every starting node, summing betweenness values and then dividing by $2$ (paths are counted from both ends).
+
+A random subset of starting nodes can be used to get an approximation.
+
+The edge with the greatest betweenness is removed, and the process is repeated until there are no edges left.
+
+### Network Communities
+
+Girvan-Newman decomposes the network into clusters, but how many clusters should there be?
+
+Community: sets of tightly connected nodes.
+
+#### Modularity
+
+Modularity, $Q$, is a measure of how well the network is partitioned. Given a partitioning of the graph $G$ into groups $s \in S$:
+
+$$
+Q \propto \sum_{s \in S}{
+  \textrm{number of edges in } s -
+  \textrm{expected number of edges in } s}
+$$
+
+$$
+Q(G, S) = \frac{1}{2m} \sum_{s\in S}{\sum_{i \in s}{\sum_{j\in s}{A_{ij} - \frac{k_i k_j}{2m}}}}
+$$
+
+Where $A_{ij} = 1$ if there is a edge $i \rightarrow j$, and $0$ otherwise.
+
+$Q$ is normalized such that $-1 \lt Q \lt 1$.
+
+A positive value means the number of edges in $s$ is greater than expected: around $0.3$ to $0.7$ means significant community structure.
+
+In nice cases, the modularity will have a maxima.
