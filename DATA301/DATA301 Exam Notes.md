@@ -90,7 +90,7 @@ Vector does not fit in memory:
 
 Matrix-matrix multiplication: matrix-vector multiplication, but repeated for each column of the second matrix.
 
-#### Method Examples
+#### PySpark Methods
 
 ```python
 # INPUT
@@ -606,3 +606,226 @@ $Q$ is normalized such that $-1 \lt Q \lt 1$.
 A positive value means the number of edges in $s$ is greater than expected: around $0.3$ to $0.7$ means significant community structure.
 
 In nice cases, the modularity will have a maxima.
+
+### K-means
+
+If there are no predefined or direct connections (e.g. helicopters can fly to anywhere) in some high-dimensional space, clustering can be done using some distance metric.
+
+Instead of **hierarchical** clustering (like with Girvan-Newman which has a top-down/divisive approach) we can use **point assignment**; points belong to the nearest clusters.
+
+Pick some number of clusters $k$ and pick a centroid for each cluster, preferably far away from each other.
+
+For each element, place it in the cluster whose centroid it is nearest too, then update the centroid using the average point of all elements in the centroid.
+
+Repeat until it converges.
+
+## Online Algorithms
+
+Algorithm given to input one piece at a time and must make irrevocable decisions.
+
+### Bipartite Matching
+
+Two sets of vertices (e.g. advertisements and queries), elements from one set can only be paired with a subset of the other, and elements can only be picked once.
+
+Problem: match each element from one set to an eligible element from the other set.
+
+Competitive ratio: worst performance over all possible inputs.
+
+$$
+\textrm{competitive ratio} = min_\textrm{all inputs}\frac
+  {\left|M_\textrm{greedy}|\right}
+  {\left|M_\textrm{optimal}|\right}
+$$
+
+### AdWords
+
+Performance-based advertising; charged only if ad clicked.
+
+Use **expected revenue per click**: bid times the click-through rate.
+
+Advertisers have a daily budget, and the CTR is calculated from historical data - **exploration vs exploitation**; show a new ad to estimate CTR or show ad with good known CTR?
+
+Assume one ad/query, all advertisers have the same budget $B$ and ads have the same CTR and bid ($1$).
+
+Greedy: $0.5$
+
+BALANCE: pick advertiser with the largest unspent budget, breaking ties via some deterministic way. $0.75$ with two advertisers.
+
+## Parallel Computing
+
+Clock speeds haven't gone up significantly in years; better performance requires optimizations by the program.
+
+### Types of Parallelism
+
+Data Dependence Graph: directed acyclic graph, vertices being tasks and edges dependencies.
+
+Critical path: slowest path.
+
+If two tasks are independent of each other, they can be done in parallel.
+
+**Data Parallelism**: same operation executed on different elements simultaneously (or out-of-order).
+
+**Functional parallelism**: independent tasks can apply different operations to different data elements simultaneously (or out-of-order).
+
+**Pipelining**: dividing process into stages to produce items simultaneously.
+
+### Instruction-Level Parallelism
+
+Dependencies: if two instructions data-dependent, they cannot be executed simultaneously.
+
+Hazard and stall may or may not occur, depending on pipeline organization.
+
+**Data forwarding**: store instruction in register if another instruction will use it soon.
+
+Out-of-order execution complicated as some instructions take more clock cycles to complete (e.g. FP).
+
+**Out-of-order pipeline**: pool up instructions, schedule them, execute them out-of-order, then commit in-order.
+
+Approx. one order of magnitude improvement from these tricks.
+
+**Flynn's Taxonomy**:
+
+- SISD: standard programming
+- SIMD: vector instructions, GPUs
+- MISD: �
+- MIMD: multi-core processors
+
+Memory hierarchy: registers, L1/L2/L3 cache, RAM, secondary/permanent storage. Trade-off between size and speed will always exist as it will be limited by physical distance to the CPU.
+
+### Threads and Processes
+
+**Memory Model**:
+
+- Distributed memory model: each process has its own separate area of memory, explicit data transfer required
+- Shared memory model: implicit data sharing, own private area
+
+Multi-threaded process: **shared code + data**, kernel context, each thread has its own stack and context (registers etc.).
+
+Concurrency can be simulated via **time slicing**. Multi-core processors can have true concurrency.
+
+Two threads **logically concurrent** if their flows overlap in time - life of one thread (in terms of time) overlaps with another.
+
+Threads and processes:
+
+- Context switching requires register values to be swapped; ~1K cycles for both threads and processes
+- Creating and destroying threads cheaper than with processes
+- Sharing data (too) easy with threads
+
+Memory consistency with threads: the only constraint is that instructions **within your own thread appear to run in-order** - no guarantee of sequential consistency with other threads.
+
+Hyperthreading - replicates enough instruction-control hardware to process multiple instruction streams (but not the functional units - ALU etc.).
+
+Vectorization: applying the same operation to multiple pieces of data
+
+- More communication = shared memory/threads
+- More computation = distributed memory
+- More expensive algorithm = vectorized operations
+
+### Python MPI
+
+Multiple processes - distributed memory model.
+
+#### Problem Decomposition
+
+Large data sets split into small tasks; assume there needs to be communication between neighbouring regions.
+
+Blocks: each task given vertical slice of height $n$. $2n$ items need to be communicated at each boundary.
+
+Cyclic: each task given $m$ vertical slices of size $n$; $2mn$ items communicated per task. Benefit is that only one cycle worth of information has to be in memory at a time, allowing check-pointing. Also allows load-balancing as some areas may require less computation - the slicing is likely to split this expensive area across multiple tasks.
+
+Partitioning can also be done in multiple dimensions (e.g. sliced vertically and horizontally).
+
+Can also use **domain decomposition**: master task responsible for decomposition/assignment may decompose areas that are more expensive or require high accuracy further.
+
+#### MPI Methods
+
+```python
+from mpi4py import MPI
+import numpy
+
+comm = MPI.COMM_WORLD
+size = comm.Get_size() # number of processes connected to the world
+rank = comm.Get_rank() # process identifier. Starts at 0
+
+data_to_send = numpy.zeros(1) # data must map to a byte buffer 
+var_to_overwrite = numpy.zeros(4) # receive buffer can be bigger
+
+comm.Send(data_to_send     , dest=${process_to_send_to})
+comm.Recv(var_to_overwrite, dest=${process_to_receive_to})
+
+# Non-blocking
+req = comm.Isend(data_to_send, dest=RANK)
+# or
+req = comm.Irecv(var_to_overwrite, source=RANK)
+req.Wait()
+
+# Receiving from any source
+# use `status.source` to get source process rank
+status = MPI.Status()
+comm.Recv(var_to_overwrite, source=MPI.ANY_SOURCE, status=status)
+
+# Use probe to modify variable to write to depending on source rank
+comm.Probe(source=MPI.ANY_SOURCE, status=status)
+
+
+# Collective operations
+# Force processes to wait until all processes reach this point
+comm.Barrier()
+
+# For each element of the array, process 0 gets max value out of any process
+comm.Reduce(in_arr, out_arr, op=MPI.MAX, root=0)
+
+# Sends message from root to every other process
+comm.Bcast(arr, root=0)
+
+# Distribute chunks of the array from root process to all processes
+comm.Scatter(in_arr, out_arr, root=0)
+
+# Get chunks of arrays from every process and sends them to root
+comm.Gather(in_arr, out_arr, root=0)
+```
+
+#### Deadlocks
+
+Send/receive calls are blocking; if the condition it is waiting for never happens, deadlock results.
+
+e.g. if all processes need to send and receive data, send call will block as it is waiting for the receiver to make a receive call, but all are trying to send.
+
+Can also be caused by memory buffer filling up, causing the send function to wait.
+
+Solution: **paired send-and-receive**:
+
+```python
+if rank % 2:
+  comm.Snd(..., rank - 1)
+  comm.Recv(..., rank - 1)
+
+else:
+  comm.Recv(..., rank + 1)
+  comm.Send(..., rank + 1)
+```
+
+### CUDA
+
+The entire program is a **grid** made up **blocks**: independent subtasks that can run in any order.
+
+**Global memory** can be accessed by any block and each block has a single control logic unit.
+
+**Threads** within a block can access **shared memory** and run the same instructions on a different bit of data.
+
+'**Local memory**' is private to a thread, and is actually global memory. If too many registers are used it swaps to local memory.
+
+`syncthreads()` acts as a synchronization barrier for threads in a block.
+
+#### Warps
+
+Each block divided into 32-thread warps. At any one time, one warp (not per-block!) is running, with all threads running the instructions in lockstep (if statements etc. disable threads that do not meet the condition).
+
+Block sizes should be chosen to result in many full warps (e.g. 128 is better than 32 is better than 1 thread) - having lots of warps to switch between allows memory access latency to be hidden.
+
+Warps can be executing, waiting for data, or waiting to execute. The scheduler will interleave warp execution to minimize the amount of time spent waiting for data.
+
+**Occupancy** - the number of warps running concurrently, is limited by hardware constraints as well as register/shared memory usage.
+
+Switching between warps has zero overhead as each warp has its own set of registers - the occupancy will be reduced if there is not enough register space.
+
