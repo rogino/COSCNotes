@@ -178,7 +178,8 @@ rdd_1.join(rdd_2)
 # [(key, val_1), (key, val_2)], [(key, val_3)] => (key, ([val_1, val_2], [val_3])
 rdd_1.cogroup(rdd_2)
 
-
+# cogroup, but filters out elements if any of the values are False and returns only keys
+rdd_1.intersection(rdd_2)
 
 # ACTION
 rdd.count()
@@ -198,6 +199,8 @@ rdd.countByValue()
 
 # [(key, val_1), (key, val_2)] => [val_1, val_2]
 rdd.lookup(key)
+
+rdd.cache()
 
 # Return everything
 rdd.collect()
@@ -827,7 +830,7 @@ comm.Gather(in_arr, out_arr, root=0)
 
 #### Deadlocks
 
-Send/receive calls are blocking; if the condition it is waiting for never happens, deadlock results.
+If a process is waiting for a message it will never receive, deadlock results.
 
 e.g. if all processes need to send and receive data, send call will block as it is waiting for the receiver to make a receive call, but all are trying to send.
 
