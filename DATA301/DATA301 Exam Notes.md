@@ -25,7 +25,12 @@ Look at the problem from three levels of abstractions:
   - Distributed processes - MPI
   - Shared memory - CUDA
 
-### TODO HEADING Distributed File Systems (DFS)
+### Cluster Architecture
+
+- Rack with 16-64 nodes, 1Gbps between any pair of nodes in rack
+- 2-10 Gbps backbone between racks
+
+### Distributed File Systems (DFS)
 
 Scale + durability + consistency.
 
@@ -36,6 +41,29 @@ Master node stores metadata.
 Chunk servers store contiguous chunks of 16-64 MB that have been replicated onto a few different machines.
 
 Computation done directly on chunk servers instead of dealing with network transfer.
+
+### Cloud Computing
+
+- Remotely hosted
+- Commodified - a utility, charged by usage, little differentiation
+- Ubiquitous - services available anywhere
+
+IaaS, PaaS, SaaS: infrastructure, platform, software.
+
+Cloud advantages: scaling, resilience, high-level services, no personnel required.
+
+Disadvantages: data transfer from local to cloud, no control when things go wrong, privacy.
+
+Service layers:
+
+- Application focused:
+  - Services: complete business services e.g. OAuth, Google Maps
+  - Application: cloud-based software that replaces local apps e.g. Office online
+  - Development: platforms for custom cloud-based PaaS and SaaS apps e.g. SalesForce
+- Infrastructure focused:
+  - Platform: cloud-based platforms e.g. Amazon ECC
+  - Storage: e.g. cloud NAS
+  - Hosting: physical data centers
 
 ## Map-Reduce
 
@@ -185,14 +213,6 @@ rdd.first()
 rdd.takeOrdered(n, sort_fn)
 ```
 
-## TODO HEADING Architecture: Cloud Computing
-
-IaaS, PaaS, SaaS: infrastructure, platform, software
-
-Cloud advantages: scaling, high-level services, no personnel required.
-
-Disadvantages: data transfer from local to cloud, no control when things go wrong, privacy.
-
 ## Scalability
 
 How much speed-up you get from parallelizing:
@@ -203,7 +223,7 @@ $$
 
 ### Amdahl's Law
 
-Some code inherently sequential; as $p$, number of processors tends to infinity, the time taken for the parallelizeable section will tend to zero.
+Some code inherently sequential; as $p$, number of processors tends to infinity, the time taken for the parallelizable section will tend to zero.
 
 if $s$ is proportion of time spent on sequential code:
 
@@ -214,12 +234,26 @@ $$
 ### Gustafson's Law
 
 $$
-S = P - s(P - 1)
+S = P - s \cdot (P - 1)
 $$
 
 Strong scalability: time vs cores when problem size fixed
 
 Weak scalability: time vs problem size/cores fixed. Sub-linear scalability if time increases.
+
+### Karp-Flatt Metric
+
+Experimentally determining the serial fraction, $s$, on $P$ processors.
+
+If $\psi$ is the speed-up on $P$ processors:
+
+$$
+e = \frac
+  {\frac{1}{\psi} - \frac{1}{P}}
+  {             1 - \frac{1}{P}}
+$$
+
+The lower the value of $e$, the greater the parallelization.
 
 ### Communication
 
@@ -259,11 +293,11 @@ $$
 High confidence != interesting: some items may just be frequent (e.g. 'the'). Hence, use *interest*; confidence minus the probability of the item appearing in any basket.
 
 $$
-\textrm{Interest}(I \rightarrow j) =
+\textrm{interest}(I \rightarrow j) =
   \left|\textrm{confidence}(I \rightarrow j) - P(j)\right|
 $$
 
-High-confidence rules ($> ~0.5$) are usually 'interesting'.
+High-interest rules ($> ~0.5$) are 'interesting'.
 
 #### A-Priori
 
@@ -285,7 +319,8 @@ Problem: given vector of data-points (possibly a flattened matrix) and a distanc
 
 Axioms:
 
-- Greater than zero, unless points are the same
+- Never negative
+- Zero if the points are the same
 - Commutative: $d(x, y) = d(y, x)$
 - Triangle inequality: direct path never longer
 
@@ -633,8 +668,8 @@ Competitive ratio: worst performance over all possible inputs.
 
 $$
 \textrm{competitive ratio} = min_\textrm{all inputs}\frac
-  {\left|M_\textrm{greedy}|\right}
-  {\left|M_\textrm{optimal}|\right}
+  {\left|M_\textrm{greedy}\right|}
+  {\left|M_\textrm{optimal}\right|}
 $$
 
 ### AdWords
@@ -685,9 +720,11 @@ Approx. one order of magnitude improvement from these tricks.
 
 **Flynn's Taxonomy**:
 
+Instructions and data:
+
 - SISD: standard programming
 - SIMD: vector instructions, GPUs
-- MISD: �
+- MISD: 😢 - none
 - MIMD: multi-core processors
 
 Memory hierarchy: registers, L1/L2/L3 cache, RAM, secondary/permanent storage. Trade-off between size and speed will always exist as it will be limited by physical distance to the CPU.
@@ -717,6 +754,10 @@ Hyperthreading - replicates enough instruction-control hardware to process multi
 
 Vectorization: applying the same operation to multiple pieces of data
 
+Roofline Model:
+
+- Identifies if compute or memory/communication bound
+- TODO how
 - More communication = shared memory/threads
 - More computation = distributed memory
 - More expensive algorithm = vectorized operations
@@ -731,7 +772,7 @@ Large data sets split into small tasks; assume there needs to be communication b
 
 Blocks: each task given vertical slice of height $n$. $2n$ items need to be communicated at each boundary.
 
-Cyclic: each task given $m$ vertical slices of size $n$; $2mn$ items communicated per task. Benefit is that only one cycle worth of information has to be in memory at a time, allowing check-pointing. Also allows load-balancing as some areas may require less computation - the slicing is likely to split this expensive area across multiple tasks.
+Cyclic: each task given $m$ vertical slices of size $n$, $2mn$ items communicated per task. Benefit is that only one cycle worth of information has to be in memory at a time, allowing check-pointing. Also allows load-balancing as some areas may require less computation - the slicing is likely to split this expensive area across multiple tasks.
 
 Partitioning can also be done in multiple dimensions (e.g. sliced vertically and horizontally).
 
@@ -750,12 +791,11 @@ rank = comm.Get_rank() # process identifier. Starts at 0
 data_to_send = numpy.zeros(1) # data must map to a byte buffer 
 var_to_overwrite = numpy.zeros(4) # receive buffer can be bigger
 
-comm.Send(data_to_send     , dest=${process_to_send_to})
-comm.Recv(var_to_overwrite, dest=${process_to_receive_to})
+comm.Send(data_to_send    , dest=process_to_send_to)
+comm.Recv(var_to_overwrite, dest=process_to_receive_to)
 
 # Non-blocking
 req = comm.Isend(data_to_send, dest=RANK)
-# or
 req = comm.Irecv(var_to_overwrite, source=RANK)
 req.Wait()
 
@@ -797,7 +837,7 @@ Solution: **paired send-and-receive**:
 
 ```python
 if rank % 2:
-  comm.Snd(..., rank - 1)
+  comm.Send(..., rank - 1)
   comm.Recv(..., rank - 1)
 
 else:
@@ -819,7 +859,7 @@ The entire program is a **grid** made up **blocks**: independent subtasks that c
 
 #### Warps
 
-Each block divided into 32-thread warps. At any one time, one warp (not per-block!) is running, with all threads running the instructions in lockstep (if statements etc. disable threads that do not meet the condition).
+Each block divided into 32-thread warps. At any one time, one warp (not per-block!) is running, with all threads running the instructions in lock-step (if statements etc. disable threads that do not meet the condition).
 
 Block sizes should be chosen to result in many full warps (e.g. 128 is better than 32 is better than 1 thread) - having lots of warps to switch between allows memory access latency to be hidden.
 
@@ -829,3 +869,84 @@ Warps can be executing, waiting for data, or waiting to execute. The scheduler w
 
 Switching between warps has zero overhead as each warp has its own set of registers - the occupancy will be reduced if there is not enough register space.
 
+#### Locks
+
+Data race - data accessed and manipulated by multiple processors.
+
+Can use atomic operations to perform load-add-store operations in a single step.
+
+Only works for specific processors and on individual instructions. Use **locks** to execute arbitrary regions of code. **Mutual exclusion** - only one process can have access to the data.
+
+```c
+volatile char lock = 0
+
+while (true) {
+  if (lock == 0) {
+    lock = 1;
+    // read-modify-write
+    break;
+  }
+}
+
+do_stuff();
+lock = 0;
+```
+
+An atomic compare-and-exchange operation must be used to acquire the lock `CMPXCHG` in x86.
+
+#### Numba Methods
+
+```python
+from numba import jit
+
+@jit
+def fn():
+  return
+
+from numba import cuda
+def fn(in_out_arr):
+  pos = cuda.grid(1) # coordinate of thread when split as a 1D array
+
+  # Atomic operations
+  old_val = cuda.atomic.add(arr, index, increment_by)
+
+  # if arr[0] == old, set it to new and return the old value
+  old_val = cuda.atomic.compare_and_swap(arr, old, new)
+
+  # Synchronization point
+  cuda.syncthreads()
+
+arr = cuda.to_device(np.zeros(shape = 1, dtype=np.int32))
+
+# Or make array directly on the GPU
+global_arr = cuda.device_array(shape)
+shared_arr = cuda.shared.array(shape, dtype)
+
+# Max 1024 threads per blocks on most Nvidia GPUs
+fn[blocks_per_grid, threads_per_block](arr)
+
+
+main_mem_arr = global_arr.copy_to_host()
+```
+
+## Raft Consensus Algorithm
+
+Election:
+
+- After election timeout (random, ~10x network latency), become candidate; vote for self and send request vote
+- Vote for candidate if:
+  - Term is greater than current
+  - Haven't yet voted for anyone in the new term
+  - Their log is as or more up-to-date than you
+  - Reset election timeout
+- If majority of votes received, become leader
+- If election timeout reached, increment term and try again
+
+Log replication:
+
+- Leader takes commands from client, appends to in-progress logs
+- Leader sends heartbeats, possibly with entries to append
+- Once command acknowledged by majority of followers, commit
+- On next heartbeat, tell followers to commit previous command
+
+If a leader gets a command from another leader with a greater term, step down and roll back uncommitted commands.
