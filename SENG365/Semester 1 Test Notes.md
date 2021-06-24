@@ -105,12 +105,13 @@ var IIFE = (function() { return val })(); // succeeds
 
 this; // window in browser, global in node
 
-`use strict` // inside a script or function
+"use strict"; // First statement inside a script or function
 // this defaults to undefined
 // variables must be declared
 // errors thrown instead of tolerating some bad code
 // `with` statements and octel notation rejected
 // `eval` and other keywords cannot be assigned
+// ES6 modules always in strict mode
 
 
 // Call stack: stack of function calls

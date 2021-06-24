@@ -114,6 +114,9 @@ Server can optionally allow this. Browser sends an HTTP `OPTIONS` request before
 - `Access-Control-Allow-Methods`: comma-separated list of allowed HTTP methods
 - `Access-Control-Max-Age`: number of seconds the response of a preflight request can be cached
 - `Access-Control-Allow-Credentials: true`: cookies sent if true
+- `Access-Control-Allow-Headers`: request headers the JS can modify
+  - `Accept`, `Accept-Language`, `Content-Language`, and `Content-Type` are safe headers and always allowed
+- `Access-Control-Expose-Headers`: response headers the JS can read (safe headers always allowed)
 
 ### WebSockets
 
@@ -275,3 +278,15 @@ driver.get("https://google.com")
 ```
 
 Vue test utils: arrange, act, assert
+
+## Misc
+
+```js
+"use strict"; // First statement inside a script or function
+// this defaults to undefined
+// variables must be declared
+// errors thrown instead of tolerating some bad code
+// `with` statements and octet notation rejected (use 0o123)
+// `eval` and other keywords cannot be assigned
+// ES6 modules always in strict mode
+```

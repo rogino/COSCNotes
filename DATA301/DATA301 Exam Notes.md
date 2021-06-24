@@ -191,9 +191,6 @@ rdd.max(fn)
 # Run locally on driver, does not need to be associative
 rdd.reduce(fn)
 
-# [(val, 1), (val, 2)] => [1, 2]
-rdd.lookup(val)
-
 # [el_1, el_1, el_2] => { el_1: 2, el_2: 1}
 rdd.countByValue()
 
@@ -237,7 +234,7 @@ $$
 ### Gustafson's Law
 
 $$
-S = P - s \cdot (P - 1)
+S = p - s \cdot (p - 1)
 $$
 
 Strong scalability: time vs cores when problem size fixed
@@ -347,7 +344,7 @@ $$
 Root of sum of squares of differences. If the vectors have $n$ dimensions:
 
 $$
-d(x, y) = \sqrt{\sum_{i=1}^{n}{(x^2 - y^2)}}
+d(x, y) = \sqrt{\sum_{i=1}^{n}{(x_i^2 - y_i^2)}}
 $$
 
 #### Jaccard Distance
@@ -546,11 +543,11 @@ Teleports only go to page relevant to a topic - this leads to a different vector
 
 Issue 1: **term spam** - add relevant keywords to the page (visible only to the search engine), and/or copy text from top results.
 
-Solution 1: statistical text analysis, duplicate page detection
+Solution 1: statistical text analysis, duplicate page detection.
 
 Solution 2: use text content of the in-links and surrounding text - trust what others say about you, know what you say.
 
-Issue 1: the internet banding together for jokes
+Issue 1: the internet banding together for jokes.
 
 Issue 2: **spam farms** - spammer link to target page from popular websites they have some access to (e.g. forums) and from sites they fully control (which the target page links to).
 
@@ -637,7 +634,7 @@ $$
 Q(G, S) = \frac{1}{2m} \sum_{s\in S}{\sum_{i \in s}{\sum_{j\in s}{A_{ij} - \frac{k_i k_j}{2m}}}}
 $$
 
-Where $A_{ij} = 1$ if there is a edge $i \rightarrow j$, and $0$ otherwise.
+Where $m$ is the number of edges, $k_i$ is the degree of node $i$, and $A_{ij} = 1$ if there is a edge $i \rightarrow j$, and $0$ otherwise.
 
 $Q$ is normalized such that $-1 \lt Q \lt 1$.
 
@@ -762,8 +759,7 @@ Roofline Model:
 - Identifies if compute or memory/communication bound
 - TODO how
 - More communication = shared memory/threads
-- More computation = distributed memory
-- More expensive algorithm = vectorized operations
+- More computation = distributed memory/processes, vectorized operations
 
 ### Python MPI
 
@@ -849,6 +845,8 @@ else:
 ```
 
 ### CUDA
+
+SM: Simultaneous Multi-processor.
 
 The entire program is a **grid** made up **blocks**: independent subtasks that can run in any order.
 
