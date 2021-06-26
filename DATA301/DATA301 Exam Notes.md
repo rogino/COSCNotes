@@ -668,7 +668,7 @@ Competitive ratio: worst performance over all possible inputs.
 
 $$
 \textrm{competitive ratio} = min_\textrm{all inputs}\frac
-  {\left|M_\textrm{greedy}\right|}
+  {\left|M_\textrm{algorithm}\right|}
   {\left|M_\textrm{optimal}\right|}
 $$
 
