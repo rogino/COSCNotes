@@ -1,0 +1,97 @@
+/*
+
+Monokai-Co Light style. Derived from Monokai Sublime
+
+*/
+
+.hljs {
+  background: white;
+  color: black;
+}
+
+.hljs-tag,
+.hljs-subst {
+  color: #f8f8f2;
+}
+
+.hljs-strong,
+.hljs-emphasis {
+  color: #a8a8a2;
+}
+
+.hljs-bullet,
+.hljs-quote,
+.hljs-number,
+.hljs-regexp,
+.hljs-literal,
+.hljs-link {
+  color: #ae81ff;
+}
+
+.hljs-code,
+.hljs-title,
+.hljs-section,
+.hljs-selector-class {
+  color: #6aaf19;
+  /* color: #a6e22e; */
+}
+
+.hljs-type,
+.hljs-selector-id,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-addition,
+.hljs-variable,
+.hljs-template-variable {
+  color: #6aaf19;
+}
+
+
+.hljs-params {
+  /* color: #fd971f; */
+  color: black;
+}
+
+.hljs-variable.language_,
+.hljs-title.class_,
+.hljs-class
+ {
+  color: black;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-selector-tag,
+.hljs-keyword,
+.hljs-name,
+.hljs-attr {
+  color: #f92672;
+}
+
+.hljs-symbol,
+.hljs-built_in,
+.hljs-attribute {
+  color: #66d9ef;
+}
+
+.hljs-deletion,
+.hljs-meta,
+.hljs-string {
+  color: #f25a00;
+  /*
+  inline-raw: fd971f
+  info-token: 316bcd
+  warn-token: cd9731
+  error-token: cd3131
+  */
+}
+
+.hljs-comment {
+  color: #9f9f8f;
+}

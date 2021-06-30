@@ -1,0 +1,131 @@
+body {
+  display: flex;
+  justify-content: center;
+  font-family: system-ui, sans-serif;
+  font-size: 1rem;
+  box-sizing: border-box;
+  /* line-height: 175%; */
+}
+
+h1 {
+  font-size: 3rem;
+  /* margin-block: 1rem; */
+}
+
+h2 {
+  font-size: 2.2rem;
+  /* margin-block: 1rem; */
+}
+
+h3 {
+  font-size: 2rem;
+  /* margin-block: 1rem; */
+}
+
+h4 {
+  font-size: 1.7rem;
+  /* margin-block: 1rem; */
+}
+h5 {
+  font-size: 1.4rem;
+  /* margin-block: 1rem; */
+}
+
+h6 {
+  font-size: 1.2rem;
+  /* margin-block: 1rem; */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 400;
+  margin-block: 1em 0;
+}
+
+p {
+  margin-block: 1em 0;
+}
+
+ul, ol {
+  margin-block: 0.5em 1em;
+  padding-inline-start: 1.5em;
+}
+
+body {
+  scroll-behavior: smooth;
+  width: 100%;
+  margin: 0;
+  padding-block: 1em;
+}
+
+body > div {
+  max-width: min(50em, calc(100% - 2em));
+}
+
+body > div > h1:first-child {
+  margin-block-start: 0;
+}
+
+pre, .katex-display {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 1em 0;
+  /* keep scroll-bar away from content */
+  margin: 0;
+}
+
+.table-of-contents {
+  margin-block-start: 1em;
+
+  background-color: #F8F8F8;
+  border-radius: 0.4em;
+  padding: 1em;
+  padding-block-start: 0;
+}
+
+.table-of-contents > ol::before {
+  display: block;
+  font-size: 1.2rem;
+  margin-block-end: 0.4em;
+  content: "Table of Contents";
+  font-variant: small-caps;
+}
+
+.table-of-contents ol {
+  counter-reset: list-item;
+  margin-block: 0;
+  padding-inline-start: 2em;
+}
+
+.table-of-contents > ol,
+.table-of-contents > ol > li > ol {
+  /* H1 is not present, H2, has no left margin */
+  padding-inline-start: 0;
+}
+
+.table-of-contents li {
+  display: block;
+  counter-increment: list-item;
+}
+
+.table-of-contents li > a:before {
+  content: counters(list-item,'.') ' ';
+  font-size: 1rem;
+}
+
+.table-of-contents > ol > li > a {
+  /* Hide H1 */
+  display: none;
+}
+
+a {
+  color: #316bcd;
+}
+
+img {
+  max-height: 120vh;
+  max-width: 100%;
+
+  /* Center image */
+  display: block;
+  margin-inline: auto;
+}
