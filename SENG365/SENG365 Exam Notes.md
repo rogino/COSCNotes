@@ -35,7 +35,7 @@ HTTP stateless: authenticate and authorize every request.
 
 SPAs: can redraw any part of the page without requiring a full reload.
 
-Model-View-*
+Model-View-*:
 
 - Presentation: specific to UI
 - Session state; data bound to the view
@@ -98,7 +98,7 @@ Asynchronous, via callbacks. JS's **concurrency** model uses event loops - it is
 Fetch is a newer API which uses promises:
 
 ```js
-fetch("http://example/com")
+fetch("http://example.com")
 .then(res => res.json())
 .then(obj => console.log(obj))
 .catch(err => console.log(err));
@@ -180,7 +180,7 @@ import * as lib from "lib";
 
 exports.bla = 10;
 
-const lib = require("./lib.js)
+const lib = require("./lib.js")
 ```
 
 ### Virtual DOM
@@ -271,7 +271,7 @@ const driver = new webdriver.Builder().forBrowser("firefox").build();
 driver.get("https://google.com")
   .then(() => 
     driver.findElement(By.name("q"))
-    .sendKeys("reddit", Key,RETURN)
+    .sendKeys("reddit", Key, RETURN)
   ).then(() => {
     driver.wait(until.titleIs("reddit - Google Search"), 1000)
   }).then(() => driver.quit())
