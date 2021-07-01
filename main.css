@@ -44,11 +44,44 @@ p {
 }
 
 
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
 
 /* Variables */
 body {
+  --background: white;
+  --foreground: black;
+
   --border-grey: #999;
+
+  --blockquote-color: #333;
+
+  --toc-background: #F6F6F6;
+
+  --link-color: #316bcd;
+  --link-color-hover: #00348f;
+  --link-color-visited: #9c31cd;
+
   --indentation: 1.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    --background: black;
+    --foreground: white;
+
+    --border-grey: #999;
+
+    --blockquote-color: #F6F6F6;
+
+    --toc-background: #222;
+
+    --link-color: #bbd4ff;
+    --link-color-hover: #e1e8f5;
+    --link-color-visited: #e9baff;
+  }
 }
 
 
@@ -92,7 +125,7 @@ blockquote {
   border-inline-start: 0.3rem solid var(--border-grey);
   margin-inline: 0;
   padding-inline-start: var(--indentation);
-  color: #555;
+  color: var(--blockquote-color);
 }
 
 
@@ -122,22 +155,22 @@ section.footnotes > ol.footnotes-list::before {
 
 /* Links */
 a {
-  color: #316bcd;
+  color: var(--link-color);
 }
 a:hover {
-  color: #00348f;
+  color: var(--link-color-hover);
 }
 a:visited {
-  color: #9c31cd;
+  color: var(--link-color-visited);
 }
 
+/* markdown-it-anchors */
 a.header-anchor {
   text-decoration: none;
   color: inherit;
 }
 a.header-anchor:hover {
   text-decoration: underline;
-  color: initial;
 }
 
 /* Image and video centering, sizing */
@@ -153,7 +186,6 @@ img, video {
 
 /* Horizontal rules */
 hr {
-  /* border: 1px solid var(--border-grey); */
   background: linear-gradient(to right, transparent, var(--border-grey), transparent);
   border-inline: none;
   border: none;
@@ -201,7 +233,7 @@ table tr th:last-child {
 .table-of-contents {
   margin-block-start: 1rem;
 
-  background-color: #F8F8F8;
+  background-color: var(--toc-background);
   border-radius: 0.4rem;
   padding: 1rem;
   padding-block-start: 0;
