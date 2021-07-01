@@ -1,131 +1,256 @@
+/* Fonts */
+:root {
+  font-size: 16px;
+}
+
+html {
+  text-size-adjust: none;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  display: flex;
-  justify-content: center;
   font-family: system-ui, sans-serif;
-  font-size: 1rem;
-  box-sizing: border-box;
-  /* line-height: 175%; */
 }
 
 h1 {
   font-size: 3rem;
-  /* margin-block: 1rem; */
 }
-
 h2 {
   font-size: 2.2rem;
-  /* margin-block: 1rem; */
 }
-
 h3 {
   font-size: 2rem;
-  /* margin-block: 1rem; */
 }
-
 h4 {
   font-size: 1.7rem;
-  /* margin-block: 1rem; */
 }
 h5 {
   font-size: 1.4rem;
-  /* margin-block: 1rem; */
 }
-
 h6 {
   font-size: 1.2rem;
-  /* margin-block: 1rem; */
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: 400;
-  margin-block: 1em 0;
+
+  /* Use em, not rem - top margin varies */
+  margin-block: 0.8em 0;
 }
 
 p {
-  margin-block: 1em 0;
+  /* No bottom margin so less spacing between paragraph and list */
+  margin-block: 1rem 0;
 }
 
-ul, ol {
-  margin-block: 0.5em 1em;
-  padding-inline-start: 1.5em;
+
+
+/* Variables */
+body {
+  --border-grey: #999;
+  --indentation: 1.5rem;
 }
 
+
+
+/* Body and body wrapper centering */
 body {
   scroll-behavior: smooth;
   width: 100%;
   margin: 0;
-  padding-block: 1em;
+  padding-block: 1rem;
+  box-sizing: border-box;
 }
 
-body > div {
-  max-width: min(50em, calc(100% - 2em));
+body > article {
+  max-width: min(50rem, calc(100% - max(env(safe-area-inset-left), 2rem)));
+  margin-inline: auto;
 }
 
-body > div > h1:first-child {
+body > article > h1:first-child {
+  /* The page title H1 doesn't need top margin */
   margin-block-start: 0;
 }
 
+
+
+/* General element styling */
+/* Lists */
+ul, ol {
+  margin-block: 0.5rem 1rem;
+  padding-inline-start: var(--indentation);
+}
+
+li ul, li ol {
+  /* No vertical margin between list item and nested list */
+  margin-block: 0;
+}
+
+
+/* Blockquotes */
+blockquote {
+  border-inline-start: 0.3rem solid var(--border-grey);
+  margin-inline: 0;
+  padding-inline-start: var(--indentation);
+  color: #555;
+}
+
+
+/* Code and math blocks (markdown-it-textmath) */
 pre, .katex-display {
   max-width: 100%;
   overflow-x: auto;
-  padding: 1em 0;
+  padding: 1rem 0;
   /* keep scroll-bar away from content */
   margin: 0;
 }
 
+
+/* Footnotes (markdown-it-footnotes) */
+.footnotes-sep {
+  margin-block-start: 2em;
+}
+
+section.footnotes > ol.footnotes-list {
+  padding-inline-start: 0;
+}
+
+section.footnotes > ol.footnotes-list::before {
+  content: "Footnotes";
+}
+
+
+/* Links */
+a {
+  color: #316bcd;
+}
+a:hover {
+  color: #00348f;
+}
+a:visited {
+  color: #9c31cd;
+}
+
+a.header-anchor {
+  text-decoration: none;
+  color: inherit;
+}
+a.header-anchor:hover {
+  text-decoration: underline;
+  color: initial;
+}
+
+/* Image and video centering, sizing */
+img, video {
+  max-height: 120vh;
+  max-width: 100%;
+
+  /* center image */
+  display: block;
+  margin-inline: auto;
+}
+
+
+/* Horizontal rules */
+hr {
+  /* border: 1px solid var(--border-grey); */
+  background: linear-gradient(to right, transparent, var(--border-grey), transparent);
+  border-inline: none;
+  border: none;
+  padding-block: 1px;
+}
+
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  min-width: 100%;
+  overflow-y: auto;
+}
+
+table td, table th {
+  border-style: solid;
+  border-color: var(--border-grey);
+  border-inline-width: 2px;
+  border-block-width: 1px;
+  padding-block: 0.2rem;
+  padding-inline: 0.4em;
+}
+
+/* no outer table borders */
+table tr:first-child th {
+  border-top: 0;
+}
+
+table tr:last-child td {
+  border-bottom: 0;
+}
+
+table tr td:first-child,
+table tr th:first-child {
+  border-left: 0;
+}
+
+table tr td:last-child,
+table tr th:last-child {
+  border-right: 0;
+}
+
+
+/* Table of contents (markdown-it-toc-done-right) */
 .table-of-contents {
-  margin-block-start: 1em;
+  margin-block-start: 1rem;
 
   background-color: #F8F8F8;
-  border-radius: 0.4em;
-  padding: 1em;
+  border-radius: 0.4rem;
+  padding: 1rem;
   padding-block-start: 0;
 }
 
-.table-of-contents > ol::before {
+.table-of-contents > ol::before, section.footnotes > ol.footnotes-list::before {
   display: block;
   font-size: 1.2rem;
-  margin-block-end: 0.4em;
-  content: "Table of Contents";
+  margin-block-end: 0.4rem;
   font-variant: small-caps;
 }
 
-.table-of-contents ol {
-  counter-reset: list-item;
-  margin-block: 0;
-  padding-inline-start: 2em;
+.table-of-contents > ol::before {
+  content: "Table of Contents";
 }
 
-.table-of-contents > ol,
-.table-of-contents > ol > li > ol {
+.table-of-contents ol {
+  margin-block: 0;
+  padding-inline-start: 1.5rem;
+}
+
+.table-of-contents > ol {
   /* H1 is not present, H2, has no left margin */
   padding-inline-start: 0;
 }
 
 .table-of-contents li {
   display: block;
-  counter-increment: list-item;
+  list-style-type: none;
 }
 
-.table-of-contents li > a:before {
-  content: counters(list-item,'.') ' ';
+.table-of-contents ol {
+  counter-reset: toc-counter;
+}
+
+.table-of-contents li {
+  counter-increment: toc-counter;
+}
+
+.table-of-contents li > a::before {
+  content: counters(toc-counter,'.') ' ';
   font-size: 1rem;
 }
 
-.table-of-contents > ol > li > a {
-  /* Hide H1 */
-  display: none;
+
+.table-of-contents li > a {
+  text-decoration: none;
 }
 
-a {
-  color: #316bcd;
-}
-
-img {
-  max-height: 120vh;
-  max-width: 100%;
-
-  /* Center image */
-  display: block;
-  margin-inline: auto;
+.table-of-contents li > a:hover {
+  text-decoration: underline;
 }
