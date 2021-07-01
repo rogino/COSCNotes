@@ -6,6 +6,7 @@
 html {
   text-size-adjust: none;
   -webkit-text-size-adjust: 100%;
+  color-scheme: light dark;
 }
 
 body {
@@ -19,16 +20,16 @@ h2 {
   font-size: 2.2rem;
 }
 h3 {
-  font-size: 2rem;
+  font-size: 1.8rem;
 }
 h4 {
-  font-size: 1.7rem;
+  font-size: 1.5rem;
 }
 h5 {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
 }
 h6 {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -57,8 +58,8 @@ body {
   --border-grey: #999;
 
   --close-to-foreground-grey: #333;
-
   --close-to-background-grey: #f9f9f9;
+  --somewhat-close-to-background-grey: #BBB;
 
   --link-color: #316bcd;
   --link-color-hover: #00348f;
@@ -75,8 +76,8 @@ body {
     --border-grey: #999;
 
     --close-to-foreground-grey: #f6f6f6;
-
     --close-to-background-grey: #222;
+    --somewhat-close-to-background-grey: #777;
 
     --link-color: #bbd4ff;
     --link-color-hover: #e1e8f5;
@@ -172,6 +173,29 @@ a.header-anchor {
 a.header-anchor:hover {
   text-decoration: underline;
 }
+
+
+/* Add #'s to left of headers. Doesn't work well in mobile */
+h2, h3, h4, h5, h6 { position: relative }
+h2::before,
+h3::before,
+h4::before,
+h5::before,
+h6::before {
+  color: var(--somewhat-close-to-background-grey);
+  font-size: 1rem;
+  font-family: monospace;
+  position: absolute;
+  right: 100%;
+  bottom: 0.5ex; /* roughly align with baseline */
+  margin-right: 0.1rem;
+}
+h2::before { content: "##"; }
+h3::before { content: "###"; }
+h4::before { content: "####"; }
+h5::before { content: "#####"; }
+h6::before { content: "######"; }
+
 
 /* Image and video centering, sizing */
 img, video {
