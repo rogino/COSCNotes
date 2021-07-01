@@ -56,9 +56,9 @@ body {
 
   --border-grey: #999;
 
-  --blockquote-color: #333;
+  --close-to-foreground-grey: #333;
 
-  --toc-background: #F6F6F6;
+  --close-to-background-grey: #f9f9f9;
 
   --link-color: #316bcd;
   --link-color-hover: #00348f;
@@ -74,9 +74,9 @@ body {
 
     --border-grey: #999;
 
-    --blockquote-color: #F6F6F6;
+    --close-to-foreground-grey: #f6f6f6;
 
-    --toc-background: #222;
+    --close-to-background-grey: #222;
 
     --link-color: #bbd4ff;
     --link-color-hover: #e1e8f5;
@@ -125,7 +125,7 @@ blockquote {
   border-inline-start: 0.3rem solid var(--border-grey);
   margin-inline: 0;
   padding-inline-start: var(--indentation);
-  color: var(--blockquote-color);
+  color: var(--close-to-foreground-grey);
 }
 
 
@@ -201,28 +201,26 @@ table {
 }
 
 table td, table th {
-  border-style: solid;
-  border-color: var(--border-grey);
-  border-inline-width: 2px;
-  border-block-width: 1px;
+  border: 1px solid var(--border-grey);
   padding-block: 0.2rem;
   padding-inline: 0.4em;
+}
+
+table tbody tr:nth-child(2n - 1) {
+  background-color: var(--close-to-background-grey);
 }
 
 /* no outer table borders */
 table tr:first-child th {
   border-top: 0;
 }
-
 table tr:last-child td {
   border-bottom: 0;
 }
-
 table tr td:first-child,
 table tr th:first-child {
   border-left: 0;
 }
-
 table tr td:last-child,
 table tr th:last-child {
   border-right: 0;
@@ -233,10 +231,10 @@ table tr th:last-child {
 .table-of-contents {
   margin-block-start: 1rem;
 
-  background-color: var(--toc-background);
+  background-color: var(--close-to-background-grey);
   border-radius: 0.4rem;
   padding: 1rem;
-  padding-block-start: 0;
+  padding-block-start: 0.2em;
 }
 
 .table-of-contents > ol::before, section.footnotes > ol.footnotes-list::before {
