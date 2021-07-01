@@ -1,12 +1,29 @@
 /*
 
-Monokai-Co Light style. Derived from Monokai Sublime
-
+Monokai style. Derived from VSCode Monokai Light (by Velichko Konstantin)
+(https://marketplace.visualstudio.com/items?itemName=zoxon.monokai-light),
+VSCode Monokai-Contrast (by gerane)
+(https://marketplace.visualstudio.com/items?itemName=gerane.Theme-Monokai-Contrast)
+and highlight.js's Monokai Sublime
 */
 
-.hljs {
-  background: white;
-  color: black;
+pre code {
+  --background: white;
+  --foreground: black;
+  --green: #6aaf19;
+  --purple: #ae81ff;
+  --string: #f25a00;
+}
+
+@media (prefers-color-scheme: dark) {
+  pre code {
+    --background: black;
+    --foreground: white;
+
+    --green: #aaff33;
+    --purple: #aa88ff; /*#ff99ff; /*aa88ff*/
+    --string: #ffff88;
+  }
 }
 
 .hljs-tag,
@@ -25,14 +42,14 @@ Monokai-Co Light style. Derived from Monokai Sublime
 .hljs-regexp,
 .hljs-literal,
 .hljs-link {
-  color: #ae81ff;
+  color: var(--purple);
 }
 
 .hljs-code,
 .hljs-title,
 .hljs-section,
 .hljs-selector-class {
-  color: #6aaf19;
+  color: var(--green);
   /* color: #a6e22e; */
 }
 
@@ -43,13 +60,14 @@ Monokai-Co Light style. Derived from Monokai Sublime
 .hljs-addition,
 .hljs-variable,
 .hljs-template-variable {
-  color: #6aaf19;
+  color: var(--green);
 }
 
 
 .hljs-params {
   /* color: #fd971f; */
   color: black;
+  color: var(--foreground);
 }
 
 .hljs-variable.language_,
@@ -57,6 +75,7 @@ Monokai-Co Light style. Derived from Monokai Sublime
 .hljs-class
  {
   color: black;
+  color: var(--foreground);
 }
 
 .hljs-strong {
@@ -83,7 +102,7 @@ Monokai-Co Light style. Derived from Monokai Sublime
 .hljs-deletion,
 .hljs-meta,
 .hljs-string {
-  color: #f25a00;
+  color: var(--string);
   /*
   inline-raw: fd971f
   info-token: 316bcd
