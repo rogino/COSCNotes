@@ -83,6 +83,10 @@ body {
     --link-color-hover: #e1e8f5;
     --link-color-visited: #e9baff;
   }
+
+  img {
+    filter: invert(1) hue-rotate(180deg);
+  }
 }
 
 
