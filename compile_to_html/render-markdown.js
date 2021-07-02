@@ -51,7 +51,7 @@ module.exports.default = (markdownText, forceToC = true) => {
         lines[1].trim().length == 0 &&
         !lines[2].match(/^\[toc\]$/)
     ) {
-      markdownText = lines[0] + "\n[toc]\n" + lines.slice(2).join("\n");
+      markdownText = lines[0] + "\n[toc]\n\n" + lines.slice(2).join("\n");
     }
   }
 

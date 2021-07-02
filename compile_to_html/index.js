@@ -7,6 +7,8 @@ const recursiveReaddir = require("recursive-readdir");
 // Directories in given directory will be copied to output directory and markdown files rendered
 const inDirectory = "./../";
 const outDirectory = "./out";
+
+// Blacklist. For copying directories, just the name of the file/folder. For rendering, uses path relative to out directory
 const inDirectoryBlackList = [
   /^\./,              // e.g. .git
   /^node_modules/, 
@@ -46,15 +48,20 @@ const copyLinkedResources = () => {
 }
 
 
-const cssLinks = () => {
+// CSS links, relative to given file
+const cssLinks = (outPath) => {
   // replace all \ with /
   return linkedResources
       .filter(el => typeof el == "string" || !el.dontLink)
       .map(el => typeof el == "string"? el: el.outPath)
-      .map(relativePath =>
-         `<link rel="stylesheet" href="${path.join("/", path.relative(outDirectory, cssDir()), relativePath).replace(/\\/g, "/") }">`
-      ).join("\n");
+      .map(relativePath => {
+        const cssPath = path.join(cssDir(), relativePath);
+        // Need path.dirname for some reason
+        const link = path.relative(path.dirname(outPath), cssPath).replace(/\\/g, "/");
+        return `<link rel="stylesheet" href="${link}">`;
+      }).join("\n");
 }
+
 
 const render = (inPath, outPath, title, forceToC = true) => {
   fse.writeFileSync(outPath, `
@@ -63,7 +70,7 @@ const render = (inPath, outPath, title, forceToC = true) => {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    ${cssLinks()}
+    ${cssLinks(outPath)}
     <title>${title}</title>
   </head>
   <body>
@@ -176,7 +183,11 @@ const renderIndex = (renderedPages) => {
   // Hacky way to add description below heading
   tree.name = "COSC Notes\n\nNotes from the courses I have taken at UC.";
   const genMarkdown = (node, depth = 1) => {
-    if (!Array.isArray(node.contents)) return `[${node.name}](${encodeURI(node.contents)})`;
+    if (!Array.isArray(node.contents)) {
+      // Links are relative to index
+      const relativeLink = "." + encodeURI(node.contents.replace(/\\/g, "/"));
+      return `[${node.name}](${relativeLink})`;
+    }
 
     return `${"#".repeat(depth)} ${getCourseString(node.name)}\n\n${node.contents.map(el => genMarkdown(el, depth + 1)).join("\n\n")}`;
   }
