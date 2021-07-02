@@ -34,11 +34,6 @@ md.use(require("markdown-it-texmath"), {
   delimiters: "dollars"
 });
 
-const fs = require("fs");
-
-// let contents = fs.readFileSync("./SENG365/SENG365 Exam Notes.md", { encoding: "utf8"});
-
-let contents = fs.readFileSync("./COSC261/2. Regular Expressions.md", { encoding: "utf8"});
 
 /**
  * Given markdown text as input, returns rendered html
@@ -46,7 +41,7 @@ let contents = fs.readFileSync("./COSC261/2. Regular Expressions.md", { encoding
  * @param {*} forceToC if true, file will always have a table of contents even if not present in input
  * @returns rendered markdown
  */
-  const renderMarkdown = (markdownText, forceToC = true) => {
+module.exports.default = (markdownText, forceToC = true) => {
   // Add [toc] if not already present
   if (forceToC) {
     const lines = markdownText.split("\n");
@@ -60,26 +55,5 @@ let contents = fs.readFileSync("./COSC261/2. Regular Expressions.md", { encoding
     }
   }
 
-  markdownText += "\n\n```javascript\n" + fs.readFileSync("./parse.js", {encoding: "utf8"}) + "\n```\n\n";
-
   return md.render(markdownText);
 }
-
-
-fs.writeFileSync("./out.html", `
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
-  <link rel="stylesheet" href="./monokai.css">
-  <link rel="stylesheet" href="./main.css">
-  <title>test</title>
-</head>
-<body>
-  <article>
-    ${renderMarkdown(contents)}
-  </article>
-</body>
-`);

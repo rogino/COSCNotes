@@ -188,7 +188,7 @@ h6::before {
   position: absolute;
   right: 100%;
   bottom: 0.5ex; /* roughly align with baseline */
-  margin-right: 0.1rem;
+  margin-right: 0.2rem;
 }
 h2::before { content: "##"; }
 h3::before { content: "###"; }
