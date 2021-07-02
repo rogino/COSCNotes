@@ -2,10 +2,13 @@ const renderMarkdown = require("./render-markdown").default;
 const fse = require("fs-extra");
 const path = require("path");
 const recursiveReaddir = require("recursive-readdir");
+
+
 // Directories in given directory will be copied to output directory and markdown files rendered
 const inDirectory = "./";
 const outDirectory = "./out";
 const inDirectoryBlackList = [/^\./, /^node_modules/, /index\.md$/]; // Ignore hidden files, node_modules, generated index file
+const semesterInfo = require("./semester.json");
 
 // Resources (e.g. css files) that need to be copied. Input path relative to current file, output path relative to out/css
 const linkedResources = ["./monokai.css", "./main.css", {
@@ -119,6 +122,7 @@ const renderAllFiles = () => {
  * @param {string[]} renderedPages
  */
 const renderIndex = (renderedPages) => {
+  // Convert list to tree structure
   const tree = { name: "", contents: [] }; /* [{ name: name of folder or file, content: link or []}] */
   renderedPages.forEach(link => {
     const fragments = link.split("/");
@@ -134,7 +138,7 @@ const renderIndex = (renderedPages) => {
   });
 
 
-
+  // Sort nodes alphabetically. If files and folders both present, files sorted first
   const recursiveSort = node => (Array.isArray(node.contents))?
       node.contents.sort((a, b) => {
         if (Array.isArray(a.contents) ^ Array.isArray(b.contents)) {
@@ -148,17 +152,33 @@ const renderIndex = (renderedPages) => {
   recursiveSort(tree);
 
 
+  /**
+   * Appends semester the course was taken e.g. DATA301 => DATA301 (2021-S1)
+   * @param {*} courseCode 
+   */
+  const getCourseString = courseCode => {
+    let outputStr = courseCode;
+    Object.keys(semesterInfo).forEach(key => {
+      if (semesterInfo[key].find(el => courseCode == el)) {
+        outputStr += ` (${key})`;
+      }
+    });
 
+    return outputStr;
+  }
+
+  // Hacky way to add description below heading
   tree.name = "COSC Notes\n\nNotes from the courses I have taken at UC.";
   const genMarkdown = (node, depth = 1) => {
     if (!Array.isArray(node.contents)) return `[${node.name}](${encodeURI(node.contents)})`;
-    return `${"#".repeat(depth)} ${node.name}\n\n${node.contents.map(el => genMarkdown(el, depth + 1)).join("\n\n")}`;
+
+    return `${"#".repeat(depth)} ${getCourseString(node.name)}\n\n${node.contents.map(el => genMarkdown(el, depth + 1)).join("\n\n")}`;
   }
   
   const inPath = path.join(outDirectory, "index.md");
   const outPath = path.join(outDirectory, "index.html");
   fse.writeFileSync(inPath, genMarkdown(tree));
-  render(inPath, outPath, "COSC Notes", false);
+  render(inPath, outPath, "COSC Notes");
 }
 
 copyInputDirectories();
