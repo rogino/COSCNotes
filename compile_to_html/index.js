@@ -5,9 +5,14 @@ const recursiveReaddir = require("recursive-readdir");
 
 
 // Directories in given directory will be copied to output directory and markdown files rendered
-const inDirectory = "./";
+const inDirectory = "./../";
 const outDirectory = "./out";
-const inDirectoryBlackList = [/^\./, /^node_modules/, /index\.md$/]; // Ignore hidden files, node_modules, generated index file
+const inDirectoryBlackList = [
+  /^\./,              // e.g. .git
+  /^node_modules/, 
+  /index\.md$/,       // index is auto-generated
+  /^compile_to_html/  // folder this html gen stuff is in
+];
 const semesterInfo = require("./semester.json");
 
 // Resources (e.g. css files) that need to be copied. Input path relative to current file, output path relative to out/css
@@ -77,11 +82,12 @@ const copyInputDirectories = () => {
     fse.ensureDirSync(inDirectory);
     fse.ensureDirSync(outDirectory);
     fse.readdirSync(inDirectory).forEach(name => {
-      if (fse.statSync(name).isFile()) return;
-      if (inDirectoryBlackList.some(reg => reg.test(name))) return;
-      // Copy all directories - means images etc. get copied
       const inDir = path.join(inDirectory, name);
       const outDir = path.join(outDirectory, name);
+
+      if (fse.statSync(inDir).isFile()) return;
+      if (inDirectoryBlackList.some(reg => reg.test(name))) return;
+      // Copy all directories - means images etc. get copied
 
       // if inDir = /, outDir = /out, don't copy /out to /out/out
       if (path.relative(outDirectory, inDir).length == 0) return;
@@ -177,6 +183,7 @@ const renderIndex = (renderedPages) => {
   
   const inPath = path.join(outDirectory, "index.md");
   const outPath = path.join(outDirectory, "index.html");
+  console.log("Rendering index");
   fse.writeFileSync(inPath, genMarkdown(tree));
   render(inPath, outPath, "COSC Notes");
 }
