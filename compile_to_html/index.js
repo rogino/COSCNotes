@@ -63,7 +63,7 @@ const cssLinks = (outPath) => {
 }
 
 
-const render = (inPath, outPath, title, forceToC = true) => {
+const render = (inPath, outPath, title, forceToC = true, bodyClasses = "") => {
   fse.writeFileSync(outPath, `
   <!DOCTYPE html>
   <html>
@@ -73,7 +73,7 @@ const render = (inPath, outPath, title, forceToC = true) => {
     ${cssLinks(outPath)}
     <title>${title}</title>
   </head>
-  <body>
+  <body${bodyClasses? " class=\"" + bodyClasses + "\"": ""}>
     <article>
       ${renderMarkdown(fse.readFileSync(inPath, { encoding: "utf8"}), forceToC)}
     </article>
@@ -215,18 +215,20 @@ const renderIndexFiles = (renderedPages, linksContainExtension = true) => {
     }
 
     let md = `${"#".repeat(depth)} [${getCourseString(node.name)}](${relativeLink})`;
-    if (tree.description) md += "\n\n" + tree.description;
+    if (node.description) md += "\n\n" + node.description;
     md += `\n\n${node.contents.map(el => genMarkdown(el, parentPath, depth + 1)).join("\n\n")}`;
     return md;
   }
 
   const renderIndex = node => {
     const nodePath = findNodePath(node);
+    // Only enable ToC if there are any sub-folders
+    const enableToC = node.contents.some(child => Array.isArray(child.contents));
     const inPath = path.join(outDirectory, nodePath, "index.md");
     const outPath = path.join(outDirectory, nodePath, "index.html");
     console.log(`Rendering index for folder ${nodePath}`);
     fse.writeFileSync(inPath, genMarkdown(node, nodePath));
-    render(inPath, outPath, node.name);
+    render(inPath, outPath, node.name, enableToC, "unstyled-header-links");
   }
 
   const nonLeafDfs = (node, callback) => {

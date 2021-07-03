@@ -170,14 +170,33 @@ a:visited {
 }
 
 /* markdown-it-anchors and page titles */
-a.header-anchor, h1 a {
+a.header-anchor {
   text-decoration: none;
   color: inherit;
 }
-a.header-anchor:hover, h1 a:hover {
+a.header-anchor:hover {
   text-decoration: underline;
 }
 
+/* On index pages don't want headers coloured */
+.unstyled-header-links h1 a,
+.unstyled-header-links h2 a,
+.unstyled-header-links h3 a,
+.unstyled-header-links h4 a,
+.unstyled-header-links h5 a,
+.unstyled-header-links h6 a {
+  text-decoration: none;
+  color: var(--foreground);
+}
+
+.unstyled-header-links h1 a:hover,
+.unstyled-header-links h2 a:hover,
+.unstyled-header-links h3 a:hover,
+.unstyled-header-links h4 a:hover,
+.unstyled-header-links h5 a:hover,
+.unstyled-header-links h6 a:hover {
+  text-decoration: underline;
+}
 
 /* Add #'s to left of headers. Doesn't work well in mobile */
 h2, h3, h4, h5, h6 { position: relative }

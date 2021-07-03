@@ -21,18 +21,20 @@ const md = require('markdown-it')({
 });
 
 
-// md.use(anchor, {
-//   permalink: anchor.permalink.headerLink()
-// });
+md.use(anchor, {
+  permalink: anchor.permalink.headerLink()
+});
 
-// md.use(require("markdown-it-toc-done-right"), {
-//   level: 2
-// });
-// md.use(require("markdown-it-footnote"));
-// md.use(require("markdown-it-texmath"), {
-//   engine: require("katex"),
-//   delimiters: "dollars"
-// });
+md.use(require("markdown-it-toc-done-right"), {
+  level: 2
+});
+
+md.use(require("markdown-it-footnote"));
+
+md.use(require("markdown-it-texmath"), {
+  engine: require("katex"),
+  delimiters: "dollars"
+});
 
 
 /**
