@@ -169,12 +169,12 @@ a:visited {
   color: var(--link-color-visited);
 }
 
-/* markdown-it-anchors */
-a.header-anchor {
+/* markdown-it-anchors and page titles */
+a.header-anchor, h1 a {
   text-decoration: none;
   color: inherit;
 }
-a.header-anchor:hover {
+a.header-anchor:hover, h1 a:hover {
   text-decoration: underline;
 }
 

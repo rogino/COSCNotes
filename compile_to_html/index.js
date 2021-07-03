@@ -126,7 +126,7 @@ const renderAllFiles = () => {
       renderedPages.push("/" + path.relative(outDirectory, outPath).replace(/\\/g, "/"));
     });
 
-    renderIndex(renderedPages);
+    renderIndexFiles(renderedPages);
   });
 }
 
@@ -134,7 +134,7 @@ const renderAllFiles = () => {
  * 
  * @param {string[]} renderedPages
  */
-const renderIndex = (renderedPages) => {
+const renderIndexFiles = (renderedPages, linksContainExtension = true) => {
   // Convert list to tree structure
   const tree = { name: "", contents: [] }; /* [{ name: name of folder or file, content: link or []}] */
   renderedPages.forEach(link => {
@@ -180,24 +180,67 @@ const renderIndex = (renderedPages) => {
     return outputStr;
   }
 
-  // Hacky way to add description below heading
-  tree.name = "COSC Notes\n\nNotes from the courses I have taken at UC.";
-  const genMarkdown = (node, depth = 1) => {
+  tree.name = "COSC Notes";
+  tree.description = "Notes from the courses I have taken at UC.";
+
+
+  /**
+   * non-leaf nodes don't have url info, so need to get it from a leaf node
+   * This should really be part of the tree, not calculated
+   */
+  const findNodePath = node => {
+    if (!Array.isArray(node.contents)) return node.contents;
+    const childIndex = node.contents.findIndex(child => findNodePath(child) != undefined);
+    if (childIndex == -1) return undefined; // tree has no children, or true of all its children
+    let childPath = findNodePath(node.contents[childIndex]);
+    return path.dirname(childPath); // Remove last section from path
+  }
+
+  const genMarkdown = (node, parentPath = "/", depth = 1) => {
+    const isLeaf = !Array.isArray(node.contents);
+    const nodePath = isLeaf? node.contents: findNodePath(node);
+
+    // Links are relative to current parent
+    let relativeLink = path.relative(parentPath, nodePath);
+    if (isLeaf && !linksContainExtension) {
+      relativeLink = path.dirname(relativeLink) + path.basename(relativeLink, ".html");
+    }
+
+    if (!isLeaf && linksContainExtension) {
+      relativeLink = path.join(relativeLink, "./index.html");
+    }
+    relativeLink = "./" + encodeURI(relativeLink.replace(/\\/g, "/")); // If windows, replace backslashes
     if (!Array.isArray(node.contents)) {
-      // Links are relative to index
-      const relativeLink = "." + encodeURI(node.contents.replace(/\\/g, "/"));
       return `[${node.name}](${relativeLink})`;
     }
 
-    return `${"#".repeat(depth)} ${getCourseString(node.name)}\n\n${node.contents.map(el => genMarkdown(el, depth + 1)).join("\n\n")}`;
+    let md = `${"#".repeat(depth)} [${getCourseString(node.name)}](${relativeLink})`;
+    if (tree.description) md += "\n\n" + tree.description;
+    md += `\n\n${node.contents.map(el => genMarkdown(el, parentPath, depth + 1)).join("\n\n")}`;
+    return md;
   }
-  
-  const inPath = path.join(outDirectory, "index.md");
-  const outPath = path.join(outDirectory, "index.html");
-  console.log("Rendering index");
-  fse.writeFileSync(inPath, genMarkdown(tree));
-  render(inPath, outPath, "COSC Notes");
+
+  const renderIndex = node => {
+    const nodePath = findNodePath(node);
+    const inPath = path.join(outDirectory, nodePath, "index.md");
+    const outPath = path.join(outDirectory, nodePath, "index.html");
+    console.log(`Rendering index for folder ${nodePath}`);
+    fse.writeFileSync(inPath, genMarkdown(node, nodePath));
+    render(inPath, outPath, node.name);
+  }
+
+  const nonLeafDfs = (node, callback) => {
+    callback(node);
+    node.contents.forEach(child => {
+      if (Array.isArray(child.contents)) {
+        nonLeafDfs(child, callback);
+      }
+    });
+  }
+
+  nonLeafDfs(tree, renderIndex); 
 }
+
 
 copyInputDirectories();
 copyLinkedResources();
