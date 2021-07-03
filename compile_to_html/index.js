@@ -209,10 +209,12 @@ const renderIndexFiles = (renderedPages, linksContainExtension = true) => {
     if (!isLeaf && linksContainExtension) {
       relativeLink = path.join(relativeLink, "./index.html");
     }
+    
     relativeLink = "./" + encodeURI(relativeLink.replace(/\\/g, "/")); // If windows, replace backslashes
     if (!Array.isArray(node.contents)) {
       return `[${node.name}](${relativeLink})`;
     }
+
 
     let md = `${"#".repeat(depth)} [${getCourseString(node.name)}](${relativeLink})`;
     if (node.description) md += "\n\n" + node.description;
