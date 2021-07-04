@@ -82,6 +82,132 @@ const render = (inPath, outPath, title, forceToC = true, bodyClasses = "") => {
 }
 
 
+class Node {
+  constructor(name, link, children = null) {
+    this.name = name;
+    this.link = link;
+    this.children = children;
+    this.description = "";
+  }
+
+  isLeaf() {
+    return !Array.isArray(this.children);
+  }
+
+  /**
+   * 
+   * @returns true if leaf node or all children are leaf nodes
+   */
+  allChildrenLeafNodes() {
+    return this.isLeaf() || this.children.every(child => child.allChildrenLeafNodes());
+  }
+
+  addChildren(...children) {
+    if (this.isLeaf()) this.children = [];
+    this.children.push(...children);
+  }
+
+  /**
+   * 
+   * @param {*} relativeTo links should be relative to this 
+   * @param {*} depth 
+   * @returns 
+   */
+  generateMarkdown(relativeTo = "/", depth = 1, linksContainExtension = true) {
+    let relativeLink = path.relative(relativeTo, this.link);
+
+    if (this.isLeaf() && !linksContainExtension) {
+      relativeLink = path.join(path.dirname(relativeLink) + path.basename(relativeLink, ".html"));
+    }
+    
+    if (!this.isLeaf() && linksContainExtension) {
+      relativeLink = path.join(relativeLink, "./index.html");
+    }
+    
+    relativeLink = "./" + encodeURI(relativeLink.replace(/\\/g, "/")); // If windows, replace backslashes
+
+    if (this.isLeaf()) {
+      return `[${this.name}](${relativeLink})`;
+    }
+    
+    let md = `${"#".repeat(Math.min(6, depth))} [${this.name}](${relativeLink})`;
+    if (this.description) md += "\n\n" + this.description;
+    md += `\n\n${this.children.map(child => child.generateMarkdown(relativeTo, depth + 1)).join("\n\n")}`;
+    return md;
+  }
+
+  /**
+   * 
+   * @param {*} pages array of links to pages
+   * @param {*} rootName 
+   */
+  static arrayToTree(pages, rootName = "", rootPath = "/") {
+    const tree = new Node(rootName, rootPath, []);
+    pages.forEach(link => {
+      const fragments = link.split("/");
+      let node = tree;
+      let folderLink = "/";
+
+      // BFS search
+      fragments.slice(1, -1).forEach(fragment => {
+        // Find node where relative link does not start with ../
+        const index = node.children.findIndex(node=> !path.relative(node.link, link).match(/^\.\./))
+
+        folderLink = path.join(folderLink, fragment);
+        
+        if (index == -1) {
+          const childNode = new Node(fragment, folderLink);
+          node.addChildren(childNode);
+          node = childNode;
+        } else {
+          node = node.children[index];
+        }
+      });
+
+      const name = fragments.pop().replace(/\.html$/, "");
+      node.addChildren(new Node(name, link));
+    });
+
+    return tree;
+  }
+
+
+  /**
+   * Sort nodes by their name. Leaf nodes sort before non-leaf nodes
+   * @returns this 
+   */
+  sort() {
+    if (this.isLeaf()) return;
+    this.children.sort((a, b) => {
+      if (a.isLeaf() ^ b.isLeaf()) {
+        // If one is file and another is directory, file first
+        return a.isLeaf()? 1: -1;
+      }
+
+      return a.name < b.name? -1: 1;
+    });
+    
+    this.children.forEach(child => child.sort());
+    return this;
+  }
+
+
+  /**
+   * 
+   * @param {*} callback 
+   * @param {*} noLeaves if true, callback not called on leaf nodes
+   */
+  dfs = (callback, noLeaves = false) => {
+    callback(this);
+    if(this.isLeaf()) return;
+    this.children.forEach(child => {
+      if (!(noLeaves && child.isLeaf())) {
+        child.dfs(callback, noLeaves);
+      }
+    });
+  }
+}
+
 
 const copyInputDirectories = () => {
   // Don't copy if the files are the same length
@@ -136,113 +262,33 @@ const renderAllFiles = () => {
  */
 const renderIndexFiles = (renderedPages, linksContainExtension = true) => {
   // Convert list to tree structure
-  const tree = { name: "", contents: [] }; /* [{ name: name of folder or file, content: link or []}] */
-  renderedPages.forEach(link => {
-    const fragments = link.split("/");
-    let node = tree;
-    // Ignore root and file name
-    fragments.slice(1, -1).forEach(fragment => {
-      const index = node.contents.findIndex(el => el.name == fragment);
-      node = (index == -1)? node.contents[node.contents.push({ name: fragment, contents: []}) - 1]: node.contents[index];
-      if (!Array.isArray(node.contents)) console.error(`File and directory with the same name: '${link}', '${fragment}'`);
-    });
-
-    node.contents.push({ name: fragments.pop().replace(/\.html$/, ""), contents: link });
-  });
-
-
-  // Sort nodes alphabetically. If files and folders both present, files sorted first
-  const recursiveSort = node => (Array.isArray(node.contents))?
-      node.contents.sort((a, b) => {
-        if (Array.isArray(a.contents) ^ Array.isArray(b.contents)) {
-          // If one is file and another is directory, file first
-          return Array.isArray(a.contents)? 1: -1;
-        }
-        return a.name < b.name? -1: 1;
-      }).forEach(node => recursiveSort(node)):
-      null;
-
-  recursiveSort(tree);
-
-
-  /**
-   * Appends semester the course was taken e.g. DATA301 => DATA301 (2021-S1)
-   * @param {*} courseCode 
-   */
-  const getCourseString = courseCode => {
-    let outputStr = courseCode;
-    Object.keys(semesterInfo).forEach(key => {
-      if (semesterInfo[key].find(el => courseCode == el)) {
-        outputStr += ` (${key})`;
-      }
-    });
-
-    return outputStr;
-  }
-
-  tree.name = "COSC Notes";
+  const tree = Node.arrayToTree(renderedPages, "COSC Notes");
+  
   tree.description = "Notes from the courses I have taken at UC.";
 
+  tree.sort();
 
-  /**
-   * non-leaf nodes don't have url info, so need to get it from a leaf node
-   * This should really be part of the tree, not calculated
-   */
-  const findNodePath = node => {
-    if (!Array.isArray(node.contents)) return node.contents;
-    const childIndex = node.contents.findIndex(child => findNodePath(child) != undefined);
-    if (childIndex == -1) return undefined; // tree has no children, or true of all its children
-    let childPath = findNodePath(node.contents[childIndex]);
-    return path.dirname(childPath); // Remove last section from path
-  }
-
-  const genMarkdown = (node, parentPath = "/", depth = 1) => {
-    const isLeaf = !Array.isArray(node.contents);
-    const nodePath = isLeaf? node.contents: findNodePath(node);
-
-    // Links are relative to current parent
-    let relativeLink = path.relative(parentPath, nodePath);
-    if (isLeaf && !linksContainExtension) {
-      relativeLink = path.dirname(relativeLink) + path.basename(relativeLink, ".html");
-    }
-
-    if (!isLeaf && linksContainExtension) {
-      relativeLink = path.join(relativeLink, "./index.html");
-    }
-    
-    relativeLink = "./" + encodeURI(relativeLink.replace(/\\/g, "/")); // If windows, replace backslashes
-    if (!Array.isArray(node.contents)) {
-      return `[${node.name}](${relativeLink})`;
-    }
-
-
-    let md = `${"#".repeat(depth)} [${getCourseString(node.name)}](${relativeLink})`;
-    if (node.description) md += "\n\n" + node.description;
-    md += `\n\n${node.contents.map(el => genMarkdown(el, parentPath, depth + 1)).join("\n\n")}`;
-    return md;
-  }
+  // Appends semester the course was taken e.g. DATA301 => DATA301 (2021-S1)
+  tree.dfs(node => {
+    Object.keys(semesterInfo).forEach(key => {
+      if (semesterInfo[key].find(el => node.name == el)) {
+        node.name = `${node.name} (${key})`;
+        return;
+      }
+    });
+  }, true)
 
   const renderIndex = node => {
-    const nodePath = findNodePath(node);
     // Only enable ToC if there are any sub-folders
-    const enableToC = node.contents.some(child => Array.isArray(child.contents));
-    const inPath = path.join(outDirectory, nodePath, "index.md");
-    const outPath = path.join(outDirectory, nodePath, "index.html");
-    console.log(`Rendering index for folder ${nodePath}`);
-    fse.writeFileSync(inPath, genMarkdown(node, nodePath));
+    const enableToC = !node.allChildrenLeafNodes();
+    const inPath = path.join(outDirectory, node.link, "index.md");
+    const outPath = path.join(outDirectory, node.link, "index.html");
+    console.log(`Rendering index for folder ${node.link}`);
+    fse.writeFileSync(inPath, node.generateMarkdown("/", 1, linksContainExtension));
     render(inPath, outPath, node.name, enableToC, "unstyled-header-links");
   }
 
-  const nonLeafDfs = (node, callback) => {
-    callback(node);
-    node.contents.forEach(child => {
-      if (Array.isArray(child.contents)) {
-        nonLeafDfs(child, callback);
-      }
-    });
-  }
-
-  nonLeafDfs(tree, renderIndex); 
+  tree.dfs(renderIndex, true);
 }
 
 
