@@ -308,7 +308,6 @@ const renderIndexFiles = (renderedPages, linksContainExtension = true) => {
   }, true);
 
   tree.generateBreadcrumbs();
-  fse.writeFileSync("./test.json", JSON.stringify(tree, null, 2));
 
   const renderIndex = node => {
     // Only enable ToC if there are any sub-folders
@@ -323,9 +322,7 @@ const renderIndexFiles = (renderedPages, linksContainExtension = true) => {
   tree.dfs(renderIndex, true);
 }
 
-const input = require("./in.json");
-renderIndexFiles(input);
 
-// copyInputDirectories();
-// copyLinkedResources();
-// renderAllFiles();
+copyInputDirectories();
+copyLinkedResources();
+renderAllFiles();
