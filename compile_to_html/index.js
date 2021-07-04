@@ -63,7 +63,7 @@ const cssLinks = (outPath) => {
 }
 
 
-const render = (inPath, outPath, title, forceToC = true, bodyClasses = "") => {
+const render = (inPath, outPath, title, forceToC = true, bodyClasses = "", contentBelowTitle = "") => {
   fse.writeFileSync(outPath, `
   <!DOCTYPE html>
   <html>
@@ -75,13 +75,14 @@ const render = (inPath, outPath, title, forceToC = true, bodyClasses = "") => {
   </head>
   <body${bodyClasses? " class=\"" + bodyClasses + "\"": ""}>
     <article>
-      ${renderMarkdown(fse.readFileSync(inPath, { encoding: "utf8"}), forceToC)}
+      ${renderMarkdown(fse.readFileSync(inPath, { encoding: "utf8"}), forceToC, contentBelowTitle)}
     </article>
   </body>
   `);
 }
 
 
+const encodeLink = link => encodeURI(link.replace(/\\/g, "/"));
 class Node {
   constructor(name, link, children = null) {
     this.name = name;
@@ -124,7 +125,7 @@ class Node {
       relativeLink = path.join(relativeLink, "./index.html");
     }
     
-    relativeLink = "./" + encodeURI(relativeLink.replace(/\\/g, "/")); // If windows, replace backslashes
+    relativeLink = "./" + encodeLink(relativeLink); // If windows, replace backslashes
 
     if (this.isLeaf()) {
       return `[${this.name}](${relativeLink})`;
@@ -132,6 +133,9 @@ class Node {
     
     let md = `${"#".repeat(Math.min(6, depth))} [${this.name}](${relativeLink})`;
     if (this.description) md += "\n\n" + this.description;
+    if (depth < 2 && Array.isArray(this.breadcrumbs) && this.breadcrumbs.length) {
+      md += "\n\n" + this.breadcrumbsToMarkdown();
+    }
     md += `\n\n${this.children.map(child => child.generateMarkdown(relativeTo, depth + 1)).join("\n\n")}`;
     return md;
   }
@@ -197,7 +201,7 @@ class Node {
    * @param {*} callback 
    * @param {*} noLeaves if true, callback not called on leaf nodes
    */
-  dfs = (callback, noLeaves = false) => {
+  dfs(callback, noLeaves = false) {
     callback(this);
     if(this.isLeaf()) return;
     this.children.forEach(child => {
@@ -205,6 +209,31 @@ class Node {
         child.dfs(callback, noLeaves);
       }
     });
+  }
+
+  generateBreadcrumbs(prettyLinks = false) {
+    this.breadcrumbs = [];
+    this.dfs(node => {
+      if (!node.isLeaf()) {
+        node.children.forEach(child => {
+          if (!Array.isArray(child.breadcrumbs)) child.breadcrumbs = [];
+          child.breadcrumbs.push(...node.breadcrumbs);
+          child.breadcrumbs.push({
+            name: node.name,
+            link: "./" + encodeLink(path.join(
+              path.relative(child.link, node.link),
+              prettyLinks? "": "./index.html"
+            ))
+          });
+        });
+      }
+    });
+  }
+
+  breadcrumbsToMarkdown() {
+    return `<span class="breadcrumbs">${
+      this.breadcrumbs.map(crumb => `[${crumb.name}](${crumb.link})`).join("\n")
+    }</span>`
   }
 }
 
@@ -276,7 +305,10 @@ const renderIndexFiles = (renderedPages, linksContainExtension = true) => {
         return;
       }
     });
-  }, true)
+  }, true);
+
+  tree.generateBreadcrumbs();
+  fse.writeFileSync("./test.json", JSON.stringify(tree, null, 2));
 
   const renderIndex = node => {
     // Only enable ToC if there are any sub-folders
@@ -284,14 +316,16 @@ const renderIndexFiles = (renderedPages, linksContainExtension = true) => {
     const inPath = path.join(outDirectory, node.link, "index.md");
     const outPath = path.join(outDirectory, node.link, "index.html");
     console.log(`Rendering index for folder ${node.link}`);
-    fse.writeFileSync(inPath, node.generateMarkdown("/", 1, linksContainExtension));
+    fse.writeFileSync(inPath, node.generateMarkdown(node.link, 1, linksContainExtension));
     render(inPath, outPath, node.name, enableToC, "unstyled-header-links");
   }
 
   tree.dfs(renderIndex, true);
 }
 
+const input = require("./in.json");
+renderIndexFiles(input);
 
-copyInputDirectories();
-copyLinkedResources();
-renderAllFiles();
+// copyInputDirectories();
+// copyLinkedResources();
+// renderAllFiles();

@@ -178,6 +178,21 @@ a.header-anchor:hover {
   text-decoration: underline;
 }
 
+
+/* Breadcrumbs */
+.breadcrumbs a +  a::before {
+    content: " \25B7  "
+}
+.breadcrumbs a {
+    color: var(--foreground);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+.breadcrumbs a:hover {
+    text-decoration: underline;
+}
+
+
 /* On index pages don't want headers coloured */
 .unstyled-header-links h1 a,
 .unstyled-header-links h2 a,

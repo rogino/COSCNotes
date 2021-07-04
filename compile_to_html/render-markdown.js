@@ -41,9 +41,10 @@ md.use(require("markdown-it-texmath"), {
  * Given markdown text as input, returns rendered html
  * @param {*} markdownText markdown text to render
  * @param {*} forceToC if true, file will always have a table of contents even if not present in input
+ * @param {*} contentBelowTitle content to place after the page title and before the ToC, if present
  * @returns rendered markdown
  */
-module.exports.default = (markdownText, forceToC = true) => {
+module.exports.default = (markdownText, forceToC = true, contentBelowTitle = "") => {
   // Add [toc] if not already present
   if (forceToC) {
     const lines = markdownText.split("\n");
@@ -54,6 +55,17 @@ module.exports.default = (markdownText, forceToC = true) => {
         !lines[2].match(/^\[toc\]$/)
     ) {
       markdownText = lines[0] + "\n\n[toc]\n\n" + lines.slice(2).join("\n");
+    }
+  }
+
+  if (contentBelowTitle && contentBelowTitle.trim().length) {
+    const lines = markdownText.split("\n");
+    if (
+        lines.length > 2 &&
+        lines[0].match(/^# .+/) &&
+        lines[1].trim().length == 0
+    ) {
+      markdownText = lines[0] + "\n\n" + contentBelowTitle + "\n\n";
     }
   }
 
