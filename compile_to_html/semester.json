@@ -1,5 +1,13 @@
 {
-  "2020-S1": ["COSC261", "COSC262"],
+  "2020-S1": [
+    {
+      "name": "COSC261",
+      "description": "DFAs and Automata"
+    }, {
+      "name": "COSC262",
+      "description": "Algorithms!"
+    }
+  ],
   "2020-S2": ["COSC264", "COSC265", "COSC367"],
   "2021-S1": ["SENG301", "SENG302", "SENG365", "DATA301"]
 }

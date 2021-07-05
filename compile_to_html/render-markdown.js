@@ -65,7 +65,7 @@ module.exports.default = (markdownText, forceToC = true, contentBelowTitle = "")
         lines[0].match(/^# .+/) &&
         lines[1].trim().length == 0
     ) {
-      markdownText = lines[0] + "\n\n" + contentBelowTitle + "\n\n";
+      markdownText = lines[0] + "\n\n" + contentBelowTitle + "\n\n" + lines.slice(2).join("\n");
     }
   }
 

@@ -11,7 +11,7 @@ const outDirectory = "./out";
 // Blacklist. For copying directories, just the name of the file/folder. For rendering, uses path relative to out directory
 const inDirectoryBlackList = [
   /^\./,              // e.g. .git
-  /^node_modules/, 
+  /^node_modules/,
   /index\.md$/,       // index is auto-generated
   /^compile_to_html/  // folder this html gen stuff is in
 ];
@@ -19,9 +19,9 @@ const semesterInfo = require("./semester.json");
 
 // Resources (e.g. css files) that need to be copied. Input path relative to current file, output path relative to out/css
 const linkedResources = ["./monokai.css", "./main.css", {
-    path: "./node_modules/katex/dist/katex.min.css",
-    outPath: "./katex/katex.min.css",
-  }, {
+  path: "./node_modules/katex/dist/katex.min.css",
+  outPath: "./katex/katex.min.css",
+}, {
     path: "./node_modules/katex/dist/fonts",
     outPath: "./katex/fonts",
     dontLink: true /* Don't link in the HTML head */
@@ -52,14 +52,14 @@ const copyLinkedResources = () => {
 const cssLinks = (outPath) => {
   // replace all \ with /
   return linkedResources
-      .filter(el => typeof el == "string" || !el.dontLink)
-      .map(el => typeof el == "string"? el: el.outPath)
-      .map(relativePath => {
-        const cssPath = path.join(cssDir(), relativePath);
-        // Need path.dirname for some reason
-        const link = path.relative(path.dirname(outPath), cssPath).replace(/\\/g, "/");
-        return `<link rel="stylesheet" href="${link}">`;
-      }).join("\n");
+    .filter(el => typeof el == "string" || !el.dontLink)
+    .map(el => typeof el == "string" ? el : el.outPath)
+    .map(relativePath => {
+      const cssPath = path.join(cssDir(), relativePath);
+      // Need path.dirname for some reason
+      const link = path.relative(path.dirname(outPath), cssPath).replace(/\\/g, "/");
+      return `<link rel="stylesheet" href="${link}">`;
+    }).join("\n");
 }
 
 
@@ -73,9 +73,9 @@ const render = (inPath, outPath, title, forceToC = true, bodyClasses = "", conte
     ${cssLinks(outPath)}
     <title>${title}</title>
   </head>
-  <body${bodyClasses? " class=\"" + bodyClasses + "\"": ""}>
+  <body${bodyClasses ? " class=\"" + bodyClasses + "\"" : ""}>
     <article>
-      ${renderMarkdown(fse.readFileSync(inPath, { encoding: "utf8"}), forceToC, contentBelowTitle)}
+      ${renderMarkdown(fse.readFileSync(inPath, { encoding: "utf8" }), forceToC, contentBelowTitle)}
     </article>
   </body>
   `);
@@ -84,11 +84,12 @@ const render = (inPath, outPath, title, forceToC = true, bodyClasses = "", conte
 
 const encodeLink = link => encodeURI(link.replace(/\\/g, "/"));
 class Node {
-  constructor(name, link, children = null) {
-    this.name = name;
-    this.link = link;
-    this.children = children;
+  constructor() {
+    this.name = "";
+    this.link = "/"; // full link to file (if being run on a http server)
+    this.children = null;
     this.description = "";
+    this.breadcrumbs = null;
   }
 
   isLeaf() {
@@ -100,7 +101,7 @@ class Node {
    * @returns true if leaf node or all children are leaf nodes
    */
   allChildrenLeafNodes() {
-    return this.isLeaf() || this.children.every(child => child.allChildrenLeafNodes());
+    return this.isLeaf() || this.children.every(child => child.isLeaf());
   }
 
   addChildren(...children) {
@@ -109,72 +110,38 @@ class Node {
   }
 
   /**
-   * 
-   * @param {*} relativeTo links should be relative to this 
+   * Generate markdown for index pages
+   * @param {*} relativeTo links should be relative to this directory
    * @param {*} depth 
    * @returns 
    */
-  generateMarkdown(relativeTo = "/", depth = 1, linksContainExtension = true) {
+  generateIndexMarkdown(relativeTo = "/", depth = 1, prettyLinks = false) {
     let relativeLink = path.relative(relativeTo, this.link);
 
-    if (this.isLeaf() && !linksContainExtension) {
-      relativeLink = path.join(path.dirname(relativeLink) + path.basename(relativeLink, ".html"));
+    if (prettyLinks) {
+      if (this.isLeaf()) {
+        relativeLink = path.join(path.dirname(relativeLink) + path.basename(relativeLink, ".html"));
+      } else {
+        relativeLink = path.dirname(relativeLink);
+      }
     }
-    
-    if (!this.isLeaf() && linksContainExtension) {
-      relativeLink = path.join(relativeLink, "./index.html");
-    }
-    
+
     relativeLink = "./" + encodeLink(relativeLink); // If windows, replace backslashes
 
     if (this.isLeaf()) {
       return `[${this.name}](${relativeLink})`;
     }
-    
+
     let md = `${"#".repeat(Math.min(6, depth))} [${this.name}](${relativeLink})`;
     if (this.description) md += "\n\n" + this.description;
-    if (depth < 2 && Array.isArray(this.breadcrumbs) && this.breadcrumbs.length) {
-      md += "\n\n" + this.breadcrumbsToMarkdown();
-    }
-    md += `\n\n${this.children.map(child => child.generateMarkdown(relativeTo, depth + 1)).join("\n\n")}`;
+
+    // if (depth == 1 && this.breadcrumbsToMarkdown().length) {
+    //   md += "\n\n" + this.breadcrumbsToMarkdown();
+    // }
+
+    md += `\n\n${this.children.map(child => child.generateIndexMarkdown(relativeTo, depth + 1)).join("\n\n")}`;
     return md;
   }
-
-  /**
-   * 
-   * @param {*} pages array of links to pages
-   * @param {*} rootName 
-   */
-  static arrayToTree(pages, rootName = "", rootPath = "/") {
-    const tree = new Node(rootName, rootPath, []);
-    pages.forEach(link => {
-      const fragments = link.split("/");
-      let node = tree;
-      let folderLink = "/";
-
-      // BFS search
-      fragments.slice(1, -1).forEach(fragment => {
-        // Find node where relative link does not start with ../
-        const index = node.children.findIndex(node=> !path.relative(node.link, link).match(/^\.\./))
-
-        folderLink = path.join(folderLink, fragment);
-        
-        if (index == -1) {
-          const childNode = new Node(fragment, folderLink);
-          node.addChildren(childNode);
-          node = childNode;
-        } else {
-          node = node.children[index];
-        }
-      });
-
-      const name = fragments.pop().replace(/\.html$/, "");
-      node.addChildren(new Node(name, link));
-    });
-
-    return tree;
-  }
-
 
   /**
    * Sort nodes by their name. Leaf nodes sort before non-leaf nodes
@@ -185,12 +152,12 @@ class Node {
     this.children.sort((a, b) => {
       if (a.isLeaf() ^ b.isLeaf()) {
         // If one is file and another is directory, file first
-        return a.isLeaf()? 1: -1;
+        return a.isLeaf() ? 1 : -1;
       }
 
-      return a.name < b.name? -1: 1;
+      return a.name < b.name ? -1 : 1;
     });
-    
+
     this.children.forEach(child => child.sort());
     return this;
   }
@@ -203,7 +170,7 @@ class Node {
    */
   dfs(callback, noLeaves = false) {
     callback(this);
-    if(this.isLeaf()) return;
+    if (this.isLeaf()) return;
     this.children.forEach(child => {
       if (!(noLeaves && child.isLeaf())) {
         child.dfs(callback, noLeaves);
@@ -211,6 +178,10 @@ class Node {
     });
   }
 
+  /**
+   * Generates breadcrumbs for node and all children
+   * @param {*} prettyLinks 
+   */
   generateBreadcrumbs(prettyLinks = false) {
     this.breadcrumbs = [];
     this.dfs(node => {
@@ -218,12 +189,16 @@ class Node {
         node.children.forEach(child => {
           if (!Array.isArray(child.breadcrumbs)) child.breadcrumbs = [];
           child.breadcrumbs.push(...node.breadcrumbs);
+          // Child will always have parent's breadcrumbs, plus breadcrumb for the parent
+
+          // Need dirname as relative path from a/b/c.html to a/b/index.html should be ./index.html
+          let link = path.relative(path.dirname(child.link), node.link);
+
+          // Dirname to get rid of the .html
+          if (prettyLinks) link = path.dirname(link);
           child.breadcrumbs.push({
             name: node.name,
-            link: "./" + encodeLink(path.join(
-              path.relative(child.link, node.link),
-              prettyLinks? "": "./index.html"
-            ))
+            link: "./" + encodeLink(link)
           });
         });
       }
@@ -231,12 +206,93 @@ class Node {
   }
 
   breadcrumbsToMarkdown() {
-    return `<span class="breadcrumbs">${
-      this.breadcrumbs.map(crumb => `[${crumb.name}](${crumb.link})`).join("\n")
-    }</span>`
+    if (!Array.isArray(this.breadcrumbs) || this.breadcrumbs.length == 0) return "";
+    return `<span class="breadcrumbs">${this.breadcrumbs.map(crumb => `[${crumb.name}](${crumb.link})`).join("\n")
+      }</span>`
   }
 }
 
+class IndexNode extends Node {
+  constructor(name, folderPath, relativeTo) {
+    super();
+    this.name = name;
+    this.markdownPath = path.join(folderPath, "index.md");
+    this.htmlPath = path.join(folderPath, "index.html");
+    this.link = path.join("/", path.relative(relativeTo, this.htmlPath));
+    this.children = [];
+  }
+
+  /**
+   * 
+   * @param {*} pages array of links to pages
+   * @param {*} rootName 
+   * @param {string} TODO outDirectory, rename
+   */
+  static arrayToTree(pages, outDirectory, rootName = "") {
+    const tree = new IndexNode(rootName, outDirectory, outDirectory);
+    pages.forEach(markdownPath => {
+      const pageNode = new LeafNode(markdownPath, outDirectory);
+
+      const fragments = []; // Split path indo folders (and file name)
+      let link = pageNode.link;
+      let prevLen = -1;
+      while (link.length != prevLen) {
+        prevLen = link.length;
+        fragments.push(path.basename(link));
+        link = path.dirname(link);
+      }
+
+      fragments.reverse();
+
+      let node = tree;
+      let folderPath = outDirectory;
+
+      // BFS search to go down the tree to find the right index node (or make it)
+      // First element will be `.` or something, so ignore that - the root
+      // Last element is the file name so ignore that too
+      fragments.slice(1, -1).forEach(fragment => {
+        const link = pageNode.link;
+        // Find node where relative link does not start with ../
+        // Use dirname as index pages have .index.html
+        const index = node.children.findIndex(node => !path.relative(
+                path.dirname(node.link),
+                link
+            ).match(/^\.\./)
+        );
+        folderPath = path.join(folderPath, fragment);
+
+        if (index == -1) {
+          // Make the directory node
+          const childNode = new IndexNode(fragment, folderPath, outDirectory);
+          node.addChildren(childNode);
+          node = childNode;
+        } else {
+          node = node.children[index];
+        }
+      });
+
+      node.addChildren(pageNode);
+    });
+
+    return tree;
+  }
+}
+
+class LeafNode extends Node {
+  /**
+   * 
+   * @param {*} markdownPath path to markdown file
+   * @param {*} relativeTo files will be served relative to this domain
+   */
+  constructor(markdownPath, relativeTo) {
+    super();
+    this.name = path.basename(markdownPath, ".md");
+    this.markdownPath = markdownPath;
+    this.htmlPath = path.join(path.dirname(markdownPath), path.basename(markdownPath, ".md") + ".html");
+    // Link is absolute link to the output file when being served. Has the extension
+    this.link = path.join("/", path.relative(relativeTo, this.htmlPath));
+  }
+}
 
 const copyInputDirectories = () => {
   // Don't copy if the files are the same length
@@ -259,70 +315,74 @@ const copyInputDirectories = () => {
   }
 }
 
-const renderAllFiles = () => {
-  recursiveReaddir(outDirectory, [filePath => {
-    // Ignore directories in blacklist and non-markdown files
-    return (fse.statSync(filePath).isFile() && !/\.md$/.test(path.basename(filePath))) ||
-           inDirectoryBlackList.some(reg => reg.test(path.relative(outDirectory, filePath)));
-  }], function (err, files) {
+const renderAllFiles = (prettyLinks = false) => {
+  recursiveReaddir(outDirectory, [
+    // Ignore non-markdown files
+    filePath => fse.statSync(filePath).isFile() && !/\.md$/.test(path.basename(filePath)),
+
+    // Ignore directories in blacklist
+    filePath => inDirectoryBlackList.some(reg => reg.test(path.relative(outDirectory, filePath))),
+   
+    // Ignore index.md
+    filePath => /index\.md$/.test(path.basename(filePath))
+  ], function (err, pagePaths) {
     if (err) {
       console.error("Error recursively reading output directory");
       console.error(err);
       process.exit(2);
     }
 
-    const renderedPages = [];
+    // Convert list to tree structure
+    const tree = IndexNode.arrayToTree(pagePaths, outDirectory, "COSC Notes");
+    tree.description = "Notes from the courses I have taken at UC.";
 
-    files.forEach(filePath => {
-      console.log(`Rendering ${filePath}`);
-      const title = path.basename(filePath, ".md");
-      const outPath = path.join(path.dirname(filePath), title + ".html");
-      render(filePath, outPath, title);
-      renderedPages.push("/" + path.relative(outDirectory, outPath).replace(/\\/g, "/"));
+    tree.sort();
+
+    // Appends semester the course was taken to the page title e.g. DATA301 => DATA301 (2021-S1)
+    tree.dfs(node => {
+      Object.keys(semesterInfo).forEach(key => {
+        const info = semesterInfo[key].find(el => node.name == (typeof(el) == "string"? el: el.name))
+        if (info) {
+          node.name = `${node.name} (${key})`;
+          if (typeof(info) == "object" && info.description) {
+            node.description = info.description;
+          }
+          return;
+        }
+      });
+    }, true);
+
+
+    tree.generateBreadcrumbs(prettyLinks);
+
+    fse.writeFileSync("./test.json", JSON.stringify(tree, null, 2));
+
+    tree.dfs(node => {
+      let forceToC = true;
+      let bodyClasses = "";
+      let breadcrumbs = node.breadcrumbsToMarkdown();
+
+      if (!node.isLeaf()) {
+        bodyClasses = "unstyled-header-links";
+        forceToC = !node.allChildrenLeafNodes();
+
+        fse.writeFileSync(
+            node.markdownPath,
+            node.generateIndexMarkdown(path.dirname(node.link), 1, prettyLinks)
+        );
+      } else {
+        console.log(`Rendering page ${node.markdownPath}`);
+      }
+
+      render(node.markdownPath, node.htmlPath, node.name, forceToC, bodyClasses, breadcrumbs);
     });
-
-    renderIndexFiles(renderedPages);
   });
 }
 
-/**
- * 
- * @param {string[]} renderedPages
- */
-const renderIndexFiles = (renderedPages, linksContainExtension = true) => {
-  // Convert list to tree structure
-  const tree = Node.arrayToTree(renderedPages, "COSC Notes");
-  
-  tree.description = "Notes from the courses I have taken at UC.";
 
-  tree.sort();
-
-  // Appends semester the course was taken e.g. DATA301 => DATA301 (2021-S1)
-  tree.dfs(node => {
-    Object.keys(semesterInfo).forEach(key => {
-      if (semesterInfo[key].find(el => node.name == el)) {
-        node.name = `${node.name} (${key})`;
-        return;
-      }
-    });
-  }, true);
-
-  tree.generateBreadcrumbs();
-
-  const renderIndex = node => {
-    // Only enable ToC if there are any sub-folders
-    const enableToC = !node.allChildrenLeafNodes();
-    const inPath = path.join(outDirectory, node.link, "index.md");
-    const outPath = path.join(outDirectory, node.link, "index.html");
-    console.log(`Rendering index for folder ${node.link}`);
-    fse.writeFileSync(inPath, node.generateMarkdown(node.link, 1, linksContainExtension));
-    render(inPath, outPath, node.name, enableToC, "unstyled-header-links");
-  }
-
-  tree.dfs(renderIndex, true);
-}
-
+// const input = require("./in.json");
+// renderIndexFiles(input);
 
 copyInputDirectories();
-copyLinkedResources();
+// copyLinkedResources();
 renderAllFiles();
