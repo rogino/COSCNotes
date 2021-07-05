@@ -5,6 +5,8 @@ const path = require("path");
 const readline = require('readline');
 const recursiveReaddir = require("recursive-readdir");
 
+const PRETTY_LINKS = true; // No links don't have .html extension, index.html is just /
+
 // Directories in given directory will be copied to output directory and markdown files rendered
 const inDirectory = "./../";
 const outDirectory = "./out";
@@ -159,7 +161,7 @@ class Node {
 
     if (prettyLinks) {
       if (this.isLeaf()) {
-        relativeLink = path.join(path.dirname(relativeLink) + path.basename(relativeLink, ".html"));
+        relativeLink = path.join(path.dirname(relativeLink), path.basename(relativeLink, ".html"));
       } else {
         relativeLink = path.dirname(relativeLink);
       }
@@ -401,6 +403,8 @@ const renderAllFiles = async (prettyLinks = false) => {
   tree.generateBreadcrumbs(prettyLinks);
 
   // await fse.writeFile("./test.json", JSON.stringify(tree, null, 2));
+  // return tree.generateIndexMarkdown(outDirectory, 1, true);
+
   const promises = [];
 
   tree.dfs(node => {
@@ -430,5 +434,5 @@ const renderAllFiles = async (prettyLinks = false) => {
 (async () => {
   await copyInputDirectories();
   await copyLinkedResources();
-  await renderAllFiles(true);
+  await renderAllFiles(PRETTY_LINKS);
 })();
