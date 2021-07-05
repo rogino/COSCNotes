@@ -1,4 +1,4 @@
-# DATA301 Exam Notes
+# Exam Notes
 
 ## Five Vs
 
