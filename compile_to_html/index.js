@@ -113,6 +113,11 @@ const render = async (inPath, outPath, title, forceToC = true, bodyClasses = "",
 }
 
 
+/**
+ * Encodes link. Replaces backslashes with slashes
+ * @param {*} link 
+ * @returns 
+ */
 const encodeLink = link => encodeURI(link.replace(/\\/g, "/"));
 class Node {
   constructor() {
@@ -149,7 +154,8 @@ class Node {
    * @returns 
    */
   generateIndexMarkdown(relativeTo = "/", depth = 1, prettyLinks = false) {
-    let relativeLink = path.relative(relativeTo, this.link);
+    // If `./` is used here, it becomes just `.`
+    let relativeLink = path.join("/", path.relative(relativeTo, this.link));
 
     if (prettyLinks) {
       if (this.isLeaf()) {
@@ -159,7 +165,8 @@ class Node {
       }
     }
 
-    relativeLink = "./" + encodeLink(relativeLink); // If windows, replace backslashes
+    // Dot makes it relative
+    relativeLink = "." + encodeLink(relativeLink);
 
     if (this.isLeaf()) {
       return `[${this.name}](${relativeLink})`;
