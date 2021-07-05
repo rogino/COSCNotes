@@ -1,8 +1,9 @@
 const renderMarkdown = require("./render-markdown").default;
 const fse = require("fs-extra");
+const fs = require("fs");
 const path = require("path");
+const readline = require('readline');
 const recursiveReaddir = require("recursive-readdir");
-
 
 // Directories in given directory will be copied to output directory and markdown files rendered
 const inDirectory = "./../";
@@ -32,7 +33,8 @@ const linkedResources = ["./monokai.css", "./main.css", {
 const cssDir = () => path.join(outDirectory, "css");
 
 const copyLinkedResources = () => {
-  linkedResources.forEach(el => {
+  let promises = [];
+  linkedResources.map(el => {
     let relativeInPath = el;
     let relativeOutPath = el;
     if (typeof el == "object") {
@@ -42,9 +44,38 @@ const copyLinkedResources = () => {
 
     const inPath = path.join(path.dirname(require.main.filename), relativeInPath);
     const outPath = path.join(cssDir(), relativeOutPath);
-    fse.ensureDirSync(path.dirname(outPath));
-    fse.copySync(inPath, outPath);
+
+    promises.push((async () => {
+      await fse.ensureDir(path.dirname(outPath));
+      await fse.copySync(inPath, outPath);
+    })());
   });
+
+  return Promise.all(promises);
+}
+
+
+const copyInputDirectories = async () => {
+  // Don't copy if the files are the same length
+  if (path.relative(inDirectory, outDirectory).length != 0) {
+    await fse.ensureDir(outDirectory);
+    const names = await fse.readdir(inDirectory);
+    
+    return Promise.all(names.map(async name => {
+      const inDir = path.join(inDirectory, name);
+      const outDir = path.join(outDirectory, name);
+
+      if ((await fse.stat(inDir)).isFile()) return;
+      if (inDirectoryBlackList.some(reg => reg.test(name))) return;
+      // Copy all directories - means images etc. get copied
+
+      // if inDir = /, outDir = /out, don't copy /out to /out/out
+      if (path.relative(outDirectory, inDir).length == 0) return;
+
+      console.log(`Copying ${name}`);
+      await fse.copy(inDir, outDir);
+    }));
+  }
 }
 
 
@@ -63,8 +94,8 @@ const cssLinks = (outPath) => {
 }
 
 
-const render = (inPath, outPath, title, forceToC = true, bodyClasses = "", contentBelowTitle = "") => {
-  fse.writeFileSync(outPath, `
+const render = async (inPath, outPath, title, forceToC = true, bodyClasses = "", contentBelowTitle = "") => {
+  return await fse.writeFile(outPath, `
   <!DOCTYPE html>
   <html>
   <head>
@@ -75,7 +106,7 @@ const render = (inPath, outPath, title, forceToC = true, bodyClasses = "", conte
   </head>
   <body${bodyClasses ? " class=\"" + bodyClasses + "\"" : ""}>
     <article>
-      ${renderMarkdown(fse.readFileSync(inPath, { encoding: "utf8" }), forceToC, contentBelowTitle)}
+      ${renderMarkdown(await fse.readFile(inPath, { encoding: "utf8" }), forceToC, contentBelowTitle)}
     </article>
   </body>
   `);
@@ -86,7 +117,9 @@ const encodeLink = link => encodeURI(link.replace(/\\/g, "/"));
 class Node {
   constructor() {
     this.name = "";
-    this.link = "/"; // full link to file (if being run on a http server)
+    this.link = null// full link to file (if being run on a http server)
+    this.markdownPath = null;
+    this.htmlPath = null;
     this.children = null;
     this.description = "";
     this.breadcrumbs = null;
@@ -135,16 +168,13 @@ class Node {
     let md = `${"#".repeat(Math.min(6, depth))} [${this.name}](${relativeLink})`;
     if (this.description) md += "\n\n" + this.description;
 
-    // if (depth == 1 && this.breadcrumbsToMarkdown().length) {
-    //   md += "\n\n" + this.breadcrumbsToMarkdown();
-    // }
-
-    md += `\n\n${this.children.map(child => child.generateIndexMarkdown(relativeTo, depth + 1)).join("\n\n")}`;
+    md += "\n\n";
+    md += this.children.map(child => child.generateIndexMarkdown(relativeTo, depth + 1, prettyLinks)).join("\n\n");
     return md;
   }
 
   /**
-   * Sort nodes by their name. Leaf nodes sort before non-leaf nodes
+   * Sort nodes by their link. Leaf nodes sort before non-leaf nodes
    * @returns this 
    */
   sort() {
@@ -155,7 +185,7 @@ class Node {
         return a.isLeaf() ? 1 : -1;
       }
 
-      return a.name < b.name ? -1 : 1;
+      return a.link < b.link ? -1 : 1;
     });
 
     this.children.forEach(child => child.sort());
@@ -294,29 +324,24 @@ class LeafNode extends Node {
   }
 }
 
-const copyInputDirectories = () => {
-  // Don't copy if the files are the same length
-  if (path.relative(inDirectory, outDirectory).length != 0) {
-    fse.ensureDirSync(inDirectory);
-    fse.ensureDirSync(outDirectory);
-    fse.readdirSync(inDirectory).forEach(name => {
-      const inDir = path.join(inDirectory, name);
-      const outDir = path.join(outDirectory, name);
-
-      if (fse.statSync(inDir).isFile()) return;
-      if (inDirectoryBlackList.some(reg => reg.test(name))) return;
-      // Copy all directories - means images etc. get copied
-
-      // if inDir = /, outDir = /out, don't copy /out to /out/out
-      if (path.relative(outDirectory, inDir).length == 0) return;
-      console.log(`Copying ${name}`);
-      fse.copySync(inDir, outDir);
+// https://stackoverflow.com/a/60193465
+// May fail on empty files
+async function getFirstLine(pathToFile) {
+  const readable = fs.createReadStream(pathToFile);
+  const reader = readline.createInterface({ input: readable });
+  const line = await new Promise((resolve) => {
+    reader.on('line', (line) => {
+      reader.close();
+      resolve(line);
     });
-  }
+  });
+  readable.close();
+  return line;
 }
 
-const renderAllFiles = (prettyLinks = false) => {
-  recursiveReaddir(outDirectory, [
+
+const renderAllFiles = async (prettyLinks = false) => {
+  const pagePaths = await recursiveReaddir(outDirectory, [
     // Ignore non-markdown files
     filePath => fse.statSync(filePath).isFile() && !/\.md$/.test(path.basename(filePath)),
 
@@ -325,48 +350,61 @@ const renderAllFiles = (prettyLinks = false) => {
    
     // Ignore index.md
     filePath => /index\.md$/.test(path.basename(filePath))
-  ], function (err, pagePaths) {
-    if (err) {
-      console.error("Error recursively reading output directory");
-      console.error(err);
-      process.exit(2);
-    }
+  ]);
 
-    // Convert list to tree structure
-    const tree = IndexNode.arrayToTree(pagePaths, outDirectory, "COSC Notes");
-    tree.description = "Notes from the courses I have taken at UC.";
+  // Convert list to tree structure
+  const tree = IndexNode.arrayToTree(pagePaths, outDirectory, "COSC Notes");
+  tree.description = "Notes from the courses I have taken at UC.";
 
-    tree.sort();
+  tree.sort();
 
-    // Appends semester the course was taken to the page title e.g. DATA301 => DATA301 (2021-S1)
-    tree.dfs(node => {
-      Object.keys(semesterInfo).forEach(key => {
-        const info = semesterInfo[key].find(el => node.name == (typeof(el) == "string"? el: el.name))
-        if (info) {
-          node.name = `${node.name} (${key})`;
-          if (typeof(info) == "object" && info.description) {
-            node.description = info.description;
-          }
-          return;
+  // Appends semester the course was taken to the page title e.g. DATA301 => DATA301 (2021-S1)
+  tree.dfs(node => {
+    Object.keys(semesterInfo).forEach(key => {
+      const info = semesterInfo[key].find(el => node.name == (typeof(el) == "string"? el: el.name))
+      if (info) {
+        node.name = `${node.name} (${key})`;
+        if (typeof(info) == "object" && info.description) {
+          node.description = info.description;
         }
-      });
-    }, true);
+        return;
+      }
+    });
+  }, true);
+
+ 
+  const readTitlePromises = [];
+  tree.dfs(node => {
+    if (!node.isLeaf()) return;
+    readTitlePromises.push((async () => {
+      const line = await getFirstLine(node.markdownPath);
+
+      if (!line.match(/^# .+/g)) return;
+      let title = line.substr(2);
+      // If link, remove the link-y bits
+      const match = /^\[(.+?)\]\(\)$/.exec(title);
+      if (match) title = match[1];
+      node.name = title;
+    })());
+  });
+
+  await Promise.all(readTitlePromises);
 
 
-    tree.generateBreadcrumbs(prettyLinks);
+  tree.generateBreadcrumbs(prettyLinks);
 
-    fse.writeFileSync("./test.json", JSON.stringify(tree, null, 2));
+  // await fse.writeFile("./test.json", JSON.stringify(tree, null, 2));
+  const promises = [];
 
-    tree.dfs(node => {
-      let forceToC = true;
-      let bodyClasses = "";
-      let breadcrumbs = node.breadcrumbsToMarkdown();
-
+  tree.dfs(node => {
+    let forceToC = true;
+    let bodyClasses = "";
+    let breadcrumbs = node.breadcrumbsToMarkdown();
+    promises.push((async () => {
       if (!node.isLeaf()) {
         bodyClasses = "unstyled-header-links";
         forceToC = !node.allChildrenLeafNodes();
-
-        fse.writeFileSync(
+        await fse.writeFile(
             node.markdownPath,
             node.generateIndexMarkdown(path.dirname(node.link), 1, prettyLinks)
         );
@@ -374,15 +412,16 @@ const renderAllFiles = (prettyLinks = false) => {
         console.log(`Rendering page ${node.markdownPath}`);
       }
 
-      render(node.markdownPath, node.htmlPath, node.name, forceToC, bodyClasses, breadcrumbs);
-    });
+      await render(node.markdownPath, node.htmlPath, node.name, forceToC, bodyClasses, breadcrumbs);
+    })());
   });
+  return Promise.all(promises);
 }
 
 
-// const input = require("./in.json");
-// renderIndexFiles(input);
 
-copyInputDirectories();
-// copyLinkedResources();
-renderAllFiles();
+(async () => {
+  await copyInputDirectories();
+  await copyLinkedResources();
+  await renderAllFiles(true);
+})();
