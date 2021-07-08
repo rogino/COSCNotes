@@ -178,10 +178,16 @@ a.header-anchor:hover {
   text-decoration: underline;
 }
 
-
 /* Breadcrumbs */
-.breadcrumbs a +  a::before {
-    content: " \25B7  "
+.breadcrumbs {
+  list-style: none;
+  padding-inline-start: 0;
+}
+.breadcrumbs li {
+  display: inline-block;
+}
+.breadcrumbs li + li::before {
+  content: " \25B7  "
 }
 .breadcrumbs a {
     color: var(--foreground);

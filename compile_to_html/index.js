@@ -5,7 +5,7 @@ const path = require("path");
 const readline = require('readline');
 const recursiveReaddir = require("recursive-readdir");
 
-const PRETTY_LINKS = true; // No links don't have .html extension, index.html is just /
+const PRETTY_LINKS = false; // No links don't have .html extension, index.html is just /
 
 // Directories in given directory will be copied to output directory and markdown files rendered
 const inDirectory = "./../";
@@ -18,6 +18,10 @@ const inDirectoryBlackList = [
   /index\.md$/,       // index is auto-generated
   /^compile_to_html/  // folder this html gen stuff is in
 ];
+
+
+const INDENTATION_STRING = "  ";
+
 const semesterInfo = require("./semester.json");
 
 // Resources (e.g. css files) that need to be copied. Input path relative to current file, output path relative to out/css
@@ -34,6 +38,10 @@ const linkedResources = ["./monokai.css", "./main.css", {
 // Absolute path to css files
 const cssDir = () => path.join(outDirectory, "css");
 
+/**
+ * Copy required CSS files etc.
+ * @returns 
+ */
 const copyLinkedResources = () => {
   let promises = [];
   linkedResources.map(el => {
@@ -58,12 +66,12 @@ const copyLinkedResources = () => {
 
 
 const copyInputDirectories = async () => {
-  // Don't copy if the files are the same length
+  // Don't copy if the input and output directories are the same
   if (path.relative(inDirectory, outDirectory).length != 0) {
     await fse.ensureDir(outDirectory);
     const names = await fse.readdir(inDirectory);
     
-    return Promise.all(names.map(async name => {
+    return await Promise.all(names.map(async name => {
       const inDir = path.join(inDirectory, name);
       const outDir = path.join(outDirectory, name);
 
@@ -96,24 +104,44 @@ const cssLinks = (outPath) => {
 }
 
 
-const render = async (inPath, outPath, title, forceToC = true, bodyClasses = "", contentBelowTitle = "") => {
-  return await fse.writeFile(outPath, `
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    ${cssLinks(outPath)}
-    <title>${title}</title>
-  </head>
-  <body${bodyClasses ? " class=\"" + bodyClasses + "\"" : ""}>
-    <article>
-      ${renderMarkdown(await fse.readFile(inPath, { encoding: "utf8" }), forceToC, contentBelowTitle)}
-    </article>
-  </body>
-  `);
+const indentLines = (content, depth, indentationString) => {
+  if (depth < 1) return content;
+  return content.split(/\r?\n/).map(line => indentationString.repeat(depth) + line).join("\n");
 }
 
+const render = (title, content, headers, bodyClasses = "") => {
+
+  let output = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">`;
+
+  if (headers.length) output += "\n" + indentLines(headers, 1, INDENTATION_STRING);
+
+  output += `
+<title>${title}</title>
+</head>
+<body${bodyClasses ? " class=\"" + bodyClasses + "\"" : ""}>
+${indentLines(content, 1, INDENTATION_STRING)}
+</body>
+  `;
+
+  return output;
+}
+
+const renderToFile = async (inPath, outPath, title, forceToC = true, bodyClasses = "", contentBelowTitle = "") => {
+  return await fse.writeFile(
+    outPath,
+    render(title, 
+`<article>
+  ${renderMarkdown(await fse.readFile(inPath, { encoding: "utf8" }), forceToC, contentBelowTitle)}
+</article>`,
+      cssLinks(outPath),
+      bodyClasses
+    )
+  );
+}
 
 /**
  * Encodes link. Replaces backslashes with slashes
@@ -244,10 +272,16 @@ class Node {
     });
   }
 
-  breadcrumbsToMarkdown() {
+  breadcrumbsToMarkdown(indentationString) {
     if (!Array.isArray(this.breadcrumbs) || this.breadcrumbs.length == 0) return "";
-    return `<span class="breadcrumbs">${this.breadcrumbs.map(crumb => `[${crumb.name}](${crumb.link})`).join("\n")
-      }</span>`
+    return `
+<ul class="breadcrumbs">${this.breadcrumbs
+    .map(crumb => `
+${indentationString}<li>
+${indentationString.repeat(2)}<a href="${crumb.link}">${crumb.name}</a>
+${indentationString}</li>`).join("") // TODO escape
+}
+</ul>`
   }
 }
 
@@ -410,7 +444,7 @@ const renderAllFiles = async (prettyLinks = false) => {
   tree.dfs(node => {
     let forceToC = true;
     let bodyClasses = "";
-    let breadcrumbs = node.breadcrumbsToMarkdown();
+    let breadcrumbs = indentLines(node.breadcrumbsToMarkdown(INDENTATION_STRING), 1, INDENTATION_STRING);
     promises.push((async () => {
       if (!node.isLeaf()) {
         bodyClasses = "unstyled-header-links";
@@ -423,10 +457,27 @@ const renderAllFiles = async (prettyLinks = false) => {
         console.log(`Rendering page ${node.markdownPath}`);
       }
 
-      await render(node.markdownPath, node.htmlPath, node.name, forceToC, bodyClasses, breadcrumbs);
+      await renderToFile(node.markdownPath, node.htmlPath, node.name, forceToC, bodyClasses, breadcrumbs);
     })());
   });
   return Promise.all(promises);
+}
+
+
+const render404Page = async (outDirectory, prettyLinks) => {
+  const outPath = path.join(outDirectory, "404.html");
+  await fse.writeFile(outPath, render(
+    "404 Not Found",
+    renderMarkdown(
+`# 404 Not Found
+
+Go back to [COSC Notes](${prettyLinks? "./": "./index.html"}) or [Home](${prettyLinks? "/": "/index.html"})
+`,
+      false
+    ),
+    cssLinks(outPath),
+    ""
+  ));
 }
 
 
@@ -434,5 +485,6 @@ const renderAllFiles = async (prettyLinks = false) => {
 (async () => {
   await copyInputDirectories();
   await copyLinkedResources();
+  await render404Page(outDirectory, PRETTY_LINKS);
   await renderAllFiles(PRETTY_LINKS);
 })();
