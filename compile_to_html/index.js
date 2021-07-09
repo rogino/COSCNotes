@@ -255,6 +255,8 @@ class Node {
       if (!node.isLeaf()) {
         node.children.forEach(child => {
           if (!Array.isArray(child.breadcrumbs)) child.breadcrumbs = [];
+
+          // TODO how is this working - links should be different as they're relative
           child.breadcrumbs.push(...node.breadcrumbs);
           // Child will always have parent's breadcrumbs, plus breadcrumb for the parent
 
