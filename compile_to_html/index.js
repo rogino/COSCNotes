@@ -11,7 +11,7 @@ const argv = yargs(hideBin(process.argv))
 .option(
   "pretty-links", {
     alias: "p",
-    description: "Links don't have `index` or `.html`",
+    description: "Internal links don't have `index` or `.html`",
     type: "boolean",
     default: false
   }
@@ -50,14 +50,18 @@ const argv = yargs(hideBin(process.argv))
 .option(
   "steps", {
     alias: "s",
-    description: "Steps to execute.\n'd': copy input directories\n'c': copy CSS and other resources\n'r': render files",
+    description: `Steps to execute.
+                  - 'd': copy input directories
+                  - 'c': copy CSS and other resources
+                  - 'r': render files`,
     type: "string",
     default: "dcr"
   }
 ).option(
   "nuke-out-directory", {
     alias: "n",
-    description: "Deletes contents of the output directory before copying.\nOnly if runs if 'd' or 'r' steps enabled",
+    description: `Deletes contents of the output directory before copying.
+                  Only if runs if 'd' or 'r' steps enabled`,
     type: "boolean",
     default: false
   }
@@ -84,13 +88,13 @@ const RENDER_ALL_FILES = argv.steps.includes("r");
 const PRETTY_LINKS = argv.prettyLinks;
 
 // Directories in given directory will be copied to output directory and markdown files rendered
-const inDirectory = argv.inDirectory;
-const outDirectory = argv.outDirectory;
+const IN_DIRECTORY  = argv.inDirectory;
+const OUT_DIRECTORY = argv.outDirectory;
 
 const SEMESTER_INFO_PATH = argv.semesterInfoPath;
 
 // Blacklist. For copying directories, just the name of the file/folder. For rendering, uses path relative to out directory
-const inDirectoryBlackList = [
+const IN_DIRECTORY_BLACKLIST = [
   /^\./,              // e.g. .git
   /^node_modules/,
   /index\.md$/,       // index is auto-generated
@@ -139,7 +143,7 @@ const linkedResources = ["./monokai.css", "./main.css", {
 ];
 
 // Absolute path to css files
-const cssDir = () => path.join(outDirectory, "css");
+const cssDir = () => path.join(OUT_DIRECTORY, "css");
 
 /**
  * Copy required CSS files etc.
@@ -170,20 +174,20 @@ const copyLinkedResources = () => {
 
 const copyInputDirectories = async () => {
   // Don't copy if the input and output directories are the same
-  if (path.relative(inDirectory, outDirectory).length != 0) {
-    await fse.ensureDir(outDirectory);
-    const names = await fse.readdir(inDirectory);
+  if (path.relative(IN_DIRECTORY, OUT_DIRECTORY).length != 0) {
+    await fse.ensureDir(OUT_DIRECTORY);
+    const names = await fse.readdir(IN_DIRECTORY);
     
     return await Promise.all(names.map(async name => {
-      const inDir = path.join(inDirectory, name);
-      const outDir = path.join(outDirectory, name);
+      const inDir = path.join(IN_DIRECTORY, name);
+      const outDir = path.join(OUT_DIRECTORY, name);
 
       if ((await fse.stat(inDir)).isFile()) return;
-      if (inDirectoryBlackList.some(reg => reg.test(name))) return;
+      if (IN_DIRECTORY_BLACKLIST.some(reg => reg.test(name))) return;
       // Copy all directories - means images etc. get copied
 
       // if inDir = /, outDir = /out, don't copy /out to /out/out
-      if (path.relative(outDirectory, inDir).length == 0) return;
+      if (path.relative(OUT_DIRECTORY, inDir).length == 0) return;
 
       console.log(`Copying folder ${inDir}`);
 
@@ -411,12 +415,12 @@ class IndexNode extends Node {
    * 
    * @param {*} pages array of links to pages
    * @param {*} rootName 
-   * @param {string} TODO outDirectory, rename
+   * @param {string} TODO OUT_DIRECTORY, rename
    */
-  static arrayToTree(pages, outDirectory, rootName = "") {
-    const tree = new IndexNode(rootName, outDirectory, outDirectory);
+  static arrayToTree(pages, OUT_DIRECTORY, rootName = "") {
+    const tree = new IndexNode(rootName, OUT_DIRECTORY, OUT_DIRECTORY);
     pages.forEach(markdownPath => {
-      const pageNode = new LeafNode(markdownPath, outDirectory);
+      const pageNode = new LeafNode(markdownPath, OUT_DIRECTORY);
 
       const fragments = []; // Split path indo folders (and file name)
       let link = pageNode.link;
@@ -430,7 +434,7 @@ class IndexNode extends Node {
       fragments.reverse();
 
       let node = tree;
-      let folderPath = outDirectory;
+      let folderPath = OUT_DIRECTORY;
 
       // BFS search to go down the tree to find the right index node (or make it)
       // First element will be `.` or something, so ignore that - the root
@@ -448,7 +452,7 @@ class IndexNode extends Node {
 
         if (index == -1) {
           // Make the directory node
-          const childNode = new IndexNode(fragment, folderPath, outDirectory);
+          const childNode = new IndexNode(fragment, folderPath, OUT_DIRECTORY);
           node.addChildren(childNode);
           node = childNode;
         } else {
@@ -496,19 +500,19 @@ async function getFirstLine(pathToFile) {
 
 
 const renderAllFiles = async (prettyLinks = false) => {
-  const pagePaths = await recursiveReaddir(outDirectory, [
+  const pagePaths = await recursiveReaddir(OUT_DIRECTORY, [
     // Ignore non-markdown files
     filePath => fse.statSync(filePath).isFile() && !/\.md$/.test(path.basename(filePath)),
 
     // Ignore directories in blacklist
-    filePath => inDirectoryBlackList.some(reg => reg.test(path.relative(outDirectory, filePath))),
+    filePath => IN_DIRECTORY_BLACKLIST.some(reg => reg.test(path.relative(OUT_DIRECTORY, filePath))),
    
     // Ignore index.md
     filePath => /index\.md$/.test(path.basename(filePath))
   ]);
 
   // Convert list to tree structure
-  const tree = IndexNode.arrayToTree(pagePaths, outDirectory, "COSC Notes");
+  const tree = IndexNode.arrayToTree(pagePaths, OUT_DIRECTORY, "COSC Notes");
   tree.description = "Notes from the courses I have taken at UC.";
 
   tree.sort();
@@ -550,7 +554,7 @@ const renderAllFiles = async (prettyLinks = false) => {
   tree.generateBreadcrumbs(prettyLinks);
 
   // await fse.writeFile("./test.json", JSON.stringify(tree, null, 2));
-  // return tree.generateIndexMarkdown(outDirectory, 1, true);
+  // return tree.generateIndexMarkdown(OUT_DIRECTORY, 1, true);
 
   const promises = [];
 
@@ -577,8 +581,8 @@ const renderAllFiles = async (prettyLinks = false) => {
 }
 
 
-const render404Page = async (outDirectory, prettyLinks) => {
-  const outPath = path.join(outDirectory, "404.html");
+const render404Page = async (OUT_DIRECTORY, prettyLinks) => {
+  const outPath = path.join(OUT_DIRECTORY, "404.html");
   await fse.writeFile(outPath, render(
     "404 Not Found",
     renderMarkdown(
@@ -597,7 +601,7 @@ Go back to [COSC Notes](${prettyLinks? "./": "./index.html"}) or [Home](${pretty
 
 (async () => {
   if (NUKE_OUT_DIRECTORY && (COPY_DIRECTORIES || COPY_LINKED_RESOURCES)) try {
-    await fse.remove(outDirectory);
+    await fse.remove(OUT_DIRECTORY);
   } catch(err) {
     console.error("Could not delete out directory");
     console.error(err);
@@ -607,7 +611,7 @@ Go back to [COSC Notes](${prettyLinks? "./": "./index.html"}) or [Home](${pretty
   if (COPY_DIRECTORIES) await copyInputDirectories();
   if (COPY_LINKED_RESOURCES) await copyLinkedResources();
   if (RENDER_ALL_FILES) {
-    await render404Page(outDirectory, PRETTY_LINKS);
+    await render404Page(OUT_DIRECTORY, PRETTY_LINKS);
     await renderAllFiles(PRETTY_LINKS);
   }
 })();
