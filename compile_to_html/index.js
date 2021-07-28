@@ -4,12 +4,68 @@ const fs = require("fs");
 const path = require("path");
 const readline = require('readline');
 const recursiveReaddir = require("recursive-readdir");
+const yargs = require("yargs");
+const { hideBin } = require('yargs/helpers')
 
-const PRETTY_LINKS = false; // No links don't have .html extension, index.html is just /
+const argv = yargs(hideBin(process.argv))
+.option(
+  "pretty-links", {
+    alias: "p",
+    description: "Links don't have `index` or `.html`",
+    type: "boolean",
+    default: false
+  }
+)
+.option(
+  "in-directory", {
+    alias: "i",
+    description: "Directory containing source Markdown files",
+    type: "string",
+    default: "./../"
+  }
+)
+.option(
+  "out-directory", {
+    alias: "o",
+    description: "Directory to output HTML and other resources to",
+    type: "string",
+    default:"./out"
+  }
+)
+.option(
+  "steps", {
+    alias: "s",
+    description: "Steps to execute.\n'd': copy input directories\n'c': copy CSS and other resources\n'r': render files",
+    type: "string",
+    default: "dcr"
+  }
+).option(
+  "nuke-out-directory", {
+    alias: "n",
+    description: "Deletes contents of the output directory before copying.\nOnly if runs if 'd' or 'r' steps enabled",
+    type: "boolean",
+    default: false
+  }
+)
+.version(false)
+.epilogue(
+`NB: on Windows, if any input directories are Junctions, developer mode needs to
+be enabled. See https://stackoverflow.com/a/57725541
+`)
+.help().alias("help", "h").argv;
+
+// To make args: blacklist, indentation, semester info path
+
+const NUKE_OUT_DIRECTORY = argv.nukeOutDirectory;
+const COPY_DIRECTORIES = argv.steps.includes("d");
+const COPY_LINKED_RESOURCES = argv.steps.includes("c");
+const RENDER_ALL_FILES = argv.steps.includes("r");
+
+const PRETTY_LINKS = argv.prettyLinks;
 
 // Directories in given directory will be copied to output directory and markdown files rendered
-const inDirectory = "./../";
-const outDirectory = "./out";
+const inDirectory = argv.inDirectory;
+const outDirectory = argv.outDirectory;
 
 // Blacklist. For copying directories, just the name of the file/folder. For rendering, uses path relative to out directory
 const inDirectoryBlackList = [
@@ -82,8 +138,15 @@ const copyInputDirectories = async () => {
       // if inDir = /, outDir = /out, don't copy /out to /out/out
       if (path.relative(outDirectory, inDir).length == 0) return;
 
-      console.log(`Copying ${name}`);
-      await fse.copy(inDir, outDir);
+      console.log(`Copying folder ${inDir}`);
+
+      // If there are symlinks or junctions etc., copy the contents, not the link
+      try {
+        await fse.copy(inDir, outDir, { dereference: true });
+      } catch(err) {
+        console.log(`Error copying ${inDir} to ${path.resolve(outDir)}`);
+        console.error(err);
+      }
     }));
   }
 }
@@ -485,8 +548,18 @@ Go back to [COSC Notes](${prettyLinks? "./": "./index.html"}) or [Home](${pretty
 
 
 (async () => {
-  await copyInputDirectories();
-  await copyLinkedResources();
-  await render404Page(outDirectory, PRETTY_LINKS);
-  await renderAllFiles(PRETTY_LINKS);
+  if (NUKE_OUT_DIRECTORY && (COPY_DIRECTORIES || COPY_LINKED_RESOURCES)) try {
+    await fse.remove(outDirectory);
+  } catch(err) {
+    console.error("Could not delete out directory");
+    console.error(err);
+    process.exit();
+  }
+
+  if (COPY_DIRECTORIES) await copyInputDirectories();
+  if (COPY_LINKED_RESOURCES) await copyLinkedResources();
+  if (RENDER_ALL_FILES) {
+    await render404Page(outDirectory, PRETTY_LINKS);
+    await renderAllFiles(PRETTY_LINKS);
+  }
 })();

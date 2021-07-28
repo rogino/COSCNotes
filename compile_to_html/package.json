@@ -9,6 +9,7 @@
     "markdown-it-katex": "^2.0.3",
     "markdown-it-texmath": "^0.9.0",
     "markdown-it-toc-done-right": "^4.2.0",
-    "recursive-readdir": "^2.2.2"
+    "recursive-readdir": "^2.2.2",
+    "yargs": "^17.0.1"
   }
 }
