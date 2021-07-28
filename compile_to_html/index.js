@@ -33,6 +33,21 @@ const argv = yargs(hideBin(process.argv))
   }
 )
 .option(
+  "semester-info-path", {
+    alias: "f",
+    description: `Path to JSON file containing semester and course name/description
+                  Format of { "semesterName": [
+                    "CourseCode", /* or */
+                    {
+                      "name": "CourseCode",
+                      "description": "description"
+                    }
+                  ]}`,
+    type: "string",
+    default: "./semester.json"
+  }
+)
+.option(
   "steps", {
     alias: "s",
     description: "Steps to execute.\n'd': copy input directories\n'c': copy CSS and other resources\n'r': render files",
@@ -57,6 +72,11 @@ be enabled. See https://stackoverflow.com/a/57725541
 // To make args: blacklist, indentation, semester info path
 
 const NUKE_OUT_DIRECTORY = argv.nukeOutDirectory;
+
+if (argv.steps.match(/[^dcr]/)) {
+  console.error(`Unknown step(s); only 'dcr' supported`);
+  process.exit();
+}
 const COPY_DIRECTORIES = argv.steps.includes("d");
 const COPY_LINKED_RESOURCES = argv.steps.includes("c");
 const RENDER_ALL_FILES = argv.steps.includes("r");
@@ -66,6 +86,8 @@ const PRETTY_LINKS = argv.prettyLinks;
 // Directories in given directory will be copied to output directory and markdown files rendered
 const inDirectory = argv.inDirectory;
 const outDirectory = argv.outDirectory;
+
+const SEMESTER_INFO_PATH = argv.semesterInfoPath;
 
 // Blacklist. For copying directories, just the name of the file/folder. For rendering, uses path relative to out directory
 const inDirectoryBlackList = [
@@ -78,7 +100,32 @@ const inDirectoryBlackList = [
 
 const INDENTATION_STRING = "  ";
 
-const semesterInfo = require("./semester.json");
+const readSemesterInfo = () => {
+  const semesterInfo = {};
+  try {
+    let semesterDataRaw = JSON.parse(fse.readFileSync(SEMESTER_INFO_PATH));
+    Object.keys(semesterDataRaw).forEach(semester => {
+      semesterInfo[semester] = [];
+      semesterDataRaw[semester].forEach(el => {
+        const course = { name: "", description: "" };
+        if (typeof el == "string") course.name = el;
+        else {
+          course.name = el.name;
+          course.description = el.description;
+        }
+
+        semesterInfo[semester].push(course);
+      });
+    });
+    
+  } catch(err) {
+    console.error(`Could not parse or read semester info file at ${SEMESTER_INFO_PATH}`);
+    console.error(err);
+    process.exit();
+  }
+
+  return semesterInfo;
+}
 
 // Resources (e.g. css files) that need to be copied. Input path relative to current file, output path relative to out/css
 const linkedResources = ["./monokai.css", "./main.css", {
@@ -467,20 +514,21 @@ const renderAllFiles = async (prettyLinks = false) => {
   tree.sort();
 
   // Appends semester the course was taken to the page title e.g. DATA301 => DATA301 (2021-S1)
+  const semesterInfo = readSemesterInfo();
   tree.dfs(node => {
-    Object.keys(semesterInfo).forEach(key => {
-      const info = semesterInfo[key].find(el => node.name == (typeof(el) == "string"? el: el.name))
-      if (info) {
-        node.name = `${node.name} (${key})`;
-        if (typeof(info) == "object" && info.description) {
-          node.description = info.description;
+    Object.keys(semesterInfo).forEach(semester => {
+      const course = semesterInfo[semester].find(el => node.name == el.name);
+      if (course) {
+        node.name = `${course.name} (${semester})`;
+        if (course.description) {
+          node.description = course.description;
         }
         return;
       }
     });
   }, true);
 
- 
+  
   const readTitlePromises = [];
   tree.dfs(node => {
     if (!node.isLeaf()) return;
