@@ -55,13 +55,20 @@ const argv = yargs(hideBin(process.argv))
                   - 'c': copy CSS and other resources
                   - 'r': render files`,
     type: "string",
-    // default: "dcr"
+    default: "dcr"
   }
 ).option(
   "nuke-out-directory", {
     alias: "n",
     description: `Deletes contents of the output directory before copying.
                   Only if runs if 'd' or 'r' steps enabled`,
+    type: "boolean",
+    default: false
+  }
+).option(
+  "render-in-series", {
+    alias: "r",
+    description: `If false, files are rendered one by one instead of concurrently`,
     type: "boolean",
     default: false
   }
@@ -92,6 +99,8 @@ const IN_DIRECTORY  = argv.inDirectory;
 const OUT_DIRECTORY = argv.outDirectory;
 
 const SEMESTER_INFO_PATH = argv.semesterInfoPath;
+
+const RENDER_IN_SERIES = argv.renderInSeries;
 
 // Blacklist. For copying directories, just the name of the file/folder. For rendering, uses path relative to out directory
 const IN_DIRECTORY_BLACKLIST = [
@@ -558,28 +567,36 @@ const renderAllFiles = async (prettyLinks = false) => {
   // await fse.writeFile("./test.json", JSON.stringify(tree, null, 2));
   // return tree.generateIndexMarkdown(OUT_DIRECTORY, 1, true);
 
-  const promises = [];
-
-  tree.dfs(node => {
+  const renderLogic = async node => {
     let forceToC = true;
     let bodyClasses = "";
     let breadcrumbs = indentLines(node.breadcrumbsToMarkdown(INDENTATION_STRING), 1, INDENTATION_STRING);
-    promises.push((async () => {
-      if (!node.isLeaf()) {
-        bodyClasses = "unstyled-header-links";
-        forceToC = !node.allChildrenLeafNodes();
-        await fse.writeFile(
-            node.markdownPath,
-            node.generateIndexMarkdown(path.dirname(node.link), 1, prettyLinks)
-        );
-      } else {
-        console.log(`Rendering page ${node.markdownPath}`);
-      }
 
-      await renderToFile(node.markdownPath, node.htmlPath, node.name, forceToC, bodyClasses, breadcrumbs);
-    })());
-  });
-  return Promise.all(promises);
+    if (!node.isLeaf()) {
+      bodyClasses = "unstyled-header-links";
+      forceToC = !node.allChildrenLeafNodes();
+      await fse.writeFile(
+          node.markdownPath,
+          node.generateIndexMarkdown(path.dirname(node.link), 1, prettyLinks)
+      );
+    } else {
+      console.log(`Rendering page ${node.markdownPath}`);
+    }
+
+    await renderToFile(node.markdownPath, node.htmlPath, node.name, forceToC, bodyClasses, breadcrumbs);
+  }
+
+  if (RENDER_IN_SERIES) {
+    const nodes = [];
+    tree.dfs(node => nodes.push(node));
+    for (const node of nodes) {
+      await renderLogic(node);
+    }
+  } else {
+    const promises = [];
+    tree.dfs(node => promises.push(renderLogic(node)));
+    return Promise.all(promises);
+  }
 }
 
 
