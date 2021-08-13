@@ -55,7 +55,7 @@ const argv = yargs(hideBin(process.argv))
                   - 'c': copy CSS and other resources
                   - 'r': render files`,
     type: "string",
-    default: "dcr"
+    // default: "dcr"
   }
 ).option(
   "nuke-out-directory", {
@@ -77,7 +77,7 @@ be enabled. See https://stackoverflow.com/a/57725541
 
 const NUKE_OUT_DIRECTORY = argv.nukeOutDirectory;
 
-if (argv.steps.match(/[^dcr]/)) {
+if (typeof argv.steps !== "string" || argv.steps.match(/[^dcr]/)) {
   console.error(`Unknown step(s); only 'dcr' supported`);
   process.exit();
 }
@@ -150,6 +150,7 @@ const cssDir = () => path.join(OUT_DIRECTORY, "css");
  * @returns 
  */
 const copyLinkedResources = () => {
+  console.log("Copying linked resources");
   let promises = [];
   linkedResources.map(el => {
     let relativeInPath = el;
@@ -164,6 +165,7 @@ const copyLinkedResources = () => {
 
     promises.push((async () => {
       await fse.ensureDir(path.dirname(outPath));
+      console.log(`Copying ${inPath}`);
       await fse.copySync(inPath, outPath);
     })());
   });

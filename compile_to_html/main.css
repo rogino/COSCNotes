@@ -11,6 +11,7 @@ html {
 
 body {
   font-family: system-ui, sans-serif;
+  line-height: 1.5;
 }
 
 h1 {
@@ -37,6 +38,11 @@ h1, h2, h3, h4, h5, h6 {
 
   /* Use em, not rem - top margin varies */
   margin-block: 0.3em 0;
+}
+
+/* Prevents situations where more whitespace above than below a heading */
+h1 + p, h2 + p, h3 + p, h4 + p, h5 + p, h6 + p {
+  margin-block-start: 0;
 }
 
 p {

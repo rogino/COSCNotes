@@ -11,5 +11,14 @@
     "markdown-it-toc-done-right": "^4.2.0",
     "recursive-readdir": "^2.2.2",
     "yargs": "^17.0.1"
-  }
+  },
+  "name": "cosc_notes_compile_to_html",
+  "version": "1.0.0",
+  "description": "Compiles markdown COSC notes to a directory of HTML files and index pages",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+  },
+  "author": "",
+  "license": "ISC"
 }
