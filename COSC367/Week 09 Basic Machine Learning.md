@@ -35,11 +35,11 @@ For continuous target variables, regression is used.
 Common performance measures:
 
 $$
-\textrm{error} = \frac{\textrm{number of incorrectly classified instances}}{\textrm{total number of instances}}
+\text{error} = \frac{\text{number of incorrectly classified instances}}{\text{total number of instances}}
 $$
 
 $$
-\textrm{accuracy} = 1 - \textrm{error} = \frac{\textrm{number of correctly classified instances}}{\textrm{total number of instances}}
+\text{accuracy} = 1 - \text{error} = \frac{\text{number of correctly classified instances}}{\text{total number of instances}}
 $$
 
 In binary classification problems, one class is called *positive* (*p*) and the other *negative* (*n*).

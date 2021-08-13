@@ -139,7 +139,7 @@ $$
 The weights can be updated incrementally:
 
 $$
-W \leftarrow \textrm W - \eta \nabla E(W)
+W \leftarrow \text W - \eta \nabla E(W)
 $$
 
 $\nabla E(W)$ is the gradient of the error; a vector of partial derivatives (derivatives for each input scalar given all other inputs are fixed). The gradient in the output layer is easy to compute, but in the hidden layer neurons can influence multiple other neurons, so back-propagation is needed (not covered).

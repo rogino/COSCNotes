@@ -44,7 +44,7 @@ If $I$ is the interpretation where every element of the fixed point is true and 
 ### Top-down procedure
 Answer clause: $yes \leftarrow a_1 \land ... \land a_m$.
 
-Until the answer clause is an answer ($yes \leftarrow \textrm{}$), repeatedly run **SLD resolution**.
+Until the answer clause is an answer ($yes \leftarrow \text{}$), repeatedly run **SLD resolution**.
 
 - Pick an atom $a_i$
 - Choose a clause $a_i \leftarrow body$

@@ -218,7 +218,7 @@ rdd.takeOrdered(n, sort_fn)
 How much speed-up you get from parallelizing:
 
 $$
-\textrm{S} = \frac{T_{\textrm{sequential}}}{T_{\textrm{parallel}}}
+\text{S} = \frac{T_{\text{sequential}}}{T_{\text{parallel}}}
 $$
 
 ### Amdahl's Law
@@ -284,17 +284,17 @@ If $I = \{ i_1, ..., i_k \}$ and $I -> j$, baskets containing all elements of $I
 Confidence:
 
 $$
-\textrm{confidence}(I \rightarrow j) =
+\text{confidence}(I \rightarrow j) =
 \frac
-  {\textrm{support}(I \cup j)}
-  {\textrm{support}(I)}
+  {\text{support}(I \cup j)}
+  {\text{support}(I)}
 $$
 
 High confidence != interesting: some items may just be frequent (e.g. 'the'). Hence, use *interest*; confidence minus the probability of the item appearing in any basket.
 
 $$
-\textrm{interest}(I \rightarrow j) =
-  \left|\textrm{confidence}(I \rightarrow j) - P(j)\right|
+\text{interest}(I \rightarrow j) =
+  \left|\text{confidence}(I \rightarrow j) - P(j)\right|
 $$
 
 High-interest rules ($> ~0.5$) are 'interesting'.
@@ -354,7 +354,7 @@ For sets - dimensions are Boolean values.
 Jaccard similarity:
 
 $$
-\textrm{sim}(C_1, C_2) =
+\text{sim}(C_1, C_2) =
 \frac{\left| C_1 \cap C_2 \right|}
      {\left| C_1 \cup C_2 \right|}
 $$
@@ -362,7 +362,7 @@ $$
 Jaccard distance:
 
 $$
-d(C_1, C_2) = 1 - \textrm{sim}(C_1, C_2)
+d(C_1, C_2) = 1 - \text{sim}(C_1, C_2)
 $$
 
 Jaccard bag similarity:
@@ -415,7 +415,7 @@ With min-hashes, the probability of two documents sharing a bucket grows linearl
 With $b$ bands of $r$ rows, this becomes:
 
 $$
-P(\textrm{bucket shared}) = 1 - (1 - t^r)^b
+P(\text{bucket shared}) = 1 - (1 - t^r)^b
 $$
 
 Where $t$ is the Jaccard similarity.
@@ -456,7 +456,7 @@ $$
 M_{ji} =
 \begin{cases}
   \frac{1}{d_i}, & i \rightarrow j\\
-  0            , & \textrm{otherwise}
+  0            , & \text{otherwise}
 \end{cases}
 $$
 
@@ -528,10 +528,10 @@ Store a list of page IDs, the out-degree of the page, and the IDs of out-links f
 
 Assume the vector does fit in memory.
 
-- Initialize all entries of $r_\textrm{new}$ to $(1 - \beta)/N$.
+- Initialize all entries of $r_\text{new}$ to $(1 - \beta)/N$.
 - For each page $i$:
   - For each out-link $j = 1, ..., d_i$:
-    - $r_\textrm{new}(\textrm{out-page}_j) \mathrel{{+}{=}}  \beta \cdot r_\textrm{old}(i)/d_i$
+    - $r_\text{new}(\text{out-page}_j) \mathrel{{+}{=}}  \beta \cdot r_\text{old}(i)/d_i$
 
 Lots of random writes.
 
@@ -626,8 +626,8 @@ Modularity, $Q$, is a measure of how well the network is partitioned. Given a pa
 
 $$
 Q \propto \sum_{s \in S}{
-  \textrm{number of edges in } s -
-  \textrm{expected number of edges in } s}
+  \text{number of edges in } s -
+  \text{expected number of edges in } s}
 $$
 
 $$
@@ -667,9 +667,9 @@ Problem: match each element from one set to an eligible element from the other s
 Competitive ratio: worst performance over all possible inputs.
 
 $$
-\textrm{competitive ratio} = min_\textrm{all inputs}\frac
-  {\left|M_\textrm{algorithm}\right|}
-  {\left|M_\textrm{optimal}\right|}
+\text{competitive ratio} = min_\text{all inputs}\frac
+  {\left|M_\text{algorithm}\right|}
+  {\left|M_\text{optimal}\right|}
 $$
 
 ### AdWords

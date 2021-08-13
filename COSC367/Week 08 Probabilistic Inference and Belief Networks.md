@@ -75,8 +75,8 @@ P(y|x,z) &= \frac{P(x,y,z)}{P(x,z)} \\
 &= P(y|x,z) \cdot P(x|z) \\
 \\
 \therefore P(x|y,z) &= \frac{P(y|x,z) \cdot P(x|z)}{P(y,z)} \\
-\textrm{if z is implicit}: \\
-P(x|y) &= \frac{P(y|x) \cdot P(x)}{P(y)} \textrm{ (Baye's rule)}
+\text{if z is implicit}: \\
+P(x|y) &= \frac{P(y|x) \cdot P(x)}{P(y)} \text{ (Baye's rule)}
 \end{aligned}
 $$
 
@@ -112,7 +112,7 @@ To measure complexity, count the number of free parameters that must be specifie
 Two variables are independent if:
 $$
 \begin{aligned}
-P(X, Y) &= P(X) \cdot P(Y) \textrm{ or} \\
+P(X, Y) &= P(X) \cdot P(Y) \text{ or} \\
 \forall x, y: P(x, y) &= P(X=x) \cdot P(Y=y)
 \end{aligned}
 $$
@@ -126,7 +126,7 @@ Absolute (unconditional) independence is vary rare; **conditional independence**
 
 $$
 \begin{aligned}
-&\forall x, y, z: P(x, y|z) = P(x|z) \cdot P(y|z) \textrm{ or}\\
+&\forall x, y, z: P(x, y|z) = P(x|z) \cdot P(y|z) \text{ or}\\
 &\forall x, y, z: P(x|z, y) = P(x|z)
 \end{aligned}
 $$
@@ -189,8 +189,8 @@ $$
 
 $$
 \begin{aligned}
-P(a, b, c, d, e) &= P(e|a, b, c, d) \cdot P(a, b, c, d) \quad\textrm{(by the product rule)} \\
-&= P(e|c) \cdot P(a, b, c, d)          \quad\textrm{(e dependent on c but independent of all others)} \\
+P(a, b, c, d, e) &= P(e|a, b, c, d) \cdot P(a, b, c, d) \quad\text{(by the product rule)} \\
+&= P(e|c) \cdot P(a, b, c, d)          \quad\text{(e dependent on c but independent of all others)} \\
 &= P(e|c) \cdot P(d|a, b, c) \cdot P(a, b, c) \\
 &= P(e|c) \cdot P(d|b, c) \cdot P(a, b, c) \\ 
 &= P(e|c) \cdot P(d|b, c) \cdot P(c|a, b) \cdot P(a, b) \\

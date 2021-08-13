@@ -25,7 +25,7 @@
   - `happy` is a **predicate**; a **test** - it is 'true' (provably true) or 'false' (unknown) for the given argument; it is not a function call
 - `listensToMusic(yolanda) :- happy(yolanda).` is a rule
   - If RHS (head) is true, then LHS (body) must be true
-  - `:-` means $\leftarrow \textrm{}$
+  - `:-` means $\leftarrow \text{}$
 - `,` means conjunction ($\land$)
 - `;` means disjunction ($\lor$). It can defined by having two rules; this is just syntactic sugar
 
