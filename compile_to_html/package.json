@@ -18,6 +18,7 @@
   "main": "index.js",
   "devDependencies": {},
   "scripts": {
+    "generate-pretty": "node index.js --pretty-links true --nuke-out-directory"
   },
   "author": "",
   "license": "ISC"
