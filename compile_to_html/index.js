@@ -344,7 +344,7 @@ class Node {
     this.children.sort((a, b) => {
       if (a.isLeaf() ^ b.isLeaf()) {
         // If one is file and another is directory, file first
-        return a.isLeaf() ? 1 : -1;
+        return a.isLeaf() ? -1 : 1;
       }
 
       return a.link < b.link ? -1 : 1;
@@ -377,25 +377,48 @@ class Node {
   generateBreadcrumbs(prettyLinks = false) {
     this.breadcrumbs = [];
     this.dfs(node => {
-      if (!node.isLeaf()) {
-        node.children.forEach(child => {
-          if (!Array.isArray(child.breadcrumbs)) child.breadcrumbs = [];
+      if (!Array.isArray(node.breadcrumbs)) node.breadcrumbs = [];
 
-          // TODO how is this working - links should be different as they're relative
-          child.breadcrumbs.push(...node.breadcrumbs);
-          // Child will always have parent's breadcrumbs, plus breadcrumb for the parent
+      if (!node.isLeaf()) node.children.forEach(child => {
+        if (!Array.isArray(child.breadcrumbs)) child.breadcrumbs = [];
+        // Every link but the link to itself can be used by the child.
+        // Since the link to self is added after this loop, all parent breadcrumbs
+        // can be added to the child after slightly modifying the link
+        child.breadcrumbs.push(...node.breadcrumbs.map(breadcrumb => ({
+            // Make shallow copy of breadcrumb
+            ...breadcrumb,
+            link: breadcrumb.link.replace(/^\.\//, "./../") // ./index.html => ./../index.html
+          })
+        ));
 
-          // Need dirname as relative path from a/b/c.html to a/b/index.html should be ./index.html
-          let link = path.relative(path.dirname(child.link), node.link);
+        // Need dirname as relative path from a/b/c.html to a/b/index.html should be ./index.html
+        let linkFromSelfToChild = path.relative(path.dirname(child.link), node.link);
+        // Dirname to get rid of the .html
+        if (prettyLinks) linkFromSelfToChild = path.dirname(linkFromSelfToChild);
 
-          // Dirname to get rid of the .html
-          if (prettyLinks) link = path.dirname(link);
-          child.breadcrumbs.push({
-            name: node.name,
-            link: "./" + encodeLink(link)
-          });
+        child.breadcrumbs.push({
+          name: node.name,
+          link: "./" + encodeLink(linkFromSelfToChild)
         });
+      });
+
+      // Link to itself is a bit special since if it's a content page the link is
+      // in the form ./filename
+      let linkFromSelfToSelf = "";
+      
+      if (node.isLeaf()) {
+        linkFromSelfToSelf = path.basename(
+          node.link,
+          prettyLinks? ".html": ""
+        );
+      } else if (!prettyLinks) {
+        linkFromSelfToSelf = "index.html";
       }
+      
+      node.breadcrumbs.push({
+        name: node.name,
+        link: "./" + encodeLink(linkFromSelfToSelf)
+      });
     });
   }
 
@@ -424,46 +447,56 @@ class IndexNode extends Node {
 
   /**
    * 
-   * @param {*} pages array of links to pages
+   * @param {*} pages array of paths to pages
    * @param {*} rootName 
-   * @param {string} TODO OUT_DIRECTORY, rename
+   * @param {string} outDirectory links to pages are relative to this
    */
-  static arrayToTree(pages, OUT_DIRECTORY, rootName = "") {
-    const tree = new IndexNode(rootName, OUT_DIRECTORY, OUT_DIRECTORY);
+  static arrayToTree(pages, outDirectory, rootName = "") {
+    const tree = new IndexNode(rootName, outDirectory, outDirectory);
     pages.forEach(markdownPath => {
-      const pageNode = new LeafNode(markdownPath, OUT_DIRECTORY);
+      const pageNode = new LeafNode(markdownPath, outDirectory);
 
-      const fragments = []; // Split path indo folders (and file name)
+      const fragments = []; // Split path into folders (and file name)
       let link = pageNode.link;
       let prevLen = -1;
       while (link.length != prevLen) {
+        // Pop the deepest directory (or filename) from the link
         prevLen = link.length;
         fragments.push(path.basename(link));
         link = path.dirname(link);
       }
 
-      fragments.reverse();
+      fragments.reverse(); // Deepest directory is first, so reverse it
 
+      // Go through tree to find to place node in the tree,
+      // creating parent/directory as necessary
       let node = tree;
-      let folderPath = OUT_DIRECTORY;
+      let folderPath = outDirectory;
 
-      // BFS search to go down the tree to find the right index node (or make it)
+    // BFS search to go down the tree to find the right index node (or make it)
       // First element will be `.` or something, so ignore that - the root
       // Last element is the file name so ignore that too
       fragments.slice(1, -1).forEach(fragment => {
-        const link = pageNode.link;
-        // Find node where relative link does not start with ../
-        // Use dirname as index pages have .index.html
-        const index = node.children.findIndex(node => !path.relative(
-                path.dirname(node.link),
-                link
+        // Find a node where the relative path from the searchNode to pageNode
+        // (the node we are trying to place in the tree) does not start with ../:
+        // this means there is no backtracking and hence the searchNode is a parent
+        // directory of the pageNode
+        // Use dirname as index pages have .index.html, and filter out leaf nodes
+        // since they can't have children
+        const index = node.children.findIndex(searchNode => 
+          !searchNode.isLeaf() &&
+          !path.relative(
+                path.dirname(searchNode.link),
+                path.dirname(pageNode.link)
             ).match(/^\.\./)
         );
+        
+        // Keep track of the path to the folder in case we need to make an index node
         folderPath = path.join(folderPath, fragment);
 
         if (index == -1) {
-          // Make the directory node
-          const childNode = new IndexNode(fragment, folderPath, OUT_DIRECTORY);
+          // Make the directory node if it doesn't exist
+          const childNode = new IndexNode(fragment, folderPath, outDirectory);
           node.addChildren(childNode);
           node = childNode;
         } else {
@@ -473,7 +506,6 @@ class IndexNode extends Node {
 
       node.addChildren(pageNode);
     });
-
     return tree;
   }
 }
@@ -620,9 +652,10 @@ Go back to [COSC Notes](${prettyLinks? "./": "./index.html"}) or [Home](${pretty
 
 (async () => {
   if (NUKE_OUT_DIRECTORY && (COPY_DIRECTORIES || COPY_LINKED_RESOURCES)) try {
+    console.log(`Nuking ${OUT_DIRECTORY}`)
     await fse.remove(OUT_DIRECTORY);
   } catch(err) {
-    console.error("Could not delete out directory");
+    console.error(`Could not delete out ${OUT_DIRECTORY}`);
     console.error(err);
     process.exit();
   }
