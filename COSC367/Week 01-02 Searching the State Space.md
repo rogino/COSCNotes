@@ -179,7 +179,7 @@ $f(p) = cost(p) + h(n)$ where:
 A requirement that is stronger than admissibility. A function is **monotone/consistent** if, for any two nodes $n$ and $n'$ (which are reachable from $n$):
 
 $$
-h(n) \leq cost(n, n^') + h(n^')
+h(n) \leq cost(n, n') + h(n')
 $$
 
 That is, the estimated cost from $n$ to the goal must be less than the estimated cost of going to the goal via $n'$. Where $s$ is the start node:
