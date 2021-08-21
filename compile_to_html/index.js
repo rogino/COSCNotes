@@ -113,6 +113,9 @@ const IN_DIRECTORY_BLACKLIST = [
 
 const INDENTATION_STRING = "  ";
 
+const ROOT_TITLE = "COSC Notes";
+const ROOT_DESCRIPTION = "Notes from the courses I have taken at UC.";
+
 const readSemesterInfo = () => {
   const semesterInfo = {};
   try {
@@ -528,7 +531,7 @@ class LeafNode extends Node {
 
 // https://stackoverflow.com/a/60193465
 // May fail on empty files
-async function getFirstLine(pathToFile) {
+const getFirstLine = async (pathToFile) => {
   const readable = fs.createReadStream(pathToFile);
   const reader = readline.createInterface({ input: readable });
   const line = await new Promise((resolve) => {
@@ -555,8 +558,8 @@ const renderAllFiles = async (prettyLinks = false) => {
   ]);
 
   // Convert list to tree structure
-  const tree = IndexNode.arrayToTree(pagePaths, OUT_DIRECTORY, "COSC Notes");
-  tree.description = "Notes from the courses I have taken at UC.";
+  const tree = IndexNode.arrayToTree(pagePaths, OUT_DIRECTORY, ROOT_TITLE);
+  tree.description = ROOT_DESCRIPTION;
 
   tree.sort();
 
@@ -570,7 +573,6 @@ const renderAllFiles = async (prettyLinks = false) => {
         if (course.description) {
           node.description = course.description;
         }
-        return;
       }
     });
   }, true);

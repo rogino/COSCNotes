@@ -66,11 +66,11 @@ body {
   --close-to-foreground-grey: #333;
   --close-to-background-grey: #f9f9f9;
   --somewhat-close-to-background-grey: #BBB;
-
+  --close-to-foreground-muted-accent: #e4eeff;
+  
   --link-color: #316bcd;
   --link-color-hover: #00348f;
   --link-color-visited: #9c31cd;
-
   --indentation: 1.5rem;
 }
 
@@ -84,6 +84,7 @@ body {
     --close-to-foreground-grey: #f6f6f6;
     --close-to-background-grey: #222;
     --somewhat-close-to-background-grey: #777;
+    --close-to-foreground-muted-accent: #26334a;
 
     --link-color: #bbd4ff;
     --link-color-hover: #e1e8f5;
@@ -241,6 +242,11 @@ From https://codepen.io/nana8/pen/VEeoPW
   text-decoration: none;
   font-size: 0.9rem;
 }
+
+.breadcrumbs li:last-child::before, .breadcrumbs li:last-child::after {
+  background-color: var(--close-to-foreground-muted-accent);
+}
+  
 
 
 /* On index pages don't want headers coloured */
