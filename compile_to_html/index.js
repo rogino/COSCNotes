@@ -395,7 +395,13 @@ class Node {
         child.breadcrumbs.push(...node.breadcrumbs.map(breadcrumb => ({
             // Make shallow copy of breadcrumb
             ...breadcrumb,
-            link: breadcrumb.link.replace(/^\.\//, "./../") // ./index.html => ./../index.html
+            // link: "!" + breadcrumb.link
+            link: child.isLeaf()?
+                    // No idea why I need to special case leaf nodes but without
+                    // it it gets twice the number of `../`'s it needs
+                    breadcrumb.link:
+                    breadcrumb.link.replace(/^\.\//, "./../")
+                    // ./index.html => ./../index.html
           })
         ));
 
