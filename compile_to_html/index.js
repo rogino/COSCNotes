@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const readline = require('readline');
 const recursiveReaddir = require("recursive-readdir");
+const dedent = require("dedent-js");
 const yargs = require("yargs");
 const { hideBin } = require('yargs/helpers')
 
@@ -75,8 +76,8 @@ const argv = yargs(hideBin(process.argv))
 )
 .version(false)
 .epilogue(
-`NB: on Windows, if any input directories are Junctions, developer mode needs to
-be enabled. See https://stackoverflow.com/a/57725541
+  `NB: on Windows, if any input directories are Junctions, developer mode needs to
+  be enabled. See https://stackoverflow.com/a/57725541
 `)
 .help().alias("help", "h").argv;
 
@@ -192,7 +193,7 @@ const copyInputDirectories = async () => {
     await fse.ensureDir(OUT_DIRECTORY);
     const names = await fse.readdir(IN_DIRECTORY);
     
-    return await Promise.all(names.map(async name => {
+    return Promise.all(names.map(async name => {
       const inDir = path.join(IN_DIRECTORY, name);
       const outDir = path.join(OUT_DIRECTORY, name);
 
@@ -239,32 +240,36 @@ const indentLines = (content, depth, indentationString) => {
 
 const render = (title, content, headers, bodyClasses = "") => {
 
-  let output = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">`;
+  let output = dedent`
+    <!DOCTYPE html>
+    <head>
+    ${INDENTATION_STRING}<meta charset="utf-8">
+    ${INDENTATION_STRING}<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  `;
 
-  if (headers.length) output += "\n" + indentLines(headers, 1, INDENTATION_STRING);
+  if (headers.length) output += "\n" + indentLines(headers, 1, INDENTATION_STRING) + "\n";
 
-  output += `
-<title>${title}</title>
-</head>
-<body${bodyClasses ? " class=\"" + bodyClasses + "\"" : ""}>
-${indentLines(content, 1, INDENTATION_STRING)}
-</body>
+  output += dedent`
+  ${INDENTATION_STRING}<title>${title}</title>
+  </head>
+  <body${bodyClasses ? " class=\"" + bodyClasses + "\"" : ""}>
+  ${indentLines(content, 1, INDENTATION_STRING)}
+  </body>
   `;
 
   return output;
 }
 
 const renderToFile = async (inPath, outPath, title, forceToC = true, bodyClasses = "", contentBelowTitle = "") => {
-  return await fse.writeFile(
+  const fileContents = await fse.readFile(inPath, { encoding: "utf8" });
+  const markdown = renderMarkdown(fileContents, forceToC, contentBelowTitle);
+
+  return fse.writeFile(
     outPath,
-    render(title, 
-`<article>
-  ${renderMarkdown(await fse.readFile(inPath, { encoding: "utf8" }), forceToC, contentBelowTitle)}
-</article>`,
+    render(title, dedent`
+      <article>
+      ${INDENTATION_STRING}${markdown}
+      </article>`,
       cssLinks(outPath),
       bodyClasses
     )
@@ -427,14 +432,17 @@ class Node {
 
   breadcrumbsToMarkdown(indentationString) {
     if (!Array.isArray(this.breadcrumbs) || this.breadcrumbs.length == 0) return "";
-    return `
-<ul class="breadcrumbs">${this.breadcrumbs
-    .map(crumb => `
-${indentationString}<li>
-${indentationString.repeat(2)}<a href="${crumb.link}">${crumb.name}</a>
-${indentationString}</li>`).join("") // TODO escape
-}
-</ul>`
+    const breadcrumbsString = this.breadcrumbs.map(crumb => dedent`
+      ${indentationString}<li>
+      ${indentationString.repeat(2)}<a href="${crumb.link}">
+      ${indentationString.repeat(3)}${crumb.name}
+      ${indentationString.repeat(2)}</a>
+      ${indentationString}</li>
+    `).join("\n");
+    return dedent`
+      <ul class="breadcrumbs">
+      ${breadcrumbsString}
+      </ul>`
   }
 }
 
@@ -586,9 +594,10 @@ const renderAllFiles = async (prettyLinks = false) => {
 
       if (!line.match(/^# .+/g)) return;
       let title = line.substr(2);
+
       // If link, remove the link-y bits
-      const match = /^\[(.+?)\]\(\)$/.exec(title);
-      if (match) title = match[1];
+      title = title.replace(/\[(.+?)\]\(.+?\)/g, (_, group1) => group1);
+
       node.name = title;
     })());
   });
