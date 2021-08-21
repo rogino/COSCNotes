@@ -150,6 +150,13 @@ pre, .katex-display {
   margin: 0;
 }
 
+@media print {
+  pre {
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+}
+
 
 /* Footnotes (markdown-it-footnotes) */
 .footnotes-sep {
@@ -197,6 +204,7 @@ From https://codepen.io/nana8/pen/VEeoPW
   display: inline-block;
   position: relative;
   padding-inline: 0.5rem;
+  margin-block-end: 0.20rem;
   --border-width: 1px;
 }
 
