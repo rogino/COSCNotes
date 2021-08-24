@@ -398,7 +398,7 @@ table tr th:last-child {
 }
 
 .table-of-contents li > a::before {
-  content: counters(toc-counter,'.') ' ';
+  content: counters(toc-counter, ".", decimal-leading-zero) ". ";
   font-size: 1rem;
 }
 
