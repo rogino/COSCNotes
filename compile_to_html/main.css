@@ -292,11 +292,12 @@ h6::before {
   bottom: 0.5ex; /* roughly align with baseline */
   margin-right: 0.2rem;
 }
-h2::before { content: "##"; }
-h3::before { content: "###"; }
-h4::before { content: "####"; }
-h5::before { content: "#####"; }
-h6::before { content: "######"; }
+
+h2::before { content: "##"    ; bottom:  0.9ex; }
+h3::before { content: "###"   ; bottom:  0.3ex; }
+h4::before { content: "####"  ; bottom:  0.2ex; }
+h5::before { content: "#####" ; bottom:  0.0ex; }
+h6::before { content: "######"; bottom: -0.1ex; }
 
 
 /* Image and video centering, sizing */
@@ -354,14 +355,6 @@ table tr th:last-child {
 
 
 /* Table of contents (markdown-it-toc-done-right) */
-.table-of-contents {
-  margin-block-start: 1rem;
-
-  background-color: var(--close-to-background-grey);
-  border-radius: 0.4rem;
-  padding: 1rem;
-  padding-block-start: 0.2em;
-}
 
 .table-of-contents > ol::before, section.footnotes > ol.footnotes-list::before {
   display: block;
@@ -379,9 +372,24 @@ table tr th:last-child {
   padding-inline-start: 1.5rem;
 }
 
+/* top level OL has background etc. so that it can be hidden if there are no
+   children in the table of contents
+*/
 .table-of-contents > ol {
-  /* H1 is not present, H2, has no left margin */
-  padding-inline-start: 0;
+  /* H1 is not present, H2, has no left margin,so padding inline just adds
+     padding so the content isn't right against the background
+  */
+  padding: 1rem;
+  padding-block-start: 0.2rem;
+
+  margin-block-start: 1rem;
+
+  background-color: var(--close-to-background-grey);
+  border-radius: 0.4rem;
+}
+
+.table-of-contents > ol:empty {
+  display: none;
 }
 
 .table-of-contents li {
