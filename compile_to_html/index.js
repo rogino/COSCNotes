@@ -108,6 +108,7 @@ const IN_DIRECTORY_BLACKLIST = [
   /^\./,              // e.g. .git
   /^node_modules/,
   /index\.md$/,       // index is auto-generated
+  /404\.md$/,         // 404 also auto-generated; don't want it in the table of contents
   /^compile_to_html/  // folder this html gen stuff is in
 ];
 
@@ -117,6 +118,10 @@ const INDENTATION_STRING = "  ";
 const ROOT_TITLE = "COSC Notes";
 const ROOT_DESCRIPTION = "Notes from the courses I have taken at UC.";
 
+/**
+ * Reads semester info from SEMESTER_INFO_PATH and parses it
+ * @returns { semesterName: [{ name: courseName, description: courseDescription }]}
+ */
 const readSemesterInfo = () => {
   const semesterInfo = {};
   try {
@@ -155,11 +160,14 @@ const linkedResources = ["./monokai.css", "./main.css", {
   }
 ];
 
-// Absolute path to css files
+/**
+ * Finds absolute path to css directory
+ * @returns 
+ */
 const cssDir = () => path.join(OUT_DIRECTORY, "css");
 
 /**
- * Copy required CSS files etc.
+ * Copy required CSS files etc. to output directory
  * @returns 
  */
 const copyLinkedResources = () => {
@@ -187,6 +195,11 @@ const copyLinkedResources = () => {
 }
 
 
+/**
+ * Copies files and directories in the input directory to the output directory.
+ * Top-level items are copied individually after passing through a blocklist
+ * @returns 
+ */
 const copyInputDirectories = async () => {
   // Don't copy if the input and output directories are the same
   if (path.relative(IN_DIRECTORY, OUT_DIRECTORY).length != 0) {
@@ -218,7 +231,11 @@ const copyInputDirectories = async () => {
 }
 
 
-// CSS links, relative to given file
+/**
+ * Generates HTML for a file using relative links
+ * @param {*} outPath path to file the links will be relative to
+ * @returns links to place in the HTML head
+ */
 const cssLinks = (outPath) => {
   // replace all \ with /
   return linkedResources
@@ -232,14 +249,27 @@ const cssLinks = (outPath) => {
     }).join("\n");
 }
 
-
-const indentLines = (content, depth, indentationString) => {
+/**
+ * Indents content to the given depth, and converts from CRLF to LF
+ * @param {*} content content to indent
+ * @param {*} depth of indentation
+ * @param {*} indentationString string to use for indentation 
+ * @returns indented string
+ */
+const indentLines = (content, depth, indentationString = INDENTATION_STRING) => {
   if (depth < 1) return content;
   return content.split(/\r?\n/).map(line => indentationString.repeat(depth) + line).join("\n");
 }
 
+/**
+ * Given HTML content, title etc., returns a full HTML document
+ * @param {*} title title of the document
+ * @param {*} content HTML content
+ * @param {*} headers additional headers to add
+ * @param {*} bodyClasses string of classes to add the to HTML body
+ * @returns HTML string
+ */
 const render = (title, content, headers, bodyClasses = "") => {
-
   let output = dedent`
     <!DOCTYPE html>
     <head>
@@ -260,6 +290,16 @@ const render = (title, content, headers, bodyClasses = "") => {
   return output;
 }
 
+/**
+ * Renders markdown path at the given path to an HTML file, wrapping the content in an `<article>` tag
+ * @param {*} inPath path to markdown
+ * @param {*} outPath path to html
+ * @param {*} title HTML title
+ * @param {*} forceToC if true, will always have a ToC even if not present in markdown file
+ * @param {*} bodyClasses additional body classes to add; space-separated string
+ * @param {*} contentBelowTitle additional markdown to put below the title
+ * @returns 
+ */
 const renderToFile = async (inPath, outPath, title, forceToC = true, bodyClasses = "", contentBelowTitle = "") => {
   const fileContents = await fse.readFile(inPath, { encoding: "utf8" });
   const markdown = renderMarkdown(fileContents, forceToC, contentBelowTitle);
@@ -268,7 +308,7 @@ const renderToFile = async (inPath, outPath, title, forceToC = true, bodyClasses
     outPath,
     render(title, dedent`
       <article>
-      ${INDENTATION_STRING}${markdown}
+      ${indentLines(markdown, 1, INDENTATION_STRING)}
       </article>`,
       cssLinks(outPath),
       bodyClasses
@@ -305,6 +345,10 @@ class Node {
     return this.isLeaf() || this.children.every(child => child.isLeaf());
   }
 
+  /**
+   * Adds children to the node
+   * @param  {...any} children nodes to add
+   */
   addChildren(...children) {
     if (this.isLeaf()) this.children = [];
     this.children.push(...children);
@@ -314,7 +358,7 @@ class Node {
    * Generate markdown for index pages
    * @param {*} relativeTo links should be relative to this directory
    * @param {*} depth 
-   * @returns 
+   * @returns markdown for the index page
    */
   generateIndexMarkdown(relativeTo = "/", depth = 1, prettyLinks = false) {
     // If `./` is used here, it becomes just `.`
@@ -436,7 +480,12 @@ class Node {
     });
   }
 
-  breadcrumbsToMarkdown(indentationString) {
+  /**
+   * Converts the breadcrumbs for the node into an HTML list with class 'breadcrumbs'
+   * @param {*} indentationString indentation string to use
+   * @returns HTML list
+   */
+  breadcrumbsToMarkdown(indentationString = INDENTATION_STRING) {
     if (!Array.isArray(this.breadcrumbs) || this.breadcrumbs.length == 0) return "";
     const breadcrumbsString = this.breadcrumbs.map(crumb => dedent`
       ${indentationString}<li>
@@ -559,6 +608,11 @@ const getFirstLine = async (pathToFile) => {
 }
 
 
+/**
+ * Renders all index and content markdown files in the output directory to HTML
+ * @param {*} prettyLinks 
+ * @returns 
+ */
 const renderAllFiles = async (prettyLinks = false) => {
   const pagePaths = await recursiveReaddir(OUT_DIRECTORY, [
     // Ignore non-markdown files
@@ -622,6 +676,7 @@ const renderAllFiles = async (prettyLinks = false) => {
     let breadcrumbs = indentLines(node.breadcrumbsToMarkdown(INDENTATION_STRING), 1, INDENTATION_STRING);
 
     if (!node.isLeaf()) {
+      // Don't want headings to look like links in index pages
       bodyClasses = "unstyled-header-links";
       forceToC = !node.allChildrenLeafNodes();
       await fse.writeFile(
@@ -649,20 +704,22 @@ const renderAllFiles = async (prettyLinks = false) => {
 }
 
 
-const render404Page = async (OUT_DIRECTORY, prettyLinks) => {
-  const outPath = path.join(OUT_DIRECTORY, "404.html");
-  await fse.writeFile(outPath, render(
-    "404 Not Found",
-    renderMarkdown(
-`# 404 Not Found
+/**
+ * Creates and renders the 404 page
+ * @param {*} outDirectory directory to place the markdown and html files
+ * @param {*} prettyLinks if true, links will not have 'index.html'
+ */
+const render404Page = async (outDirectory, prettyLinks) => {
+  const mdPath = path.join(outDirectory, "404.md");
+  const outPath = path.join(outDirectory, "404.html");
 
-Go back to [COSC Notes](${prettyLinks? "./": "./index.html"}) or [Home](${prettyLinks? "/": "/index.html"})
-`,
-      false
-    ),
-    cssLinks(outPath),
-    ""
-  ));
+  await fse.writeFile(mdPath, dedent`
+      # 404 Not Found
+
+      Go back to [COSC Notes](${prettyLinks? "./": "./index.html"}) or [Home](${prettyLinks? "/": "/index.html"})
+    `
+  );
+  await renderToFile(mdPath, outPath, "404 Not Found", false);
 }
 
 
