@@ -299,6 +299,12 @@ h4::before { content: "####"  ; bottom:  0.2ex; }
 h5::before { content: "#####" ; bottom:  0.0ex; }
 h6::before { content: "######"; bottom: -0.1ex; }
 
+@media (max-width: 58rem) {
+  /* article width + ~4rem * 2 to ensure all hashes are visible */
+  h2::before, h3::before, h4::before, h5::before, h6::before {
+    content: none;
+  }
+}
 
 /* Image and video centering, sizing */
 img, video {
