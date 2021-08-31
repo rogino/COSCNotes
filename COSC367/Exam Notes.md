@@ -34,7 +34,7 @@ Iterative deepening: max depth incremented until solution found. DFS is $\geq po
 ### Bottom-up/forward-chaining
 
 - Initialize the set of consequences to be the set of atomic clauses
-- Find an atom $h$ that is not yet a consequence where $h \leftarrow b_1 \land ... \land b_m$ and all $b$'s are consequences; add it to the set
+- Find an atom $h$ that is not yet a consequence where $h \leftarrow b_1 \land \dots \land b_m$ and all $b$'s are consequences; add it to the set
 - Repeat until no more clauses can be selected
 
 **Fixed point**: set of consequences generated.
@@ -42,7 +42,7 @@ Iterative deepening: max depth incremented until solution found. DFS is $\geq po
 If $I$ is the interpretation where every element of the fixed point is true and every other one is false, $I$ is the **minimal model** of the KB.
 
 ### Top-down procedure
-Answer clause: $yes \leftarrow a_1 \land ... \land a_m$.
+Answer clause: $yes \leftarrow a_1 \land \dots \land a_m$.
 
 Until the answer clause is an answer ($yes \leftarrow \text{}$), repeatedly run **SLD resolution**.
 
@@ -136,11 +136,10 @@ $$
 P(x|y,z) = \frac{P(y|z)}{P(x,y|z)}
 $$
 
-
-
 For a full assignment:
+
 $$
-P(x_1, ..., x_n) = \prod_{i=1}^{n}{P(x_i | parents(X_i))}
+P(x_1, \dots, x_n) = \prod_{i=1}^{n}{P(x_i | parents(X_i))}
 $$
 
 If it is the probability over all variables, it is called the **joint probability distribution**.

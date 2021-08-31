@@ -279,7 +279,7 @@ If the support is greater than the *support threshold* $s$, it is called a *freq
 
 #### Association Rules
 
-If $I = \{ i_1, ..., i_k \}$ and $I -> j$, baskets containing all elements of $I$ are likely to contain $j$.
+If $I = \{ i_1, \dots, i_k \}$ and $I -> j$, baskets containing all elements of $I$ are likely to contain $j$.
 
 Confidence:
 
@@ -530,7 +530,7 @@ Assume the vector does fit in memory.
 
 - Initialize all entries of $r_\text{new}$ to $(1 - \beta)/N$.
 - For each page $i$:
-  - For each out-link $j = 1, ..., d_i$:
+  - For each out-link $j = 1, \dots, d_i$:
     - $r_\text{new}(\text{out-page}_j) \mathrel{{+}{=}}  \beta \cdot r_\text{old}(i)/d_i$
 
 Lots of random writes.

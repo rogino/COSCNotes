@@ -18,7 +18,7 @@ Many problems can be abstracted into the problem of finding a path in a directed
 
 - Node: state (vertices)
 - Arc: action (edges)
-- Path: sequence of $\langle n_0, n_1, ... n0_k\rangle$ nodes (of length $k$ in this example). Implemented as a sequence of arcs in practice
+- Path: sequence of $\langle n_0, n_1, \dots, n_k \rangle$ nodes (of length $k$ in this example). Implemented as a sequence of arcs in practice
 - Arcs can have an associate cost: cost of path is sum of cost of arcs
 - Solution: path from a start node to a goal node - multiple starting and goal nodes allowed
 

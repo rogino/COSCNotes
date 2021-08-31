@@ -2,7 +2,7 @@
 
 These problems are characterized by:
 
-- A set of variables $V_1$, $V_2$, ..., $V_n$
+- A set of variables $V_1$, $V_2$, \dots, $V_n$
 - A set of domains for each variable: $D_{V_i}$ is the domain for $V_i$
 - A set of constraints on various subsets which specify legal combinations of values for these variables (e.g. $V_1 \neq V_2$ )
 

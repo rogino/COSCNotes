@@ -22,7 +22,7 @@ Learning architecture:
 
 Given the following as input:
 
-- A set of **input attributes**/features/random variables: $X_1, ..., X_n$
+- A set of **input attributes**/features/random variables: $X_1, \dots, X_n$
 - A **target feature** $Y$ (discrete class value or continuous/real value) - what is being predicted
 - A set of **training examples**/instances where the value of the input and target variables are given
 
@@ -60,7 +60,7 @@ A general pattern is that at a certain complexity, increasing the complexity of 
 ### Naïve Bayes Model
 
 $$
-P(C | X_1, ..., X_n) = \alpha \cdot \prod_{i=1}^n{P(X_i | C)} \cdot P(C)
+P(C | X_1, \dots, X_n) = \alpha \cdot \prod_{i=1}^n{P(X_i | C)} \cdot P(C)
 $$
 
 Where:
@@ -68,7 +68,7 @@ Where:
 - Features $X$ are independent given the class variable $C$
 - $P(C)$: prior distribution of $C$
 - $P(X_i | C)$: likelihood conditional distributions
-- $P(C | X_1, ..., X_n)$: posterior distribution
+- $P(C | X_1, \dots, X_n)$: posterior distribution
 
 Conditional probabilities can be estimated from labelled data.
 
@@ -143,8 +143,8 @@ Training only requires storing all the examples.
 
 Prediction: $H(x_new)$:
 
-- Let $x_1, ..., x_k$ be the *k* most similar examples to $x_new$
-- $h(x_{new}) = combine\_predictions(x_1, ..., x_k)$; given the *k* nearest neighbours to $x_{new}$, calculate which value it should have
+- Let $x_1, \dots, x_k$ be the *k* most similar examples to $x_new$
+- $h(x_{new}) = combine\_predictions(x_1, \dots, x_k)$; given the *k* nearest neighbours to $x_{new}$, calculate which value it should have
 
 If *k* is too high, it will be under-fit.
 

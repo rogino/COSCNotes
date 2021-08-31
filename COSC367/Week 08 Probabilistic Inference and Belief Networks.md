@@ -19,9 +19,9 @@ RVs are denoted with a capital letter and have an associated domain.
 
 Unobserved RVs have distributions; a table of probabilities of values. A probability is a single number e.g. $P(W = rain) = 0.1$. The probabilities sum to 1 and none are negative.
 
-Joint distribution over a set of RVs: a map from assignments/outcomes/atomic events to reals; $P(X_1 = x_1, ..., X_n = x_n)$.
+Joint distribution over a set of RVs: a map from assignments/outcomes/atomic events to reals; $P(X_1 = x_1, \dots, X_n = x_n)$.
 
-Event: set *E* of assignments; $P(E) = \sum_{(x_1, ..., x_n \in E)}{P(x_1, ..., x_n)}$.
+Event: set *E* of assignments; $P(E) = \sum_{(x_1, \dots, x_n \in E)}{P(x_1, \dots, x_n)}$.
 
 Marginalization (summing out): projecting a joint distribution to a sub-distribution over subset of variables: $P(X_1 = x_1) = \sum_{x_2 \in domain(X_2)}{P(X_1 = x_1, X_2 = x_2)}$.
 
@@ -41,6 +41,7 @@ P(x_1|x_2) &= \frac{P(x_1, x_2)}{P(x_2)} \\
 $$
 
 **Product rule**:
+
 $$
 \begin{aligned}
 P(x|y) &= \frac{P(x, y)}{P(y)} \\
@@ -49,8 +50,9 @@ P(x|y) &= \frac{P(x, y)}{P(y)} \\
 $$
 
 **Chain rule**: $P(x_1,  x_2, x_3) = P(x_1) \cdot P(x_2|x_1) \cdot P(x_3|x_1, x_2)$. More generally:
+
 $$
-P(x_1, ... x_n) = \prod_{i=1}^{n}{P(x_i|x_1, ..., x_{i-1})}
+P(x_1, \dots, x_n) = \prod_{i=1}^{n}{P(x_i|x_1, \dots, x_{i-1})}
 $$
 
 ## Probabilistic Inference
@@ -83,20 +85,20 @@ $$
 
 ### Inference by Enumeration
 
-A more general procedure: $P(Y_1, ..., Y_m|e_1, ..., e_k)$ where:
+A more general procedure: $P(Y_1, \dots, Y_m|e_1, \dots, e_k)$ where:
 
-- $(E_1, ..., E_k) = (e_1, ..., e_k)$ are evidence variables
-- $Y_1, ..., Y_m$ are query variables
-- $H_1, ..., H_r$ are hidden variables
+- $(E_1, \dots, E_k) = (e_1, \dots, e_k)$ are evidence variables
+- $Y_1, \dots, Y_m$ are query variables
+- $H_1, \dots, H_r$ are hidden variables
 
-These variables can be referred to as $X_1, ..., X_n$.
+These variables can be referred to as $X_1, \dots, X_n$.
 
 First, select entries consistent with the evidence.
 
 Then, sum out $H$:
 
 $$
-P(Y_1, ..., Y_m, e_1, ..., e_k) = \sum_{h_1, ..., h_r}{P(Y_1, ..., Y_m, h_1, ..., h_r, e_1, ..., e_k)}
+P(Y_1, \dots, Y_m, e_1, \dots, e_k) = \sum_{h_1, \dots, h_r}{P(Y_1, \dots, Y_m, h_1, \dots, h_r, e_1, \dots, e_k)}
 $$
 
 Finally, normalize the remaining entries.
@@ -168,7 +170,7 @@ Nodes:
 Distributions:
 
 - A collection of distributions (CPTs) over each node; one for each combination of the parents' values
-  - $P(X|a_1, ..., a_n)$ for all combinations of $a$
+  - $P(X|a_1, \dots, a_n)$ for all combinations of $a$
 
 D-separation can be used to decide if a set of nodes $X$ is independent of $Y$ given $Z$.
 
@@ -202,7 +204,7 @@ $$
 
 More generally, if you have a full assignment, multiplying the relevant conditionals gives the probability:
 $$
-P(x_1, ..., x_n) = \prod_{i=1}^{n}{P(x_i | parents(X_i))}
+P(x_1, \dots, x_n) = \prod_{i=1}^{n}{P(x_i | parents(X_i))}
 $$
 
 ```python
@@ -221,7 +223,7 @@ $$
 P(Y|e) = \alpha \cdot P(Y, e) = \alpha \sum_H{P(Y, e, H)}
 $$
 
-(NB: $\sum_H$ means $\sum_{H_1}{\sum_{H_2}{...}}$)
+(NB: $\sum_H$ means $\sum_{H_1}{\sum_{H_2}{\dots}}$)
 
 This has to be computed for every value in the domain of $Y$.
 

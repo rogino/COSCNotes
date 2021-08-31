@@ -4,8 +4,8 @@
 
 A neuron receives signals from multiple inputs (inputs are weighted), and if the overall signal is above a threshold, the neural fires. A perceptron models this with:
 
-- Inputs $x_1, ..., x_n$
-- Parameters (weights) $w_1, ..., w_n$, and $bias$
+- Inputs $x_1, \dots, x_n$
+- Parameters (weights) $w_1, \dots, w_n$, and $bias$
 - Output (activation function): $g(a)$
 
 $$
@@ -32,7 +32,7 @@ $\underline{w}$ can be used to show which side of the hyper-plane will be classi
 
 ### Learning
 
-Given a data set - a collection of training vectors of the form $(x_1, ..., x_n, t)$ where $t$ is the target value:
+Given a data set - a collection of training vectors of the form $(x_1, \dots, x_n, t)$ where $t$ is the target value:
 
 - Randomly initialize the weights and bias
 
