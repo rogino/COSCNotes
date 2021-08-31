@@ -2,7 +2,7 @@
 
 ### Distance-Vector
 
-Periodically send $D_x$, node $x$'s estimates of the least cost path to all nodes in the networks: $D_x(y) = min([C(x, v) + D_v(y) \mbox{ for } v \mbox{ in } neighbours(x)])$, to its neighbours.
+Periodically send $D_x$, node $x$'s estimates of the least cost path to all nodes in the networks: $D_x(y) = min([C(x, v) + D_v(y) \text{ for } v \text{ in } neighbours(x)])$, to its neighbours.
 
 Poisoned reverse: if $x$ routes to $z$ through $y$, $x$ will say that $D_x(z) = \infty$, ensuring $y$ will not route to $z$ through $x$ if the link cost changes. This reduces the time to converge when link cost increases.
 
