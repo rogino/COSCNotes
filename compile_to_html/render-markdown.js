@@ -6,7 +6,7 @@ const md = require('markdown-it')({
 
   // Enable some language-neutral replacement + quotes beautification
   // For the full list of replacements, see https://github.com/markdown-it/markdown-it/blob/master/lib/rules_core/replacements.js
-  typographer:  false,
+  typographer:  true,
 
   highlight: (str, lang) => {
     if (lang && hljs.getLanguage(lang)) {
