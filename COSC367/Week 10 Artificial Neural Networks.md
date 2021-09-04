@@ -5,7 +5,7 @@
 A neuron receives signals from multiple inputs (inputs are weighted), and if the overall signal is above a threshold, the neural fires. A perceptron models this with:
 
 - Inputs $x_1, \dots, x_n$
-- Parameters (weights) $w_1, \dots, w_n$, and $bias$
+- Parameters (weights) $w_1, \dots, w_n$, and $\mathrm{bias}$
 - Output (activation function): $g(a)$
 
 $$
@@ -45,7 +45,7 @@ Given a data set - a collection of training vectors of the form $(x_1, \dots, x_
     - $y$ is the current prediction (perceptron output):
   - Update the weights/bias using:
     - $w_j \leftarrow w_{j} + \eta \cdot x_j(t - y)$
-    - $bias \leftarrow bias + \eta(t-y)$ (the same equation can be used for bias as above if it is represented as a virtual input)
+    - $\mathrm{bias} \leftarrow \mathrm{bias} + \eta(t-y)$ (the same equation can be used for bias as above if it is represented as a virtual input)
 
 If examples are linearly separable, the weights and bias will, in finite time, converge to values that produce a perfect separation.
 
@@ -109,8 +109,8 @@ Some notes:
 - A network with only one layer is an **identify function**
 - Weights and biases are *between* layers
   - Between layer $i$ and $i+1$:
-    - The number of weights is $nodesInLayer(i) \cdot nodesInLayer(i + 1)$
-    - The number of biases is $nodesInLayer(i + 1)$.
+    - The number of weights is $\mathrm{nodesInLayer}(i) \cdot \mathrm{nodesInLayer}(i + 1)$
+    - The number of biases is $\mathrm{nodesInLayer}(i + 1)$.
 - Layers between the input and output are called **hidden layers**
 
 As more layers/neurons are added, the complexity of the boundary shape(s) can increase. If you have two dimensions:
