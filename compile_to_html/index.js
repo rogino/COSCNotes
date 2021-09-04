@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const readline = require('readline');
 const recursiveReaddir = require("recursive-readdir");
-const dedent = require("dedent-js");
+const pretty = require("pretty");
 const yargs = require("yargs");
 const { hideBin } = require('yargs/helpers')
 
@@ -81,7 +81,7 @@ const argv = yargs(hideBin(process.argv))
 `)
 .help().alias("help", "h").argv;
 
-// To make args: blacklist, indentation, semester info path
+// To make args: blacklist, semester info path
 
 const NUKE_OUT_DIRECTORY = argv.nukeOutDirectory;
 
@@ -112,8 +112,6 @@ const IN_DIRECTORY_BLACKLIST = [
   /^compile_to_html/  // folder this html gen stuff is in
 ];
 
-
-const INDENTATION_STRING = "  ";
 
 const ROOT_TITLE = "COSC Notes";
 const ROOT_DESCRIPTION = "Notes from the courses I have taken at UC.";
@@ -250,18 +248,6 @@ const cssLinks = (outPath) => {
 }
 
 /**
- * Indents content to the given depth, and converts from CRLF to LF
- * @param {*} content content to indent
- * @param {*} depth of indentation
- * @param {*} indentationString string to use for indentation 
- * @returns indented string
- */
-const indentLines = (content, depth, indentationString = INDENTATION_STRING) => {
-  if (depth < 1) return content;
-  return content.split(/\r?\n/).map(line => indentationString.repeat(depth) + line).join("\n");
-}
-
-/**
  * Given HTML content, title etc., returns a full HTML document
  * @param {*} title title of the document
  * @param {*} content HTML content
@@ -270,28 +256,28 @@ const indentLines = (content, depth, indentationString = INDENTATION_STRING) => 
  * @returns HTML string
  */
 const render = (title, content, headers, bodyClasses = "") => {
-  let output = dedent`
+  let output = `
     <!DOCTYPE html>
     <head>
-    ${INDENTATION_STRING}<meta charset="utf-8">
-    ${INDENTATION_STRING}<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   `;
 
-  if (headers.length) output += "\n" + indentLines(headers, 1, INDENTATION_STRING) + "\n";
+  if (headers.length) output += headers;
 
-  output += dedent`
-  ${INDENTATION_STRING}<title>${title}</title>
+  output += `
+    <title>${title}</title>
   </head>
   <body${bodyClasses ? " class=\"" + bodyClasses + "\"" : ""}>
-  ${indentLines(content, 1, INDENTATION_STRING)}
+    ${content}
   </body>
   `;
 
-  return output;
+  return pretty(output, { ocd: false }); // newlines in code blocks get removed with ocd: true
 }
 
 /**
- * Renders markdown path at the given path to an HTML file, wrapping the content in an `<article>` tag
+ * Renders markdown path at the given path to an HTML file, wrapping the content in an `<main>` tag
  * @param {*} inPath path to markdown
  * @param {*} outPath path to html
  * @param {*} title HTML title
@@ -302,14 +288,14 @@ const render = (title, content, headers, bodyClasses = "") => {
  */
 const renderToFile = async (inPath, outPath, title, forceToC = true, bodyClasses = "", contentBelowTitle = "") => {
   const fileContents = await fse.readFile(inPath, { encoding: "utf8" });
-  const markdown = renderMarkdown(fileContents, forceToC, contentBelowTitle);
+  const renderedMarkdown = renderMarkdown(fileContents, forceToC, contentBelowTitle);
 
   return fse.writeFile(
     outPath,
-    render(title, dedent`
-      <article>
-      ${indentLines(markdown, 1, INDENTATION_STRING)}
-      </article>`,
+    render(title, `
+      <main>
+        ${renderedMarkdown}
+      </main>`,
       cssLinks(outPath),
       bodyClasses
     )
@@ -482,22 +468,25 @@ class Node {
 
   /**
    * Converts the breadcrumbs for the node into an HTML list with class 'breadcrumbs'
-   * @param {*} indentationString indentation string to use
-   * @returns HTML list
+   * @returns HTML
    */
-  breadcrumbsToMarkdown(indentationString = INDENTATION_STRING) {
+  breadcrumbsToHtml() {
     if (!Array.isArray(this.breadcrumbs) || this.breadcrumbs.length == 0) return "";
-    const breadcrumbsString = this.breadcrumbs.map(crumb => dedent`
-      ${indentationString}<li>
-      ${indentationString.repeat(2)}<a href="${crumb.link}">
-      ${indentationString.repeat(3)}${crumb.name}
-      ${indentationString.repeat(2)}</a>
-      ${indentationString}</li>
+    const breadcrumbsString = this.breadcrumbs.map(crumb => `
+      <li>
+        <a href="${crumb.link}">
+          ${crumb.name}
+        </a>
+      </li>
     `).join("\n");
-    return dedent`
+
+    // pretty required as indented lines are parsed as code blocks
+    return pretty(`
       <ul class="breadcrumbs">
-      ${breadcrumbsString}
-      </ul>`
+        ${breadcrumbsString}
+      </ul>`,
+      { ocd: false }
+    );
   }
 }
 
@@ -673,7 +662,7 @@ const renderAllFiles = async (prettyLinks = false) => {
   const renderLogic = async node => {
     let forceToC = true;
     let bodyClasses = "";
-    let breadcrumbs = indentLines(node.breadcrumbsToMarkdown(INDENTATION_STRING), 1, INDENTATION_STRING);
+    let breadcrumbs = node.breadcrumbsToMarkdown();
 
     if (!node.isLeaf()) {
       // Don't want headings to look like links in index pages
@@ -713,7 +702,7 @@ const render404Page = async (outDirectory, prettyLinks) => {
   const mdPath = path.join(outDirectory, "404.md");
   const outPath = path.join(outDirectory, "404.html");
 
-  await fse.writeFile(mdPath, dedent`
+  await fse.writeFile(mdPath, `
       # 404 Not Found
 
       Go back to [COSC Notes](${prettyLinks? "./": "./index.html"}) or [Home](${prettyLinks? "/": "/index.html"})

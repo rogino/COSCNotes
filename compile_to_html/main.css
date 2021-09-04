@@ -107,12 +107,12 @@ body {
   box-sizing: border-box;
 }
 
-body > article {
+body > main {
   max-width: min(50rem, calc(100% - max(env(safe-area-inset-left), 2rem)));
   margin-inline: auto;
 }
 
-body > article > h1:first-child {
+body > main > h1:first-child {
   /* The page title H1 doesn't need top margin */
   margin-block-start: 0;
 }
