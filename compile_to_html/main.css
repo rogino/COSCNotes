@@ -198,6 +198,7 @@ From https://codepen.io/nana8/pen/VEeoPW
 .breadcrumbs {
   list-style: none;
   padding-inline-start: 0;
+  --breadcrumb-angle: 40deg;
 }
 
 .breadcrumbs li {
@@ -234,13 +235,13 @@ From https://codepen.io/nana8/pen/VEeoPW
 }
 
 .breadcrumbs li::before {
-  transform: skewX(40deg);
+  transform: skewX(var(--breadcrumb-angle));
   top: 0;
   border-top-style: solid;
 }
 
 .breadcrumbs li::after {
-  transform: skewX(-40deg);
+  transform: skewX(calc(-1 * var(--breadcrumb-angle)));
   bottom: 0;
   border-bottom-style: solid;
 }
@@ -251,11 +252,36 @@ From https://codepen.io/nana8/pen/VEeoPW
   font-size: 0.9rem;
 }
 
-.breadcrumbs li:last-child::before, .breadcrumbs li:last-child::after {
+.breadcrumbs.highlight-last-element li:last-child::before,
+.breadcrumbs.highlight-last-element li:last-child::after {
   background-color: var(--close-to-foreground-muted-accent);
 }
-  
 
+.breadcrumbs li.reversed-angle::before {
+  transform: skewX(calc(-1 * var(--breadcrumb-angle)));
+}
+.breadcrumbs li.reversed-angle::after {
+  transform: skewX(var(--breadcrumb-angle));
+}
+.breadcrumbs li.reversed-angle + li:not(.reversed-angle) {
+  /* need to increase margin between reversed and non-reversed breadcrumbs */
+  margin-left: 0.5rem;
+}
+
+/* links to previous/next pages */
+.breadcrumbs.neighbour-links {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.breadcrumbs.neighbour-links li.next-page {
+  margin-left: auto;
+}
+@media print {
+  .breadcrumbs.neighbour-links {
+    display: none
+  }
+}
 
 /* On index pages don't want headers coloured */
 .unstyled-header-links h1 a,
@@ -314,6 +340,12 @@ img, video {
   /* center image */
   display: block;
   margin-inline: auto;
+}
+
+@media paper {
+  img, video {
+    max-height: 100vh;
+  }
 }
 
 

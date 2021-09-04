@@ -482,7 +482,7 @@ class Node {
 
     // pretty required as indented lines are parsed as code blocks
     return pretty(`
-      <ul class="breadcrumbs">
+      <ul class="breadcrumbs highlight-last-element">
         ${breadcrumbsString}
       </ul>`,
       { ocd: false }
@@ -563,6 +563,44 @@ class IndexNode extends Node {
     });
     return tree;
   }
+
+  /**
+   * Generates information about leaf node neighbours. Children must be sorted.
+   * Does a DFS walkthrough of the tree, adding previous/next neighbour information
+   * if both the elements are leaf nodes
+   */
+  generateLeafNeighbourInformation() {
+    for(let i = 0; i < this.children.length; i++) {
+      const prev = i != 0 && this.children[i - 1].isLeaf()? this.children[i - 1]: null;
+      const curr =           this.children[i    ].isLeaf()? this.children[i    ]: null;
+      const next = i + 1 < this.children.length && 
+                             this.children[i + 1].isLeaf()? this.children[i + 1]: null;
+      if (!curr) {
+        // index node: go down the tree
+        this.children[i].generateLeafNeighbourInformation();
+        continue;
+      }
+
+      if (prev) {
+        let relativeLink = path.relative(path.dirname(curr.link), prev.link);
+        if (PRETTY_LINKS) relativeLink = relativeLink.replace(/\.html$/, "");
+        console.log(relativeLink, encodeLink(relativeLink));
+        curr.neighbours.previous = {
+          name: prev.name,
+          link: "./" + encodeLink(relativeLink)
+        };
+      }
+
+      if (next) {
+        let relativeLink = path.relative(path.dirname(curr.link), next.link);
+        if (PRETTY_LINKS) relativeLink = relativeLink.replace(/\.html$/, "");
+        curr.neighbours.next = {
+          name: next.name,
+          link: "./" + encodeLink(relativeLink)
+        };
+      }
+    }
+  }
 }
 
 class LeafNode extends Node {
@@ -578,6 +616,43 @@ class LeafNode extends Node {
     this.htmlPath = path.join(path.dirname(markdownPath), path.basename(markdownPath, ".md") + ".html");
     // Link is absolute link to the output file when being served. Has the extension
     this.link = path.join("/", path.relative(relativeTo, this.htmlPath));
+
+    this.neighbours = {
+      previous: null,
+      next: null;
+    };
+  }
+
+  /**
+   * Converts the neighbouring links for the node into an HTML list with classes 'breadcrumbs neighbour-links'
+   * The list items have class 'prev-page reversed-angle' and 'next-page' respectively
+   * @returns HTML
+   */
+  neighbourLinksToHtml() {
+    let listItems = "";
+    if (this.neighbours.previous) listItems += `
+      <li class="prev-page reversed-angle">
+        <a href="${this.neighbours.previous.link}">
+          ${this.neighbours.previous.name}
+        </a>
+      </li>
+    `;
+
+    if (this.neighbours.next) listItems += `
+      <li class="next-page">
+        <a href="${this.neighbours.next.link}">
+          ${this.neighbours.next.name}
+        </a>
+      </li>
+    `;
+
+    // pretty required as indented lines are parsed as code blocks
+    return pretty(`
+      <ul class="breadcrumbs neighbour-links">
+        ${listItems}
+      </ul>`,
+      { ocd: false }
+    );
   }
 }
 
@@ -653,16 +728,16 @@ const renderAllFiles = async (prettyLinks = false) => {
 
   await Promise.all(readTitlePromises);
 
-
   tree.generateBreadcrumbs(prettyLinks);
-
+  tree.generateLeafNeighbourInformation();
+  
   // await fse.writeFile("./test.json", JSON.stringify(tree, null, 2));
   // return tree.generateIndexMarkdown(OUT_DIRECTORY, 1, true);
 
   const renderLogic = async node => {
     let forceToC = true;
     let bodyClasses = "";
-    let breadcrumbs = node.breadcrumbsToMarkdown();
+    let extraContentBelowTitle = node.breadcrumbsToHtml();
 
     if (!node.isLeaf()) {
       // Don't want headings to look like links in index pages
@@ -673,10 +748,11 @@ const renderAllFiles = async (prettyLinks = false) => {
           node.generateIndexMarkdown(path.dirname(node.link), 1, prettyLinks)
       );
     } else {
+      extraContentBelowTitle += node.neighbourLinksToHtml();
       console.log(`Rendering page ${node.markdownPath}`);
     }
 
-    await renderToFile(node.markdownPath, node.htmlPath, node.name, forceToC, bodyClasses, breadcrumbs);
+    await renderToFile(node.markdownPath, node.htmlPath, node.name, forceToC, bodyClasses, extraContentBelowTitle);
   }
 
   if (RENDER_IN_SERIES) {
