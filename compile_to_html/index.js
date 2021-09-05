@@ -79,6 +79,7 @@ const argv = yargs(hideBin(process.argv))
   `NB: on Windows, if any input directories are Junctions, developer mode needs to
   be enabled. See https://stackoverflow.com/a/57725541
 `)
+.strict()
 .help().alias("help", "h").argv;
 
 // To make args: blacklist, semester info path
@@ -116,6 +117,26 @@ const IN_DIRECTORY_BLACKLIST = [
 const ROOT_TITLE = "COSC Notes";
 const ROOT_DESCRIPTION = "Notes from the courses I have taken at UC.";
 
+
+/**
+ * Extracts the title from the title line with format `# {title}`
+ * Does support extracting text if the title includes URLs, but
+ * no other syntax is currently supported
+ * @param {string} titleLine markdown text to extract title from
+ * @return {string|undefined} undefined if could not extract, extracted title otherwise
+ */
+const extractTitleText = (titleLine) => {
+  if (titleLine == undefined) return;
+  if (!titleLine.match(/^# .+/g)) return;
+  let title = titleLine.substr(2);
+
+  // If link, remove the link-y bits
+  title = title.replace(/\[(.+?)\]\(.+?\)/g, (_, group1) => group1);
+  title = title.trim();
+  return title;
+}
+
+
 /**
  * Reads semester info from SEMESTER_INFO_PATH and parses it
  * @returns { semesterName: [{ name: courseName, description: courseDescription }]}
@@ -147,16 +168,28 @@ const readSemesterInfo = () => {
   return semesterInfo;
 }
 
-// Resources (e.g. css files) that need to be copied. Input path relative to current file, output path relative to out/css
+// Resources (e.g. css files) that need to be copied
+// If string given, used as both relative to input (to current file) and output file (relative to OUT_DIRECTORY/css)
+// If `dontLink` given, not linked as a CSS resource
+// If `onlineLink` given, alternative HTML tag to use instead of the local file
 const linkedResources = ["./monokai.css", "./main.css", {
   path: "./node_modules/katex/dist/katex.min.css",
   outPath: "./katex/katex.min.css",
+  onlineLink: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.css" integrity="sha384-zTROYFVGOfTw7JV7KUu8udsvW2fx4lWOsCEDqhBreBwlHI4ioVRtmIvEThzJHGET" crossorigin="anonymous">`
+
 }, {
     path: "./node_modules/katex/dist/fonts",
     outPath: "./katex/fonts",
     dontLink: true /* Don't link in the HTML head */
   }
-];
+].map(el => {
+  if (typeof el == "string") el = {
+    path: el,
+    outPath: el
+  };
+  if (el.dontLink !== true) el.dontLink = false;
+  return el;
+});
 
 /**
  * Finds absolute path to css directory
@@ -172,20 +205,13 @@ const copyLinkedResources = () => {
   console.log("Copying linked resources");
   let promises = [];
   linkedResources.map(el => {
-    let relativeInPath = el;
-    let relativeOutPath = el;
-    if (typeof el == "object") {
-      relativeInPath = el.path;
-      relativeOutPath = el.outPath;
-    }
-
-    const inPath = path.join(path.dirname(require.main.filename), relativeInPath);
-    const outPath = path.join(cssDir(), relativeOutPath);
+    const inPath = path.join(path.dirname(require.main.filename), el.path);
+    const outPath = path.join(cssDir(), el.outPath);
 
     promises.push((async () => {
       await fse.ensureDir(path.dirname(outPath));
       console.log(`Copying ${inPath}`);
-      await fse.copySync(inPath, outPath);
+      await fse.copy(inPath, outPath);
     })());
   });
 
@@ -230,17 +256,16 @@ const copyInputDirectories = async () => {
 
 
 /**
- * Generates HTML for a file using relative links
+ * Generates HTML head tags for CSS resources, relative to the given file
  * @param {*} outPath path to file the links will be relative to
- * @returns links to place in the HTML head
+ * @returns HTML link tags to place in the HTML head
  */
 const cssLinks = (outPath) => {
   // replace all \ with /
   return linkedResources
-    .filter(el => typeof el == "string" || !el.dontLink)
-    .map(el => typeof el == "string" ? el : el.outPath)
-    .map(relativePath => {
-      const cssPath = path.join(cssDir(), relativePath);
+    .filter(el => !el.dontLink)
+    .map(el => {
+      const cssPath = path.join(cssDir(), el.outPath)
       // Need path.dirname for some reason
       const link = path.relative(path.dirname(outPath), cssPath).replace(/\\/g, "/");
       return `<link rel="stylesheet" href="${link}">`;
@@ -248,55 +273,70 @@ const cssLinks = (outPath) => {
 }
 
 /**
- * Given HTML content, title etc., returns a full HTML document
+ * Generates HTML head elements for linked CSS resources
+ * @return HTML tags to place in the head
+ */
+const cssLinksInline = async () => {
+  const headTags = await Promise.all(linkedResources
+    .filter(el => !el.dontLink)
+    .map(async el => {
+      if (el.onlineLink) return el.onlineLink;
+      const contents = await fse.readFile(el.path, { encoding: "utf8" });
+      return `<style>\n${contents}\n</style>`;
+    }));
+  
+  return headTags.join("\n");
+}
+
+/**
+ * Given HTML content, title etc., returns a full HTML document. Basically just adds some basic meta tags, wraps content in a <body>
  * @param {*} title title of the document
  * @param {*} content HTML content
  * @param {*} headers additional headers to add
  * @param {*} bodyClasses string of classes to add the to HTML body
  * @returns HTML string
  */
-const render = (title, content, headers, bodyClasses = "") => {
-  let output = `
+const renderHtml = (title, content, headers, bodyClasses = "") => {
+  const html = `
     <!DOCTYPE html>
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <title>${title}</title>
+      ${typeof headers == "string"? headers: ""}
+    </head>
+    <body${typeof bodyClasses == "string" && bodyClasses.trim().length? " class=\"" + bodyClasses + "\"" : ""}>
+      ${content}
+    </body>
   `;
 
-  if (headers.length) output += headers;
-
-  output += `
-    <title>${title}</title>
-  </head>
-  <body${bodyClasses ? " class=\"" + bodyClasses + "\"" : ""}>
-    ${content}
-  </body>
-  `;
-
-  return pretty(output, { ocd: false }); // newlines in code blocks get removed with ocd: true
+  return pretty(html, { ocd: false }); // newlines in code blocks get removed with ocd: true
 }
 
 /**
  * Renders markdown path at the given path to an HTML file, wrapping the content in an `<main>` tag
- * @param {*} inPath path to markdown
- * @param {*} outPath path to html
- * @param {*} title HTML title
- * @param {*} forceToC if true, will always have a ToC even if not present in markdown file
- * @param {*} bodyClasses additional body classes to add; space-separated string
- * @param {*} contentBelowTitle additional markdown to put below the title
+ * @param {string} inPath path to markdown
+ * @param {string} outPath path to html
+ * @param {string|undefined} title HTML title. If undefined, attempts to extract title from first line of file (H1). If this fails uses the filename
+ * @param {boolean} inlineCss if true, CSS will be inline or links to online content. Otherwise, it will links reltaive to the current file
+ * @param {boolean} forceToC if true, will always have a ToC even if not present in markdown file
+ * @param {string|undefined} bodyClasses additional body classes to add; space-separated string
+ * @param {string|undefined} contentBelowTitle additional markdown to put below the title
  * @returns 
  */
-const renderToFile = async (inPath, outPath, title, forceToC = true, bodyClasses = "", contentBelowTitle = "") => {
+const renderMarkdownFileToHtml = async (inPath, outPath, title = undefined, inlineCss = false, forceToC = true, bodyClasses = "", contentBelowTitle = "") => {
   const fileContents = await fse.readFile(inPath, { encoding: "utf8" });
   const renderedMarkdown = renderMarkdown(fileContents, forceToC, contentBelowTitle);
 
+  if (title == undefined) title = extractTitleText(fileContents.split("\n")[0]);
+  if (title == undefined) title = path.basename(filePath, ".md");
   return fse.writeFile(
     outPath,
-    render(title, `
+    renderHtml(title, `
       <main>
         ${renderedMarkdown}
       </main>`,
-      cssLinks(outPath),
+      inlineCss? await cssLinksInline(): cssLinks(outPath),
       bodyClasses
     )
   );
@@ -394,9 +434,9 @@ class Node {
 
 
   /**
-   * 
-   * @param {*} callback 
-   * @param {*} noLeaves if true, callback not called on leaf nodes
+   * Does a DFS search on the tree, calling the callback on self first and then its children
+   * @param {function(Node): void} callback callback function
+   * @param {boolean} noLeaves if true, callback is not called on leaf nodes
    */
   dfs(callback, noLeaves = false) {
     callback(this);
@@ -410,7 +450,7 @@ class Node {
 
   /**
    * Generates breadcrumbs for node and all children
-   * @param {*} prettyLinks 
+   * @param {boolean} prettyLinks
    */
   generateBreadcrumbs(prettyLinks = false) {
     this.breadcrumbs = [];
@@ -468,7 +508,7 @@ class Node {
 
   /**
    * Converts the breadcrumbs for the node into an HTML list with class 'breadcrumbs'
-   * @returns HTML
+   * @returns HTML for breadcrumbs
    */
   breadcrumbsToHtml() {
     if (!Array.isArray(this.breadcrumbs) || this.breadcrumbs.length == 0) return "";
@@ -482,7 +522,7 @@ class Node {
 
     // pretty required as indented lines are parsed as code blocks
     return pretty(`
-      <ul class="breadcrumbs highlight-last-element">
+      <ul class="breadcrumbs highlight-last-element" aria-label="breadcrumbs">
         ${breadcrumbsString}
       </ul>`,
       { ocd: false }
@@ -584,7 +624,6 @@ class IndexNode extends Node {
       if (prev) {
         let relativeLink = path.relative(path.dirname(curr.link), prev.link);
         if (PRETTY_LINKS) relativeLink = relativeLink.replace(/\.html$/, "");
-        console.log(relativeLink, encodeLink(relativeLink));
         curr.neighbours.previous = {
           name: prev.name,
           link: "./" + encodeLink(relativeLink)
@@ -631,7 +670,7 @@ class LeafNode extends Node {
   neighbourLinksToHtml() {
     let listItems = "";
     if (this.neighbours.previous) listItems += `
-      <li class="prev-page reversed-angle">
+      <li class="prev-page reversed-angle" aria-label="previous page">
         <a href="${this.neighbours.previous.link}">
           ${this.neighbours.previous.name}
         </a>
@@ -640,7 +679,7 @@ class LeafNode extends Node {
 
     if (this.neighbours.next) listItems += `
       <li class="next-page">
-        <a href="${this.neighbours.next.link}">
+        <a href="${this.neighbours.next.link}" aria-label="next page">
           ${this.neighbours.next.name}
         </a>
       </li>
@@ -715,14 +754,8 @@ const renderAllFiles = async (prettyLinks = false) => {
     if (!node.isLeaf()) return;
     readTitlePromises.push((async () => {
       const line = await getFirstLine(node.markdownPath);
-
-      if (!line.match(/^# .+/g)) return;
-      let title = line.substr(2);
-
-      // If link, remove the link-y bits
-      title = title.replace(/\[(.+?)\]\(.+?\)/g, (_, group1) => group1);
-
-      node.name = title;
+      const title = extractTitleText(line);
+      if (title) node.name = title;
     })());
   });
 
@@ -752,7 +785,7 @@ const renderAllFiles = async (prettyLinks = false) => {
       console.log(`Rendering page ${node.markdownPath}`);
     }
 
-    await renderToFile(node.markdownPath, node.htmlPath, node.name, forceToC, bodyClasses, extraContentBelowTitle);
+    await renderMarkdownFileToHtml(node.markdownPath, node.htmlPath, node.name, false, forceToC, bodyClasses, extraContentBelowTitle);
   }
 
   if (RENDER_IN_SERIES) {
@@ -770,6 +803,23 @@ const renderAllFiles = async (prettyLinks = false) => {
 
 
 /**
+ * Renders a single markdown file; no breadcrumbs, links to other files etc.
+ * @param {string} filePath path to file
+ * @param {string|undefined} outPath. If undefined, uses same path as filePath but with a .html extension
+ * @param {boolean} addToC if a table of contents should be added to the file
+ */
+const renderASingleFile = async (filePath, outPath = undefined, addToC = false) => {
+  if (outPath == undefined) {
+    outPath = path.join(
+        path.dirname(filePath),
+        path.basename(filePath, ".md") + ".html"
+    );
+  }
+
+  renderMarkdownFileToHtml(filePath, outPath, undefined, true, addToC);
+}
+
+/**
  * Creates and renders the 404 page
  * @param {*} outDirectory directory to place the markdown and html files
  * @param {*} prettyLinks if true, links will not have 'index.html'
@@ -784,9 +834,8 @@ const render404Page = async (outDirectory, prettyLinks) => {
       Go back to [COSC Notes](${prettyLinks? "./": "./index.html"}) or [Home](${prettyLinks? "/": "/index.html"})
     `
   );
-  await renderToFile(mdPath, outPath, "404 Not Found", false);
+  await renderMarkdownFileToHtml(mdPath, outPath, "404 Not Found", false, false);
 }
-
 
 
 (async () => {
@@ -806,3 +855,4 @@ const render404Page = async (outDirectory, prettyLinks) => {
     await renderAllFiles(PRETTY_LINKS);
   }
 })();
+
