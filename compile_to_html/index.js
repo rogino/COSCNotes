@@ -73,6 +73,26 @@ const argv = yargs(hideBin(process.argv))
     type: "boolean",
     default: false
   }
+).option(
+  "render-single-file", {
+    description: `Path to a single markdown file to render. All other options ignored`,
+    type: "string",
+    default: undefined
+  }
+).option(
+  "render-single-file-out", {
+    description: `If render-single-file given, is output path for that file. If this
+                  is not given, defaults to same path as input except with a .html extension`,
+    type: "string",
+    default: undefined 
+  }
+).option(
+  "render-single-file-toc", {
+    description: `If render-single-file given, determines if a table of contents should
+                  be added automatically`,
+    type: "boolean",
+    default: false
+  }
 )
 .version(false)
 .epilogue(
@@ -103,6 +123,9 @@ const OUT_DIRECTORY = argv.outDirectory;
 const SEMESTER_INFO_PATH = argv.semesterInfoPath;
 
 const RENDER_IN_SERIES = argv.renderInSeries;
+const RENDER_SINGLE_FILE = argv.renderSingleFile;
+const RENDER_SINGLE_FILE_OUT = argv.renderSingleFileOut;
+const RENDER_SINGLE_FILE_TOC = argv.renderSingleFileToc;
 
 // Blacklist. For copying directories, just the name of the file/folder. For rendering, uses path relative to out directory
 const IN_DIRECTORY_BLACKLIST = [
@@ -815,7 +838,7 @@ const renderASingleFile = async (filePath, outPath = undefined, addToC = false) 
         path.basename(filePath, ".md") + ".html"
     );
   }
-
+  console.log(`Rendering to ${outPath}`);
   renderMarkdownFileToHtml(filePath, outPath, undefined, true, addToC);
 }
 
@@ -839,6 +862,11 @@ const render404Page = async (outDirectory, prettyLinks) => {
 
 
 (async () => {
+  if (RENDER_SINGLE_FILE) {
+    await renderASingleFile(RENDER_SINGLE_FILE, RENDER_SINGLE_FILE_OUT, RENDER_SINGLE_FILE_TOC);
+    return;
+  }
+
   if (NUKE_OUT_DIRECTORY && (COPY_DIRECTORIES || COPY_LINKED_RESOURCES)) try {
     console.log(`Nuking ${OUT_DIRECTORY}`)
     await fse.remove(OUT_DIRECTORY);
