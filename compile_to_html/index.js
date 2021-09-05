@@ -298,8 +298,8 @@ const cssLinksInline = async () => {
  */
 const renderHtml = (title, content, headers, bodyClasses = "") => {
   const html = `
-    <!DOCTYPE html lang="en">
-    <head>
+    <!DOCTYPE html>
+    <head lang="en">
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
       <title>${title}</title>
