@@ -619,7 +619,7 @@ class LeafNode extends Node {
 
     this.neighbours = {
       previous: null,
-      next: null;
+      next: null
     };
   }
 
