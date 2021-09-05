@@ -37,17 +37,19 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 400;
 
   /* Use em, not rem - top margin varies */
-  margin-block: 0.3em 0;
+  margin-top: 0.3em;
+  margin-bottom: 0;
 }
 
 /* Prevents situations where more whitespace above than below a heading */
 h1 + p, h2 + p, h3 + p, h4 + p, h5 + p, h6 + p {
-  margin-block-start: 0;
+  margin-top: 0;
 }
 
 p {
   /* No bottom margin so less spacing between paragraph and list */
-  margin-block: 1rem 0;
+  margin-top: 1rem;
+  margin-bottom: 0;
 }
 
 
@@ -103,18 +105,20 @@ body {
   scroll-behavior: smooth;
   width: 100%;
   margin: 0;
-  padding-block: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   box-sizing: border-box;
 }
 
 body > main {
   max-width: min(50rem, calc(100% - max(env(safe-area-inset-left), 2rem)));
-  margin-inline: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 body > main > h1:first-child {
   /* The page title H1 doesn't need top margin */
-  margin-block-start: 0;
+  margin-top: 0;
 }
 
 
@@ -122,21 +126,24 @@ body > main > h1:first-child {
 /* General element styling */
 /* Lists */
 ul, ol {
-  margin-block: 0.5rem 1rem;
-  padding-inline-start: var(--indentation);
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  padding-left: var(--indentation);
 }
 
 li ul, li ol {
   /* No vertical margin between list item and nested list */
-  margin-block: 0;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 
 /* Blockquotes */
 blockquote {
-  border-inline-start: 0.3rem solid var(--border-grey);
-  margin-inline: 0;
-  padding-inline-start: var(--indentation);
+  border-left: 0.3rem solid var(--border-grey);
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: var(--indentation);
   color: var(--close-to-foreground-grey);
 }
 
@@ -160,11 +167,11 @@ pre, .katex-display {
 
 /* Footnotes (markdown-it-footnotes) */
 .footnotes-sep {
-  margin-block-start: 2em;
+  margin-top: 2em;
 }
 
 section.footnotes > ol.footnotes-list {
-  padding-inline-start: 0;
+  padding-left: 0;
 }
 
 section.footnotes > ol.footnotes-list::before {
@@ -197,16 +204,19 @@ From https://codepen.io/nana8/pen/VEeoPW
  */
 .breadcrumbs {
   list-style: none;
-  padding-inline-start: 0;
+  padding-left: 0;
   --breadcrumb-angle: 40deg;
-  margin-block-end: 0;
+  margin-bottom: 0;
 }
 
 .breadcrumbs li {
   display: inline-block;
   position: relative;
-  padding-inline: 0.5rem;
-  margin-block-end: 0.20rem;
+
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+
+  margin-bottom: 0.20rem;
   --border-width: 1px;
 }
 
@@ -340,7 +350,8 @@ img, video {
 
   /* center image */
   display: block;
-  margin-inline: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @media paper {
@@ -353,9 +364,9 @@ img, video {
 /* Horizontal rules */
 hr {
   background: linear-gradient(to right, transparent, var(--border-grey), transparent);
-  border-inline: none;
   border: none;
-  padding-block: 1px;
+  padding-top: 1px;
+  padding-bottom: 1px;
 }
 
 
@@ -368,8 +379,7 @@ table {
 
 table td, table th {
   border: 1px solid var(--border-grey);
-  padding-block: 0.2rem;
-  padding-inline: 0.4em;
+  padding: 0.2rem 0.4rem;
 }
 
 table tbody tr:nth-child(2n - 1) {
@@ -398,7 +408,7 @@ table tr th:last-child {
 .table-of-contents > ol::before, section.footnotes > ol.footnotes-list::before {
   display: block;
   font-size: 1.2rem;
-  margin-block-end: 0.4rem;
+  margin-bottom: 0.4rem;
   font-variant: small-caps;
 }
 
@@ -407,8 +417,9 @@ table tr th:last-child {
 }
 
 .table-of-contents ol {
-  margin-block: 0;
-  padding-inline-start: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-left: 1.5rem;
 }
 
 /* top level OL has background etc. so that it can be hidden if there are no
@@ -419,9 +430,9 @@ table tr th:last-child {
      padding so the content isn't right against the background
   */
   padding: 1rem;
-  padding-block-start: 0.2rem;
+  padding-top: 0.2rem;
 
-  margin-block-start: 1rem;
+  margin-top: 1rem;
 
   background-color: var(--close-to-background-grey);
   border-radius: 0.4rem;
