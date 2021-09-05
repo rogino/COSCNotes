@@ -199,6 +199,7 @@ From https://codepen.io/nana8/pen/VEeoPW
   list-style: none;
   padding-inline-start: 0;
   --breadcrumb-angle: 40deg;
+  margin-block-end: 0;
 }
 
 .breadcrumbs li {
