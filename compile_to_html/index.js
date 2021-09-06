@@ -304,7 +304,9 @@ const cssLinksInline = async () => {
     .filter(el => !el.dontLink)
     .map(async el => {
       if (el.onlineLink) return el.onlineLink;
-      const contents = await fse.readFile(el.path, { encoding: "utf8" });
+      // Path is relative to this file, not directory the file was run from
+      const cssPath = path.join(path.dirname(require.main.filename), el.path);
+      const contents = await fse.readFile(cssPath, { encoding: "utf8" });
       return `<style>\n${contents}\n</style>`;
     }));
   
