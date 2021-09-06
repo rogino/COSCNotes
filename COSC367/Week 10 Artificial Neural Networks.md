@@ -26,7 +26,7 @@ The function partitions the input space into two sections: if there are two inpu
 
 If there are three inputs, the decision boundary is a plane. For *n* dimensions, it will be a *hyperplane*.
 
-The vector, $\underline{w}$ (without $w_0$), can be thought of as the normal to the line. The minimum distance between the origin and the decision boundary is $\frac{w_0}{||\underline{w}||}$.
+The vector, $\underline{w}$ (without $w_0$), can be thought of as the normal to the line. The minimum distance between the origin and the decision boundary is $\frac{w_0}{\|\underline{w}\|}$.
 
 $\underline{w}$ can be used to show which side of the hyper-plane will be classified as positive (the direction it points in will be positive).
 

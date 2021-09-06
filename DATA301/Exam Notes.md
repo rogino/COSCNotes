@@ -327,7 +327,7 @@ Axioms:
 #### Cosine Distance
 
 $$
-p_1 \cdot p_2 = |p_1||p_2| \cdot cos(\theta)
+p_1 \cdot p_2 = |p_1\|p_2| \cdot cos(\theta)
 $$
 
 Hence cosine distance is:
@@ -335,7 +335,7 @@ Hence cosine distance is:
 $$
 d(p_1, p_2) = cos^{-1}\left(\frac
     {p_1 \cdot p_2}
-    {|p_1||p_2|}
+    {|p_1\|p_2|}
 \right)
 $$
 
