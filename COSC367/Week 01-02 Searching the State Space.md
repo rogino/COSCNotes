@@ -123,7 +123,7 @@ Two problems: cycles - an infinite search tree, and when expanding multiple path
 
 We need memory - the frontier should keep track of which nodes have been expanded/closed.
 
-- Expansion happens when the frontier is removed from the path and you add new elements to it 
+- Expansion happens when the frontier is removed from the path and you add new elements to it
 - Store the expanded nodes as a set
   - The nodes must be hashable
 
@@ -202,7 +202,7 @@ Solve a simpler version of the problem:
 
 - Finding admissible heuristics is hard
   - Admissible heuristics are usually consistent. Yay!
-- Inadmissible heuristics are often quite effective, although that sacrifices optimality 
+- Inadmissible heuristics are often quite effective, although that sacrifices optimality
   - Multiplying by some constant is a hacky way of making it admissible
 
 Sliding puzzle example:

@@ -1,12 +1,12 @@
 # Test Notes
 
-### Distance-Vector
+## Distance-Vector
 
 Periodically send $D_x$, node $x$'s estimates of the least cost path to all nodes in the networks: $D_x(y) = min([C(x, v) + D_v(y) \text{ for } v \text{ in } neighbours(x)])$, to its neighbours.
 
 Poisoned reverse: if $x$ routes to $z$ through $y$, $x$ will say that $D_x(z) = \infty$, ensuring $y$ will not route to $z$ through $x$ if the link cost changes. This reduces the time to converge when link cost increases.
 
-#### RIP
+### RIP
 
 - Metric: number of hops (number of subsets traversed())
 
@@ -33,7 +33,7 @@ $O(n^2)$ algorithm, $O(nE)$ messages.
 - Uni/multi/broadcast support
 - Used mostly in upper-tier ISPs
 
-##### Hierarchy
+#### Hierarchy
 
 - Can be configured into areas. Each area runs OSPF:
   - Broadcasts only within the same area
@@ -45,7 +45,7 @@ $O(n^2)$ algorithm, $O(nE)$ messages.
 
 ## IPv6
 
--  Version (4): 6
+- Version (4): 6
 - Traffic class (8): QoS
 - Flow label (20): identifier for a group of packets
 - Payload length (16): size of data in bytes
@@ -174,7 +174,7 @@ Termination:
 
 1. Client sends `FIN`
 2. Server responds with `ACK`
-3. Once connection closed, server sends `FIN` 
+3. Once connection closed, server sends `FIN`
 4. Client responds with `ACK`, waiting twice the max segment lifespan to ensure the ACK arrived
 
 #### Acknowledgements

@@ -382,6 +382,7 @@ A $k$-shingle is any sequence of length $k$ of tokens (character, words) appeari
 The shingles are sets, not bags, so there should be no repeated shingles within the set of shingles.
 
 Pick $k$ such that the probability of any one shingle appearing in any particular document is low - if it is too small, it is likely to appear in most documents. Values of 5-10 are good starting points.
+
 #### Hashing
 
 Out of the domain of all possible shingles, only a small subset are likely to appear.

@@ -189,8 +189,3 @@ Mutation brings in diversity as compared to combining candidates to (hopefully) 
 Mutation: pick a random node and replace the subtree with a randomly-generated subtree.
 
 Crossover: pick a random node in each parent and exchange them.
-
-
-
-
-

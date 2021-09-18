@@ -1,6 +1,14 @@
 {
   "cSpell.words": [
+    "emptyset",
+    "infty",
+    "leftarrow",
+    "leftrightarrow",
     "mathbb",
-    "mathrm"
+    "mathrel",
+    "mathrm",
+    "rightarrow",
+    "setminus",
+    "subseteq"
   ]
 }

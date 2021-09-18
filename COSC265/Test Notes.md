@@ -129,7 +129,7 @@ If $X \rightarrow Y$ and $Y \rightarrow Z$, $X \rightarrow Z$ is a **transitive 
 G = {}
 for fd in F:
   for el in fd.lhs
-  	G.append(FD(el, fd.rhs)) # Decomposition
+    G.append(FD(el, fd.rhs)) # Decomposition
 
 for i in range(len(G)):
   fd = G[i]
@@ -145,8 +145,6 @@ for fd in G:
   if cover(fd.lhs, G - fd) == cover(fd.lhs, G):
     G.remove(fd)
 ```
-
-
 
 ## Physical Layer
 

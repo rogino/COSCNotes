@@ -1,6 +1,6 @@
 # Mid-Term Test Notes
 
-### Sockets
+## Sockets
 
 IP: stateless, unacknowledged, unreliable, unordered.
 
@@ -30,7 +30,7 @@ API:
 
 Network byte order: big endian.
 
-### Protocol Layering
+## Protocol Layering
 
 Service access point: interface to service for higher layer.
 
@@ -38,7 +38,7 @@ Service access point: interface to service for higher layer.
 | Header | Higher-layer payload/service data unit | Trailer |
 ```
 
-#### OSI
+### OSI
 
 Physical/Link layers single-hop scope.
 
@@ -165,7 +165,6 @@ End of frame detection: gap between frames, deliberate code violations, dedicate
 
 ## LAN
 
-
 Geometric RV:
 
 - Type 1, Bernoulli trial: returns probability of *k* **failures** before success: `P(k)=p(1-p)^k`, Expected value is `(1-p)/p`
@@ -180,9 +179,9 @@ Orthogonal: behaviour of one station independent of another.
 
 Frequency division multiple access:
 
- - Bandwidth divided into sub-channels + guard channels
- - Separate receivers/tunable receiver - latter requires switching before transmission starts
- - 0 medium access delay, B/n bandwidth
+- Bandwidth divided into sub-channels + guard channels
+- Separate receivers/tunable receiver - latter requires switching before transmission starts
+- 0 medium access delay, B/n bandwidth
 
 Time:
 
@@ -207,7 +206,7 @@ CSMA - carrier sense multiple access. Carrier sense: almost instantaneous check 
 Non-persistent CSMA:
 
 - If medium busy, generate random backoff time, then check again
-- High probability of medium being idle after tranmission finishes
+- High probability of medium being idle after transmission finishes
 
 p-persistent CSMA:
 

@@ -82,7 +82,6 @@ P(x|y) &= \frac{P(y|x) \cdot P(x)}{P(y)} \text{ (Baye's rule)}
 \end{aligned}
 $$
 
-
 ### Inference by Enumeration
 
 A more general procedure: $P(Y_1, \dots, Y_m|e_1, \dots, e_k)$ where:
@@ -200,9 +199,8 @@ P(a, b, c, d, e) &= P(e|a, b, c, d) \cdot P(a, b, c, d) \quad\text{(by the produ
 \end{aligned}
 $$
 
-
-
 More generally, if you have a full assignment, multiplying the relevant conditionals gives the probability:
+
 $$
 P(x_1, \dots, x_n) = \prod_{i=1}^{n}{P(x_i | parents(X_i))}
 $$
@@ -229,4 +227,4 @@ This has to be computed for every value in the domain of $Y$.
 
 - Answering $P(Y)$: no evidence; all variables except the query are hidden
 - Answering $P(y|e)$: answer $P(Y|e)$, then pick result for $Y=y$
-- Answering $P(Y_1=y_1, Y_2=y_2 | e)$: $P(y_1|y_2, e) \cdot P(y_2|e)$
+- Answering $P(Y_2=y_1, Y_2=y_2 | e)$: $P(y_1|y_2, e) \cdot P(y_2|e)$

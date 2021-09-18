@@ -21,7 +21,7 @@ Iterative deepening: max depth incremented until solution found. DFS is $\geq po
 - $h \leftarrow b$: if $b$ is true, $h$ must be true. $b$ is an atom, the body  
 
 - KB: set of definite clauses
-- Interpretation: assignment of truth value to each atom. 
+- Interpretation: assignment of truth value to each atom
 - Model: interpretation where all clauses are true
 - Logical consequence: atoms that are true in every model of the KB
 
@@ -42,6 +42,7 @@ Iterative deepening: max depth incremented until solution found. DFS is $\geq po
 If $I$ is the interpretation where every element of the fixed point is true and every other one is false, $I$ is the **minimal model** of the KB.
 
 ### Top-down procedure
+
 Answer clause: $yes \leftarrow a_1 \land \dots \land a_m$.
 
 Until the answer clause is an answer ($yes \leftarrow \text{}$), repeatedly run **SLD resolution**.
@@ -69,6 +70,7 @@ Until the answer clause is an answer ($yes \leftarrow \text{}$), repeatedly run 
   accReverse([], L, L).
   accReverse([Head|Tail], Acc, Rev) :- accReverse(Tail, [Head|Acc], Rev).
   ```
+
 - `!` suppresses backtailing; `fail` always fail; can be combined to invert result. Can also use `\+` to do the same
 
 ## Constraint Satisfaction Problems
@@ -123,7 +125,7 @@ Eliminate variables by passing constraints on to their neighbours.
   - At each iteration update all individuals - if any individual is a solution the search can stop
 - Simulated Annealing
   - Pick a random variable and value, adopting it if it is an improvement
-  - If it **is not an improvement**, adopt it with probability $exp(\frac{h(current\_assignment) - h(proposed\_assignment)}{Temperature})$. 
+  - If it **is not an improvement**, adopt it with probability $exp(\frac{h(current\_assignment) - h(proposed\_assignment)}{Temperature})$
   - Decrease temperature over time
 - Gradient descent
   - Walk along the gradient of the objective function to find a minima

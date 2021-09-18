@@ -221,7 +221,6 @@ List          Acc
 
 ```
 
-
 ## Arithmetic and other operators
 
 | C    | Prolog |
@@ -235,11 +234,11 @@ List          Acc
 
 These force the left and right hand arguments to be evaluated.
 
-`=` is the unification predicate and `\=` is the negation. `==` is the identity predicate, which succeeds if the arguments are identical. 
+`=` is the unification predicate and `\=` is the negation. `==` is the identity predicate, which succeeds if the arguments are identical.
 
 `2+2 = 4.` is false as `+(2, 2)` does not unify to `4`. You must use `2+2 =:= 4`.
 
-`!` is the cutback operator - it supresses backtracking. The `fail` predicate always fails. Using these two allows us to invert the result:
+`!` is the cutback operator - it suppresses backtracking. The `fail` predicate always fails. Using these two allows us to invert the result:
 
 ```prolog
 neg(Goal) :- Goal, !, fail.
