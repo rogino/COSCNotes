@@ -193,7 +193,7 @@ $$
 P(a, b, c, d, e) &= P(e|a, b, c, d) \cdot P(a, b, c, d) \quad\text{(by the product rule)} \\
 &= P(e|c) \cdot P(a, b, c, d)          \quad\text{(e dependent on c but independent of all others)} \\
 &= P(e|c) \cdot P(d|a, b, c) \cdot P(a, b, c) \\
-&= P(e|c) \cdot P(d|b, c) \cdot P(a, b, c) \\ 
+&= P(e|c) \cdot P(d|b, c) \cdot P(a, b, c) \\
 &= P(e|c) \cdot P(d|b, c) \cdot P(c|a, b) \cdot P(a, b) \\
 &= P(e|c) \cdot P(d|b, c) \cdot P(c|a) \cdot P(b|a) \cdot P(a) \\
 \end{aligned}
