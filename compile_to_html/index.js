@@ -323,16 +323,18 @@ const cssLinksInline = async () => {
  */
 const renderHtml = (title, content, headers, bodyClasses = "") => {
   const html = `
-    <!DOCTYPE html lang="en">
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-      <title>${title}</title>
-      ${typeof headers == "string"? headers: ""}
-    </head>
-    <body${typeof bodyClasses == "string" && bodyClasses.trim().length? " class=\"" + bodyClasses + "\"" : ""}>
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <title>${title}</title>
+        ${typeof headers == "string"? headers: ""}
+      </head>
+      <body${typeof bodyClasses == "string" && bodyClasses.trim().length? " class=\"" + bodyClasses + "\"" : ""}>
       ${content}
-    </body>
+      </body>
+    </html>
   `;
 
   return pretty(html, { ocd: false }); // newlines in code blocks get removed with ocd: true
