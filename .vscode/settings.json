@@ -10,5 +10,8 @@
     "rightarrow",
     "setminus",
     "subseteq"
-  ]
+  ],
+  "markdownlint.config": {
+    "MD024": false
+  }
 }
