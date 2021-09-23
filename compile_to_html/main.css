@@ -280,14 +280,16 @@ From https://codepen.io/nana8/pen/VEeoPW
 }
 
 /* links to previous/next pages */
-.breadcrumbs.neighbour-links {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+.breadcrumbs.neighbour-links::after {
+  content: "";
+  display: block;
+  clear: both;
 }
+
 .breadcrumbs.neighbour-links li.next-page {
-  margin-left: auto;
+  float: right
 }
+
 @media print {
   .breadcrumbs.neighbour-links {
     display: none
