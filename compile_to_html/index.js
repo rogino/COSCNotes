@@ -859,7 +859,7 @@ const render404Page = async (outDirectory, prettyLinks) => {
       # 404 Not Found
 
       Go back to [COSC Notes](${prettyLinks? "./": "./index.html"}) or [Home](${prettyLinks? "/": "/index.html"})
-    `
+    `.replace(/^\s+/gm, "") // remove newlines at start of line - rendered as code otherwise
   );
   await renderMarkdownFileToHtml(mdPath, outPath, "404 Not Found", false, false);
 }
