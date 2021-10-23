@@ -756,7 +756,8 @@ const getFirstLine = async (pathToFile) => {
 
 /**
  * Recursively concatenates all files in a given directory into a single file, and
- * adds the new file as the first entry in the index node
+ * adds the new file as the first entry in the index node.
+ * Doesn't work well with nested directories (image links broken, no sense of hierarchy)
  * @param {*} tree tree to parse. Nodes must be ordered
  */
 const generateConcatFilesAndNodes = async (tree) => {
