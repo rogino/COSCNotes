@@ -27,7 +27,7 @@ md.use(anchor, {
 });
 
 md.use(require("markdown-it-toc-done-right"), {
-  level: 2
+  level: 1
 });
 
 md.use(require("markdown-it-footnote"));

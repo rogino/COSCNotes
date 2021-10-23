@@ -127,6 +127,8 @@ const RENDER_SINGLE_FILE = argv.renderSingleFile;
 const RENDER_SINGLE_FILE_OUT = argv.renderSingleFileOut;
 const RENDER_SINGLE_FILE_TOC = argv.renderSingleFileToc;
 
+const CONCATENATED_FILES_NAME = "ALL_FILES_IN_FOLDER_MERGED";
+
 // Blacklist. For copying directories, just the name of the file/folder. For rendering, uses path relative to out directory
 const IN_DIRECTORY_BLACKLIST = [
   /^\./,              // e.g. .git
@@ -384,6 +386,7 @@ class Node {
     this.children = null;
     this.description = "";
     this.breadcrumbs = null;
+    this.bodyClasses = "";
   }
 
   isLeaf() {
@@ -408,9 +411,9 @@ class Node {
   }
 
   /**
-   * Generate markdown for index pages
+   * Generate markdown for index pages. If a leaf node returns markdown link
    * @param {*} relativeTo links should be relative to this directory
-   * @param {*} depth 
+   * @param {*} depth depth of node down the hierarchy (used for index nodes)
    * @returns markdown for the index page
    */
   generateIndexMarkdown(relativeTo = "/", depth = 1, prettyLinks = false) {
@@ -464,15 +467,23 @@ class Node {
    * Does a DFS search on the tree, calling the callback on self first and then its children
    * @param {function(Node): void} callback callback function
    * @param {boolean} noLeaves if true, callback is not called on leaf nodes
+   * @param {boolean} callChildrenFirst if true, callback for children node called before the parent node
    */
-  dfs(callback, noLeaves = false) {
-    callback(this);
-    if (this.isLeaf()) return;
+  dfs(callback, noLeaves = false, callChildrenFirst = false) {
+    if (this.isLeaf()) {
+      if (!noLeaves) callback(this);
+      return;
+    }
+    
+    if (!callChildrenFirst && !(this.isLeaf() && noLeaves)) callback(this);
+
     this.children.forEach(child => {
       if (!(noLeaves && child.isLeaf())) {
-        child.dfs(callback, noLeaves);
+        child.dfs(callback, noLeaves, callChildrenFirst);
       }
     });
+    
+    if (callChildrenFirst && !(this.isLeaf() && noLeaves)) callback(this);
   }
 
   /**
@@ -558,13 +569,18 @@ class Node {
 }
 
 class IndexNode extends Node {
-  constructor(name, folderPath, relativeTo) {
+  constructor(name, directoryPath, relativeTo) {
     super();
     this.name = name;
-    this.markdownPath = path.join(folderPath, "index.md");
-    this.htmlPath = path.join(folderPath, "index.html");
+    this.directoryPath = directoryPath;
+    this.markdownPath = path.join(directoryPath, "index.md");
+    this.htmlPath = path.join(directoryPath, "index.html");
     this.link = path.join("/", path.relative(relativeTo, this.htmlPath));
     this.children = [];
+
+
+    // Don't want headings to look like normal links
+    this.bodyClasses = "unstyled-header-links";
   }
 
   /**
@@ -739,6 +755,53 @@ const getFirstLine = async (pathToFile) => {
 
 
 /**
+ * Recursively concatenates all files in a given directory into a single file, and
+ * adds the new file as the first entry in the index node
+ * @param {*} tree tree to parse. Nodes must be ordered
+ */
+const generateConcatFilesAndNodes = async (tree) => {
+  const deepestIndexFirstIterator = async (node, callback) => {
+    const childrenIndexNodes = node.children.filter(el => !el.isLeaf());
+    for(const child of childrenIndexNodes) {
+      await deepestIndexFirstIterator(child, callback);
+    }
+    await callback(node);
+  }
+
+  await deepestIndexFirstIterator(tree, async node => {
+    if (node == tree) return; // don't want root copied
+    let filePromises = [];
+    node.children.forEach(child => {
+      // Children nodes should already ordered so don't need to do any sorting logic here
+      if (child.isLeaf()) {
+        filePromises.push(fse.readFile(child.markdownPath));
+      } else {
+        const filename = path.join(child.directoryPath, CONCATENATED_FILES_NAME + ".md");
+        filePromises.push(fse.readFile(filename));
+      }
+    });
+
+    const concatNode = new Node();
+    concatNode.name = `All Files in '${node.name}' Merged`;
+    concatNode.markdownPath = path.join(node.directoryPath, CONCATENATED_FILES_NAME + ".md");
+    concatNode.htmlPath     = path.join(node.directoryPath, CONCATENATED_FILES_NAME + ".html");
+    concatNode.link = path.join("/", path.relative(OUT_DIRECTORY, concatNode.htmlPath)); // full link to file (if being run on a http server)
+    concatNode.children = null;
+    concatNode.description = "";
+    concatNode.breadcrumbs = null;
+    concatNode.bodyClasses = "toc-show-h1";
+
+    const results = await Promise.all(filePromises);
+    const outputFile = "# " + concatNode.name + "\n\n" + results.join("\n\n");
+    await fse.writeFile(concatNode.markdownPath, outputFile);
+    console.log(`WROTE CONCAT MARKDOWN FILE FOR DIR ${node.directoryPath}`);
+
+    node.children.unshift(concatNode);
+  });
+}
+
+
+/**
  * Renders all index and content markdown files in the output directory to HTML
  * @param {*} prettyLinks 
  * @returns 
@@ -752,7 +815,8 @@ const renderAllFiles = async (prettyLinks = false) => {
     filePath => IN_DIRECTORY_BLACKLIST.some(reg => reg.test(path.relative(OUT_DIRECTORY, filePath))),
    
     // Ignore index.md
-    filePath => /index\.md$/.test(path.basename(filePath))
+    filePath => /index\.md$/.test(path.basename(filePath)),
+    filePath => new RegExp(CONCATENATED_FILES_NAME + "\\.md$").test(path.basename(filePath))
   ]);
 
   // Convert list to tree structure
@@ -788,31 +852,33 @@ const renderAllFiles = async (prettyLinks = false) => {
 
   await Promise.all(readTitlePromises);
 
-  tree.generateBreadcrumbs(prettyLinks);
   tree.generateLeafNeighbourInformation();
   
+  await generateConcatFilesAndNodes(tree);
+  // concat pages won't have neighbour links but will have breadcrumbs
+
+  tree.generateBreadcrumbs(prettyLinks);
+
+
   // await fse.writeFile("./test.json", JSON.stringify(tree, null, 2));
   // return tree.generateIndexMarkdown(OUT_DIRECTORY, 1, true);
 
   const renderLogic = async node => {
     let forceToC = true;
-    let bodyClasses = "";
     let extraContentBelowTitle = node.breadcrumbsToHtml();
 
     if (!node.isLeaf()) {
-      // Don't want headings to look like links in index pages
-      bodyClasses = "unstyled-header-links";
       forceToC = !node.allChildrenLeafNodes();
       await fse.writeFile(
           node.markdownPath,
           node.generateIndexMarkdown(path.dirname(node.link), 1, prettyLinks)
       );
     } else {
-      extraContentBelowTitle += node.neighbourLinksToHtml();
+      if (node.neighbours) extraContentBelowTitle += node.neighbourLinksToHtml();
       console.log(`Rendering page ${node.markdownPath}`);
     }
 
-    await renderMarkdownFileToHtml(node.markdownPath, node.htmlPath, node.name, false, forceToC, bodyClasses, extraContentBelowTitle);
+    await renderMarkdownFileToHtml(node.markdownPath, node.htmlPath, node.name, false, forceToC, node.bodyClasses, extraContentBelowTitle);
   }
 
   if (RENDER_IN_SERIES) {
