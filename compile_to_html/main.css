@@ -457,56 +457,62 @@ table tr th:last-child {
   text-decoration: underline;
 }
 
-/* ToC logic varies depending on if links to H1 elements should be shown or not.
-First few rules are for when H1 headings should be shown (excluding title).
-Below that are rules for when H1 headings should be hidden - there is no way to
-'delete' a CSS counter so some immediate children selectors are required to exclude
-the top level H1 links from having a counter (and to hide the H1 links)
+/*
+When body.toc-show-h1, top-level links in the ToC are shown (except the first
+element - the title of the page). When false, top-level links are hidden.
+
+Either way, top-level links will NOT show numbering - .toc-show-h1 is used
+in concat pages where it combines contents from all files in a directory - all
+titles are numbered so having the counter in addition to this is overkill.
+
+That said, the children elements will show the numbering of the h1s.
+
+There is no way to 'delete' a CSS counter so some immediate children selectors
+are required to exclude the top level H1 links from having a counter
 */
-.toc-show-h1 .table-of-contents ol {
-  /* After every ol (at a given nesting level), reset the counter (for that level) to 0 */
+
+.table-of-contents > ol > li ol {
+ /* After every ol (at a given nesting level), reset the counter
+    (for that level) to 0. Exclude the top-level ol elements
+ */
   counter-reset: toc-counter;
 }
-.toc-show-h1 .table-of-contents > ol li {
+.table-of-contents > ol > li ol li {
   /*After every li, increment the counter for immediate parent ol element by 1 */
   counter-increment: toc-counter;
 }
-.table-of-contents li > a::before {
+.table-of-contents > ol > li ol li > a::before {
   /* Shows contents of all counters in the hierarchy with the given formatting */
   content: counters(toc-counter, ".") ". ";
   font-size: 1rem;
 }
+
+
+/* Define counter when showing H1 elements so that the H2 and other child ToC
+ entries will have the counter for the H1 element */
+.toc-show-h1 .table-of-contents > ol {
+  counter-reset: toc-counter;
+}
+.toc-show-h1 .table-of-contents > ol > li:not(:first-child) {
+  /* First child is page title which will always be hidden, so don't increment
+     counter */
+  counter-increment:  toc-counter;
+}
+
 /* Hide ToC entry for the page title. If display:none used counter doesn't
-   increment or something. Since .toc-show-h1 is only ever used when there
-   are multiple h1s in a page, this will hide all h1s if .toc-show-h1 is not present
+   increment or something (and can't display:none the li itself since that would
+   hide the nested ol's. Since .toc-show-h1 is only ever used when there are
+   multiple h1s in a page, this will hide all h1s if .toc-show-h1 is not present
 */
 .table-of-contents > ol > li:first-child > a {
   visibility: hidden;
   display: block;
   height: 0;
 }
-/* Reset counter to 0 so that the second H1 on the page has an index of 1 */
-.toc-show-h1 .table-of-contents > ol > li:first-child {
-  counter-set: toc-counter;
-}
 
-
-/* First three rules are same as above, except that all top level ol and lis are being excluded */
-:not(.toc-show-h1) .table-of-contents > ol > li ol {
-  counter-reset: toc-counter;
-}
-:not(.toc-show-h1) .table-of-contents > ol > li ol li {
-  counter-increment: toc-counter;
-}
-:not(.toc-show-h1) .table-of-contents > ol > li ol li > a::before {
-  content: counters(toc-counter, ".") ". ";
-  font-size: 1rem;
-}
-
-/* Remove the padding from the hidden top-level list
-For some reason, just this rule requires > main. I think its because body, not
-main, has the class and hence the :not() rule matches main
+/*
+  Remove the padding from the hidden top-level list when not showing top-level links
 */
-:not(.toc-show-h1) > main > .table-of-contents > ol > li > ol {
+body:not(.toc-show-h1) .table-of-contents > ol > li > ol {
   padding-left: 0;
 }
