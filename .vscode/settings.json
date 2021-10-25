@@ -1,5 +1,8 @@
 {
   "cSpell.words": [
+    "ciphertext",
+    "ciphertexts",
+    "cryptosystem",
     "emptyset",
     "infty",
     "leftarrow",
@@ -7,6 +10,7 @@
     "mathbb",
     "mathrel",
     "mathrm",
+    "plaintexts",
     "rightarrow",
     "setminus",
     "subseteq"
