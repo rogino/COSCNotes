@@ -136,3 +136,79 @@ Novice to Expert:
   - Inter-modal: make user aware of existence of different, faster modes
   - Vocab expansion: make user aware of most common commands
   - Task strategy: inteligent UIs that figure out what the user is trying to do and suggests more efficient strategies to achieve it
+
+Human Memory:
+
+- Short-term:
+  - $ 7 \pm 2$ 'chunks'
+  - Fast access: ~70 ms
+  - Rapid decay: ~200 ms
+    - Maintenance rehersal: repeat chunk a few times to prevent decay
+    - Displacement/interference decay
+- Long-term:
+  - Short-term -> long-term through elaborative rehersal + extensive repetition
+  - Slow access: > 100 ms
+  - Good at recognition but non recall
+  - Spatial processing
+
+Slips:
+
+- Mistake is a conscious decision; bad user model
+- Slip is automatic behaviour:
+  - Capture error:
+    - Two action sequences, user captured into wrong (more frequent) sequence
+  - Description error:
+    - Multiple objecs allowing same/similar action
+    - Right action, wrong object
+  - Data-driven error:
+    - Correct value kicked out of short-term memory by external data
+    - Incorrect value entered
+  - Loss-of-activation error:
+    - Forget what you are doing mid-flow
+  - Mode error:
+    - Right action, wrong state
+    - Make states highly visible and noticable
+    - Reduce states where possible
+  - Motor slip:
+    - Problem between brain and input device
+  - Premature closure error:
+    - 'Dangling' UI action after user's perceived goal completion
+
+Human phenomena:
+
+- Homeostatis; equilibrium
+  - Make a task easier; people will attempt harder tasks with the system
+- Satisficing
+  - Making do; why improve?
+  - e.g. hunt-and-peck typing, not bothering to learn keyboard shortcuts
+- Hawthorne effect:
+  - People like being involved in experiements; behaviour here not reflective of behaviour in real world
+- Peak-end effects
+  - Most intense or terminating moments of an experience have an excessive influence over people's memories of the experience
+- Negativity bias:
+  - Bad is stronger than good
+- Communication convergence
+  - Similarity in pace, gestures, phrases etc. enhances communication
+
+## Design Process
+
+Top-level process:
+
+- Articulate
+  - Who are the users and what are the key tasks?
+  - Task-centered, participatory and/or user-centered design
+  - Generate user and task descriptions, then evaluate
+- Brainstorm
+  - User involvement, representations/metaphors, the psychology of everyday things
+  - Generate low-fidelity, paper prototypes then:
+    - Participatory interaction
+    - Task scenario walk-through
+- Refinement
+  - Graphical screen design, interface guidelines and style guides
+  - Generate high-fidelity, testable prototypes, then:
+    - Usability testing
+    - Heuristic evaluation
+- Completion
+  - Generate alpha/beta systems or a complete specification
+  - Then do field testing
+
