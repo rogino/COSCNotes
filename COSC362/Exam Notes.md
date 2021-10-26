@@ -37,7 +37,65 @@ Field $\mathbb{F}$: set with two operations:
 
 Chinese Remainder Theorem:
 
+- Relatively prime $p$, $q$
+- Given integers $c_1$ and $c_2$ there exists a unique integer $0 \le x \lt pq$ such that:
 
+    $$
+    \begin{aligned}
+    x &\equiv c_1 \pmod p \\
+    x &\equiv c_2 \pmod q
+    \end{aligned}
+    $$
+- Solution:
+
+    $$
+    x \equiv qc_1(q^{-1} \pmod p) + pc_2(p^{-1} \pmod q) \pmod{pq}
+    $$
+
+Euler function:
+
+- $\phi(n)$: number of integers smaller and relatively prime to $n$
+- $\phi(p) = p - 1$ for prime $p$.
+- For integer $n$ with prime divisors $p_i^{e_i}$:
+
+    $$
+    \phi(n) = \prod_{i = 1}^{t}{p_i^{e_i - 1}(p_i - 1)}
+    $$
+
+- Euler's Theorem: for relatively prime $a$ and $n$:
+
+    $$
+    a^{\phi(n)} \bmod n = 1
+    $$
+
+Fermat Primality Test:
+
+- Uses Fermat's little theorem: if $a^{n - 1} \bmod n \neq 1$ for $1 < a < n - 1$, $a$ an $n$ are not coprime and hence $n$ cannot be prime
+- Repeat with multiple values of $a$ (e.g. known small primes); return *probable prime* if all return $1$
+- Reduce powers using:
+  - $ab \bmod n = (a \bmod n)(b \bmod n) \bmod n$
+  - $(a^m)^k \bmod n = (a^m \bmod n)^k \bmod n$
+- *Carmichael numbers*: composite numbers that are always found to be *probable primes* by the Fermat primality test
+
+Miller-Rabin test:
+
+- Only for odd $n$
+- Pick odd $u$ and any integer $v$ such that $n - 1 = 2^v u$
+- Pick any $1 < a < n - 1$
+  - e.g. first 7 primes
+- Set $b = a^u \bmod n$
+- If $b = 1$ return *probable prime*
+- Else repeat the following $v$ times:
+  - If $b = -1$ return *probable prime*
+  - $b = b^2 \bmod n$
+- Return composite
+
+Returns *probable prime* for composite numbers with a maximum probablility of 25%.
+
+Discrete logarithm problem:
+
+- Find exponent $x$ that solves $y = g^x \bmod p$
+- *Hard* problem: need to brute force values of $x$
 
 ## Classical Encryption
 
@@ -76,6 +134,62 @@ Systems:
   - Linear function: multiply each group (column vector) by the key (a matrix)
   - Vulnerable to known-plaintext attacks (but may fail if matrix not invertible)
   - Ciphertext-only attacks: find probable blocks
+
+## Modern Encryption
+
+### Hash Functions/MACs
+
+Properties:
+
+- **Collision resitance**: find collision given no constraints
+- **Second-preimage resistance**: find collision for a given message
+- **Preimage resistance**: can't find message given its hash
+
+Birthday paradox:
+
+- ~50% chance of finding collision to hash function outputting $k$ bits given $2^{k/2}$ trials
+  - ~$2^{128}$ trials infeasible today, so hash function outputs should be at least 256 bits
+  - c.f. block cipher key: need $2^{k - 1}$ trials for 50% probability of finding key
+
+Merkle-Damgård Construction:
+
+- Compression function $h$ takes in two $n$-bit inputs and outputs one $n$-bit output
+- Split message into $n$-bit blocks
+  - Hash IV and first block
+  - Hash output of above and second block
+  - ...
+  - Hash output of above and length (plus padding)
+- Length extension attacks: hash is full state of the MAC so attacker could add extra blocks
+
+Standards:
+
+- MDx: all broken
+- SHA-0/SHA-1: broken
+- SHA-2:
+  - Min 256 bits (i.e. AES-128-level security)
+  - SHA-512 most secure
+- SHA-3: uses sponge function over compression functions
+
+MACs:
+
+- Tag generated from message and secret key
+- **Unforgeability**: cannot produce Message-Tag pair without key
+- **Unforegability under chosen message attack**: above holds even with access to oracle that can calculate MAC for attacker-chosen messages
+
+HMAC:
+
+- MAC from iterated hash function
+- $\mathrm{HMAC}(M, K) = H((K \oplus \mathrm{opad}) \| H((K \oplus \mathrm{ipad}) \| M))$
+  - Where $\text{opad}$ and $\text{ipad}$ are known constants
+
+Encryption and MAC:
+
+- If not using authenticated encryption, there are three options:
+  - Encrypt-**and**-MAC: encrypt $M$, apply MAC to $M$ and send ciphertext and tag
+    - Insecure; don't use
+  - MAC-then-Encrypt: calculate MAC on $M$, encrypt $M\|T$, send ciphertext
+  - Encrypt-then-MAC: encrypt $M$, calculate MAC on $C$, send ciphertext and tag
+    - Most secure but also a bit harder
 
 ### Block Cipher
 
@@ -169,13 +283,12 @@ Tag $T$ of message $M$ is *unforgeable* - impossible to produce $T = \mathrm{MAC
 
 ### Authenticated Encryption
 
-Data is either:
+Data fits into one of two buckets:
 
 - Payload: encrypted and authenticated
-
 - Associated data: only authenticated
 
-When the latter is supported, called AEAD - Authenticated Encryption with Associated Data.
+This is called AEAD - Authenticated Encryption with Associated Data.
 
 **CCM** (**C**ounter with **C**BC-**M**AC):
 
@@ -219,4 +332,3 @@ Synchronous Stream Ciphers:
 - **One-Time Pad**
   - Shannon's Perfect Secrecy: distribution of messages given ciphertext the same as the distribution of messages
 - A5 Cipher, RC4, ChaCha
-
