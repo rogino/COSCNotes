@@ -117,3 +117,22 @@ Hick/Hyman Law of Decision Time:
 - Hick/Hyman models reaction time when **optimally prepared** (i.e. expert with a spatially stable UI)
 - $T = a + bH$ where $H = \sum_i^n{p_i log_2 \left(\frac{1}{p_i}\right)}
 - For $n$ equally probable items, decision time is $O(log{n})$
+
+Power Law of Practice:
+
+- $\text{Trial}_n = \text{Trial}_0 \cdot n^{-\alpha}$
+- $\alpha$ is learning curve
+- Applies to both simple and complex tasks
+
+Novice to Expert:
+
+- Stagnation at some point:
+  - Satisficing: good enough
+    - And performance dip when switching to a new mode
+  - Lack of mnemonics
+  - Lack of visibility
+- Supporting transitions:
+  - Intra-modal: guidance to help user move towards the ceiling of performance within a mode
+  - Inter-modal: make user aware of existence of different, faster modes
+  - Vocab expansion: make user aware of most common commands
+  - Task strategy: inteligent UIs that figure out what the user is trying to do and suggests more efficient strategies to achieve it
