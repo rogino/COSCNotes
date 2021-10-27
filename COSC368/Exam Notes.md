@@ -246,9 +246,85 @@ Task-Centered System Design (TCSD):
   - Give each task a unique ID
   - Validate tasks: talk to relevant users to help spot issues
   - Determien what tasks and users will be covered; rank based on importance and task frequency
-- Design
+- Design:
   - Iterative design, walk-through evaluations
 
 User-Centered System Design (UCSD):
 
-- Users know the 
+- Users know their own needs better than anyone else
+- Involve representative end-users as full members of the design process
+- Great at:
+  - Responding to suggested designs
+    - Not so great at coming up with new designs
+  - Bringing in invaluable knowledge of work context
+  - Leading to greater user buy-in
+- The user is not always right - they may not know what they want
+
+Nielson's Ten Heuristics:
+
+1. Simple and natural dialogue
+  - Make it as simple as possible but no simpler
+  - Presentation + navigatino should be natural and consistent
+  - Design: organize, economize, communicate
+2. Speak the user's language
+  - Affordances (it is used the way it looks like it should be used)
+  - Mappings
+  - Metaphors
+  - Base terminology on user's task language, not implementation
+3. Minimize memory load
+  - Recall slow; use recognition where possible
+  - Show input formats, provide defaults (e.g. date fields - what format is it supposed to be entered in, can a sensible default be provided?)
+  - Support reuse/re-visitation (e.g. show a few of the most commonly or recently used)
+  - Support unit exchange
+  - Support generalization: universal commands, modifiers
+4. Consistency
+  - In graphic design
+  - In command structure (e.g. pick command then select object or select object and run command)
+  - Internally
+  - Externally (within the platform)
+  - Beyond computing
+5. Feedback
+  - Continuous feedback about the system state and system's interpretation of user input
+  - Feedback should be:
+    - Specific
+    - Consider feed-forward: show effect of action *before* it is commited
+  - Autocomplete
+    - Must be stable and predictable - muscle memory, not reading
+    - Consider persistance: how distruptive and enduring should the feedback be?
+6. Clearly-marked exits; don't trap the user
+  - Cancel buttons, universal undo, interrupt long-running operations etc.
+  - More recent actions should override older ones
+  - Quit
+    - 'Do you want to save changes to ${filename}?': 'Don't Save', 'Cancel', 'Save'; should be specific
+7. Shortcuts
+  - Keyboard accelerators
+  - Command completion, type-ahead
+  - Function keys
+  - Double clicking
+  - Gestures
+  - History
+  - Customizable toolbars
+8. Prevent errors, avoid modes
+  - Syntactic correctness - disable items that aren't valid
+  - Feedback reduces chance of slips
+  - Easy correction - universal undo
+  - Commensurate effort: states difficult to get to should be difficult to irreversibly leave
+  - Forcing functions: prevent behaviour until problem corrected
+    - Interlocks: force right order of operations (e.g. remove card before ATM dispenses cash)
+    - Lock-ins: force user to remain in space (e.g. would you like to save changes dialog on close)
+    - Lock-outs: force user leaving space or prevent event from occuring
+    - Don't just ignore illegal actions - user must infer what is wrong
+  - Mode errors:
+    - Have as few modes as possible
+    - Make current mode easily apparent
+    - Spring-loaded modes: ongoing action required to stay in mode
+9. Deal with errors positively and helpfully
+  - Clear language, not codes
+  - Precise
+  - Constructive - offer solutions
+10. Help and documentation
+  - Documentation is not permission to design a crappy UI
+  - Write the manual before the system
+  - Reminders: tooltips
+  - Wizards: puts system, not user in control. Don't overuse
+  - Tutorials
