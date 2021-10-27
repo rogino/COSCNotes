@@ -115,7 +115,7 @@ Hick/Hyman Law of Decision Time:
 
 - Visual search time usually $T = a + bn$ ($O(n)$)
 - Hick/Hyman models reaction time when **optimally prepared** (i.e. expert with a spatially stable UI)
-- $T = a + bH$ where $H = \sum_i^n{p_i log_2 \left(\frac{1}{p_i}\right)}
+- $T = a + bH$ where $H = \sum_i^n{p_i log_2 \left(\frac{1}{p_i}\right)}$
 - For $n$ equally probable items, decision time is $O(log{n})$
 
 Power Law of Practice:
@@ -140,7 +140,7 @@ Novice to Expert:
 Human Memory:
 
 - Short-term:
-  - $ 7 \pm 2$ 'chunks'
+  - $7 \pm 2$ 'chunks'
   - Fast access: ~70 ms
   - Rapid decay: ~200 ms
     - Maintenance rehearsal: repeat chunk a few times to prevent decay
@@ -200,9 +200,24 @@ Top-level process:
   - Generate user and task descriptions, then evaluate
 - Brainstorm
   - User involvement, representations/metaphors, the psychology of everyday things
-  - Generate low-fidelity, paper prototypes then:
+  - Low-fidelity sketches:
+    - Focus on high-level concepts
+    - Fast to develop, change, little change resistance
+    - Delays commmitment
+    - Sequential sketches: shows state transitions and actions that trigger state change
+    - Zipf's law: focus on 20% of most frequent interactions
+  - Medium-fidelity, paper prototypes:
+    - Fine-tune interface, screen design
+    - Do heuristic evaluation and redesign
+    - Walk-through evaluation:
+      - User tasked to do some task
+        - Is the story believable?
+        - If so, ask how they will do it
+      - Facilitator should prompt user for thoughts
+      - State updates (e.g. changing paper sketch, PowerPoint slide) should be deterministic
+  - Further evaluation:
     - Participatory interaction
-    - Task scenario walk-through
+    - Task scenario walk-through: to to X, A will press this button then...
 - Refinement
   - Graphical screen design, interface guidelines and style guides
   - Generate high-fidelity, testable prototypes, then:
@@ -212,3 +227,28 @@ Top-level process:
   - Generate alpha/beta systems or a complete specification
   - Then do field testing
 
+Iterative design: don't find a single idea and improve on that: leads to premature commitment, local maxima, and tunnel vision
+
+Elaborative/reduction: first explore the full design space, then refine the design(s)
+
+Task-Centered System Design (TCSD):
+
+- User identification:
+  - Talk to users
+    - Difficult if the system/task is new
+  - Learn about the task chain; what are the inputs, where do the outputs go?
+  - What purpose does the task achieve?
+- Task identification
+  - What the user wants to do
+    - Not a description of how they (will) do it
+  - Identify users
+    - Name individuals
+  - Give each task a unique ID
+  - Validate tasks: talk to relevant users to help spot issues
+  - Determien what tasks and users will be covered; rank based on importance and task frequency
+- Design
+  - Iterative design, walk-through evaluations
+
+User-Centered System Design (UCSD):
+
+- Users know the 
