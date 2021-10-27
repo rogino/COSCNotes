@@ -70,7 +70,7 @@ Euler function:
 
 Fermat Primality Test:
 
-- Uses Fermat's little theorem: if $a^{n - 1} \bmod n \neq 1$ for $1 < a < n - 1$, $a$ an $n$ are not coprime and hence $n$ cannot be prime
+- Uses Fermat's little theorem: if $a^{n - 1} \bmod n \neq 1$ for $1 < a < n - 1$, $a$ an $n$ are not co-prime and hence $n$ cannot be prime
 - Repeat with multiple values of $a$ (e.g. known small primes); return *probable prime* if all return $1$
 - Reduce powers using:
   - $ab \bmod n = (a \bmod n)(b \bmod n) \bmod n$
@@ -257,7 +257,7 @@ AES:
 
 - Plaintext XORed with previous ciphertext (or IV)
 - Parallel decryption possible
-- $C_t=E(P_t \oplus C_{t−1}, K)$
+- $C_t = E(P_t \oplus C_{t - 1}, K)$
 
 **CTR** (Counter Mode):
 
@@ -332,3 +332,104 @@ Synchronous Stream Ciphers:
 - **One-Time Pad**
   - Shannon's Perfect Secrecy: distribution of messages given ciphertext the same as the distribution of messages
 - A5 Cipher, RC4, ChaCha
+
+## Public Key Cryptography
+
+One-way function:
+
+- Functions where the inverse is hard to compute
+- Integer factorization, discrete logarithm problem *believed* to be one-way
+- Trapdoor one-way functions:
+  - Inverse easy to compute given additional information - *trapdoor*
+- Asymmetric cryptography: trapdoor is the decryption key
+
+RSA:
+
+- Choose distinct primes $p$, $q$
+  - At least 1024 bits
+  - $n = pq$
+    - Shor's theorem: polynomial time factorization for $n$ with quantum computers
+- Choose $e$ such that $e$ and $\phi(n)$ are co-prime
+  - Random gives best security
+  - Small values faster
+  - $e = 3$ has security issues, prefer larger values (e.g. $e = 2^{16} + 1$)
+  - $d$ should be at least $\sqrt(n)$
+- Compute $d = e^{-1} \bmod \phi(n)$
+- Public key $K_E = (n, e)$
+- Private key $K_D = (p, q, d)$
+- Encryption: $C = M^e \bmod n$
+- Decryption: $M = C^d \bmod n$
+  - CRT can be used to increase decryption speed
+- Padding required to add randomness
+  - Håstad’s Attack: if same $M$ and $e$ used by different people (i.e. different $n$), CRT can be used to find $M^e$ in the ordinary numbers and take the $e$th root to find $M$
+
+Diffie-Hellman:
+
+- Prime $p$
+- Generator $g$ in $\mathbb{Z}_p^*$
+- $g^a \bmod p$, $g^b \bmod p$ sent by Alice and Bob respectively
+- Key $Z = g^{ab} \bmod p$
+- Relies on discrete logarithm problem being hard
+
+Authenticated Diffie-Hellman:
+
+- Alice sends $g^a \bmod p$ and identity $A$
+- Bob sends $g^b \bmod p$, identity $B$ and uses public key to sign $g^b \bmod p$, $A$, and $B$
+- Alice and uses public key to sign $g^a \bmod p$, $A$, and $B$
+- Both compute $g^{ab} \bmod p$
+
+Static Diffie Hellman: $a$ and $g^a$ are the long-term private/public keys
+
+Elgamal Cryptosystem:
+
+- Key generation:
+  - Pick $p$, generator $g$
+  - Pick long-term private key $K_D$
+  - $y = g^{K_D}$
+  - Long-term public key $(p, g, y)$
+- Encryption:
+  - Pick ephemeral private key $k$
+  - Send $(C_1, C_2) = (g^k \bmod p, My^k \bmod p)$
+- Decryption:
+  - $M = C_2 \cdot \left(C_1^{K_D}\right)^{-1} \bmod p$
+
+### Digital Signatures
+
+Unforgeability: infeasible to generate a valid signature for any message without key.
+
+RSA signatures:
+
+- Signing: $s = h(M)^d \bmod n$ where $h$ is a fixed, public hash function
+- Verification: check that $s^e \bmod n = h(M)$
+
+DSA signatures:
+
+- Elgamal:
+  - Private key $x$, public key $y = g^x \bmod p$
+  - Signing:
+    - Pick $k$ smaller than and co-prime to $p - 1$
+    - $r = g^k \bmod p$
+    - Find $s$ in $M = xr + ks \bmod{(p - 1)}$
+    - Output $(M, r, s)$
+  - Verification:
+    - Check $g^M \equiv y^r r^s \pmod p$
+- DSA
+  - $p$ such that $p - 1$ has small prime divisor $q$
+  - Generator $h$ in $\mathbb{Z}_p^*$
+  - Generator $g = h^{\frac{p - 1}{q}} \bmod p$
+    - Order $q$
+    - All exponents can be reduced modulo $q$ prior to exponentiation
+  - Generation:
+    - $0 < k < q$
+    - $r = (g^k \bmod p) \bmod q$
+    - $s = k^{-1}(H(M) - xr) \bmod q$
+  - Verification:
+    - $w = s^{-1} \bmod q$
+    - $u_1 = H(M)w \bmod q$
+    - $u_2 = rw \bmod q$
+    - Check $(g^{u_1}y^{-u_2} \bmod p) \bmod q = r$
+- EDCSA:
+  - $q$ order of elliptic curve group
+  - Multiplication modulo $p$ replaced with elliptic curve group operation
+  - Public keys shorter c.f. DSA but signatures are not
+  - Takes longer to verify c.f. RSA

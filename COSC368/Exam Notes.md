@@ -135,7 +135,7 @@ Novice to Expert:
   - Intra-modal: guidance to help user move towards the ceiling of performance within a mode
   - Inter-modal: make user aware of existence of different, faster modes
   - Vocab expansion: make user aware of most common commands
-  - Task strategy: inteligent UIs that figure out what the user is trying to do and suggests more efficient strategies to achieve it
+  - Task strategy: intelligent UIs that figure out what the user is trying to do and suggests more efficient strategies to achieve it
 
 Human Memory:
 
@@ -143,10 +143,10 @@ Human Memory:
   - $ 7 \pm 2$ 'chunks'
   - Fast access: ~70 ms
   - Rapid decay: ~200 ms
-    - Maintenance rehersal: repeat chunk a few times to prevent decay
+    - Maintenance rehearsal: repeat chunk a few times to prevent decay
     - Displacement/interference decay
 - Long-term:
-  - Short-term -> long-term through elaborative rehersal + extensive repetition
+  - Short-term -> long-term through elaborative rehearsal + extensive repetition
   - Slow access: > 100 ms
   - Good at recognition but non recall
   - Spatial processing
@@ -154,11 +154,11 @@ Human Memory:
 Slips:
 
 - Mistake is a conscious decision; bad user model
-- Slip is automatic behaviour:
+- Slip is automatic behavior:
   - Capture error:
     - Two action sequences, user captured into wrong (more frequent) sequence
   - Description error:
-    - Multiple objecs allowing same/similar action
+    - Multiple objects allowing same/similar action
     - Right action, wrong object
   - Data-driven error:
     - Correct value kicked out of short-term memory by external data
@@ -167,7 +167,7 @@ Slips:
     - Forget what you are doing mid-flow
   - Mode error:
     - Right action, wrong state
-    - Make states highly visible and noticable
+    - Make states highly visible and noticeable
     - Reduce states where possible
   - Motor slip:
     - Problem between brain and input device
@@ -176,13 +176,13 @@ Slips:
 
 Human phenomena:
 
-- Homeostatis; equilibrium
+- Homeostasis; equilibrium
   - Make a task easier; people will attempt harder tasks with the system
 - Satisficing
   - Making do; why improve?
   - e.g. hunt-and-peck typing, not bothering to learn keyboard shortcuts
 - Hawthorne effect:
-  - People like being involved in experiements; behaviour here not reflective of behaviour in real world
+  - People like being involved in experiments; behavior here not reflective of behavior in real world
 - Peak-end effects
   - Most intense or terminating moments of an experience have an excessive influence over people's memories of the experience
 - Negativity bias:
