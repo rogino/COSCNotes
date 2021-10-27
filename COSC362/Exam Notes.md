@@ -178,8 +178,9 @@ MACs:
 
 HMAC:
 
-- MAC from iterated hash function
-- $\mathrm{HMAC}(M, K) = H((K \oplus \mathrm{opad}) \| H((K \oplus \mathrm{ipad}) \| M))$
+- MAC from iterated hash function (compression function)
+- $\mathrm{HMAC}(M, K) = H((K' \oplus \mathrm{opad}) \| H((K' \oplus \mathrm{ipad}) \| M))$
+  - Where $K'$ is $H(K)$ if $K$ is larger than the block size and $K$ otherwise
   - Where $\text{opad}$ and $\text{ipad}$ are known constants
 
 Encryption and MAC:
@@ -290,7 +291,7 @@ Data fits into one of two buckets:
 
 This is called AEAD - Authenticated Encryption with Associated Data.
 
-**CCM** (**C**ounter with **C**BC-**M**AC):
+**CCM** (Counter with CBC-MAC):
 
 - CBC-MAC for authentication; CTR mode encryption for payload
 - Nonce $N$ (for CTR encryption), payload $P$, associated data $A$
@@ -374,8 +375,8 @@ Diffie-Hellman:
 Authenticated Diffie-Hellman:
 
 - Alice sends $g^a \bmod p$ and identity $A$
-- Bob sends $g^b \bmod p$, identity $B$ and uses public key to sign $g^b \bmod p$, $A$, and $B$
-- Alice and uses public key to sign $g^a \bmod p$, $A$, and $B$
+- Bob sends $g^b \bmod p$, identity $B$ and uses public key to sign $g^a \bmod p$, $g^b \bmod p$, $A$, and $B$
+- Alice and uses public key to sign $g^a \bmod p$, $g^b \bmod p$, $A$, and $B$
 - Both compute $g^{ab} \bmod p$
 
 Static Diffie Hellman: $a$ and $g^a$ are the long-term private/public keys
@@ -433,3 +434,95 @@ DSA signatures:
   - Multiplication modulo $p$ replaced with elliptic curve group operation
   - Public keys shorter c.f. DSA but signatures are not
   - Takes longer to verify c.f. RSA
+
+### Public Key Infrastructure
+
+Trusted certification authority (CA) (CA public key required by clients) issues/signs and revokes certificates.
+
+Certificates (e.g. X.509 v3) contain:
+
+- Public key
+- Owner identity
+- Metadata (e.g. validity period, algorithms)
+
+Revokatiion: each CA has list of revoked certificates.
+
+### Key Management
+
+Key management phasess:
+
+- Generation (all keys equally likely)
+- Distribution
+- Protection (only accessible to authrozied parties)
+- Destruction
+
+Mutual vs unilaterial authentication:
+
+- Mutual: both parties authenticate the other party
+- Unilateral: only one party authenticates (e.g. client authenticates server)
+
+**Pre-Shared Keys**:
+
+- Trusted authority (TA) generates and distributes long-term keys to all users when joining
+- Only involved during pre-distributino
+- Simple scheme: one key for each pair of users - $O(n^2)$ keys
+- Probabilistic schemes: high probability of secure channel between any two users
+
+With symmetric keys:
+
+- User and TA share long-term keys
+- TA distributes session keys to users when requested
+- Fixed Needham-Schroeder protocol:
+  - $A$ asks for connection with $B$
+  - $B$ sends ID and nonce to $A$
+  - $A$ sends ID and nonce for both parties to TA
+  - $S$ generates session key between $A$ and $B$ encrypted with long-term key $SA$
+    - $S \to A: \left\{ K_{AB}, \mathrm{ID}_A, \mathrm{ID}_B, N_A \right\}_{K_{AS}}, \left\{ K_{AB}, \mathrm{ID}_A, \mathrm{ID}_B, N_B \right\}_{K_{BS}}$
+  - $A$ sends portion of message encrypted with long-term key $SB$
+
+With asymmetric keys:
+
+- Each user has public key signed by trusted CA
+- Users trusted to geenrate good session keys; parties must all have good PRNGs
+- Session keys encrypted with public keys
+- If long-term key compromised, attacker can act as owner
+  - Forwards secrecy: if compromise does not reveal previuos session keys
+  - Diffie-Hellman: both parties provide input to key material, allowing forwards secrecy
+
+### TLS
+
+MAC:
+
+- SHA-2 (>= TLS 1.2)
+- MD5, SHA-1 (< TLS 1.3)
+
+Encryption:
+
+- Block cipher in CBC mode or stream cipher
+- Most commonly AES
+- Block ciphers: padding applied after MAC to get complete blocks
+
+Authenticated-Encryption:
+
+- TLS 1.3: AES with CCM or GCM
+- One key for both encryption and MAC
+- Header data, (implicit) sequence number authenticated
+
+Protocols:
+
+- Handshake: establish session keys
+- Record: sends data with established session keys
+
+DH Handshake:
+
+- Client hello: highest available TLS version, available cipher suites, nonce
+- Server hello: server's public certificate, selected TLS version, cipher suite, nonce
+- Server-key exchange: nonces and DH parameters signed with public certificate
+- Client checks signature
+- Client-key exchange: client's DH parameter
+- Both parties compoute pre-master secret (PMS), then master secret (MS), then session keys
+- Client finished: encrypted with session key
+- Server finished: encrypted with session key
+
+RSA: client generates PMS and encrypts with server's public key. No forwards secrecy.
+

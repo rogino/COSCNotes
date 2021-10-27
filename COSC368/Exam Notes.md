@@ -190,9 +190,7 @@ Human phenomena:
 - Communication convergence
   - Similarity in pace, gestures, phrases etc. enhances communication
 
-## Design Process
-
-Top-level process:
+Top-level design process:
 
 - Articulate
   - Who are the users and what are the key tasks?
@@ -245,7 +243,7 @@ Task-Centered System Design (TCSD):
     - Name individuals
   - Give each task a unique ID
   - Validate tasks: talk to relevant users to help spot issues
-  - Determien what tasks and users will be covered; rank based on importance and task frequency
+  - Determine what tasks and users will be covered; rank based on importance and task frequency
 - Design:
   - Iterative design, walk-through evaluations
 
@@ -328,3 +326,57 @@ Nielson's Ten Heuristics:
   - Reminders: tooltips
   - Wizards: puts system, not user in control. Don't overuse
   - Tutorials
+
+Heuristic evaluation:
+
+- Inspectors: developers, usability experts, domain experts, users, designers
+  - Warning for designers: vested interest in their own deigns
+- With a specific scenario in mind:
+  - Inspect UI components, workflow, state transition
+  - Compare against heuristics
+  - Two-pass approach: focus on specific UI elements on first pass, then integration and state transitions
+- Result synthesis: inspectors come together and assess overlap
+
+Gestalt Laws of Perceptual Organization:
+
+- Proximity
+- Similarity (color, shape, etc.)
+- Continuity: brain see dots etc. form a larger shape
+- Symmetry: objects seen as being 'closed' when placed in symmetric boundaries
+- Closure: brain automatically 'closes' objects
+
+PARC Principles:
+
+- Proximity
+  - Group related elements, seperate unrelated
+  - Use whitespace over borders
+- Alignment
+  - Grids, tables etc. visually connect elements
+  - Mis-align unconnected elements
+- Repetition
+  - For consistency
+- Contrast
+  - Different things should look different
+
+Misc:
+
+- Visual flow should follow logical flow
+- Controls: minimize, include only what is necessary
+- Smooth continuity (e.g smooth curves vs right angled lines) less 'neat' but easier to parse.
+
+UI Evaluation:
+
+- Designers uniquely unqualified to assess usability; can't fathom what a typical user's model is like
+- 'Think Aloud' evaluation:
+  - Subjects prompted to verbalize thoughts while using a system
+    - What they are trying to do
+    - What the action did
+    - How they interpret feedback from the system
+- Cooperative evaluation:
+  - Feels less like the subject is being study; the two subjects are studying the system together
+- Interview:
+  - Prepare: have a central set of questions for consistency between interviews
+    - Be willing to explore interesting leads
+  - Good for probing particular issues
+  - Prone to post-hac rationalization
+
