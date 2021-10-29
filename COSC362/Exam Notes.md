@@ -499,36 +499,139 @@ MAC:
 Encryption:
 
 - Block cipher in CBC mode or stream cipher
-- Most commonly AES
+- Most commonly AES. 3DES, RC4 also available (< TLS 1.3)
 - Block ciphers: padding applied after MAC to get complete blocks
+- Plaintext optionally compressed (< TLS 1.3)
 
 Authenticated-Encryption:
 
 - TLS 1.3: AES with CCM or GCM
 - One key for both encryption and MAC
 - Header data, (implicit) sequence number authenticated
+  - Otherwise, uses MAC-then-encrypt by default. MAC
 
 Protocols:
 
 - Handshake: establish session keys
 - Record: sends data with established session keys
+- Change Cipher Spec (< 1.3)
+- Alert
+  - Warning
+  - Close notify (sender will not send further messages)
+  - Fatal
 
 DH Handshake:
 
-- Client hello: highest available TLS version, available cipher suites, nonce
-- Server hello: server's public certificate, selected TLS version, cipher suite, nonce
-- Server-key exchange: nonces and DH parameters signed with public certificate
+- Client hello: highest available TLS version, available cipher suites, client nonce
+- Server hello: server's public certificate, selected TLS version, cipher suite, server nonce
+- Server-key exchange: both nonces and DH parameters signed with server certificate
 - Client checks signature
 - Client-key exchange: client's DH parameter
 - Both parties compute pre-master secret (PMS), then master secret (MS), then session keys
+  - One key for MAC and encryption for each direction
+  - IV may also be generated
 - Client finished: encrypted with session key
 - Server finished: encrypted with session key
 
 RSA: client generates PMS and encrypts with server's public key. No forwards secrecy.
 
-TODO:
+Anonymous DH: against passive eavesdropping.
 
-- 14. TLS
-- 15. IPsec and VPN
-- 16. Email Security
-- 17. Malware and Cyber Attacks
+Attacks:
+
+- BEAST: CBC mode encryption, allowed byte-by-byte decryption
+- CRIME, BREACH: attacker controls part of request, attempts to get it to match cookies or passwords. If request is smaller due to compression, probable partial match
+- POODLE: CBC mode encryption, servers would return invalid padding error instead of uniform response.
+- Heartbleed: memory contents leaked via bad bounds check
+
+### IPSec
+
+Services:
+
+- Confidentiality
+- Integrity
+- Limited traffic analysis protection
+  - Conceals IP source, destination addresses
+- Message replay protection
+- Peer authentication: each endpoint confirms identity of partner
+
+Architectures:
+
+- Gateway-to-gateway
+  - e.g. connect two secure networks
+  - No protection between endpoint and gateway
+- Host-to-Gateway
+  - Secure hosts on insecure network
+  - Each user establishes VPN connection to gateway
+- Host-to-Host
+  - Mostly for special purposes
+  - End-to-end protection
+  - All systems need VPN software configured
+  - Key management system required
+
+Protocols:
+
+- Encapsulating Security Payload (ESP)
+- Authentication Header (AH)
+  - No confidentiality
+  - Depreciated
+- Internet Key Exchange (IKE)
+  - Managing session keys in Security Associations (SA)
+    - One SA per direction
+    - Includes algorithms, keys, security protocol identifier (SA and/or AH)
+  - IKEv2 used now
+    - DH with X.509 certificates
+    - Proof of reachability through cookies: server responds with cookie, client repeats request with cookie
+      - Cookie can be calculated server-side without requiring server to store any state
+    - Proof of work: pre-image for partial hash
+
+Modes of operation: ESH/AH operate in:
+
+- Transport: IP header modified, contents protected
+  - Host-to-host
+  - IP header modified: protocol changed to ESP, length field modified, checksums
+  - IP header contains:
+    - Header
+    - Packet data and ESP trailer (padding) encrypted
+    - MAC for header and encrypted data (if SA using authentication service)
+- Tunnel mode: original packet encapsulated in new packet
+  - Gateway-to-gateway or host-to-gateway
+  - Similar structure, except that encrypted data is the full IP packet, not just the data
+
+### Email
+
+Actors and systems:
+
+- Message User Agent (MUA) represents the client
+  - Message Store (MS) to client: POP/IMAP
+  - Client to Message Submission Agent (MSA): SMTP
+- Message Handling System (MHS):
+  - System handling email delivery
+  - MSA -> MS through Message Transfer Agents (MTA)
+
+Link security:
+
+- DomainKeys Identified Mail (DKIM):
+  - Provides email authentication
+  - Sending domain signs contents and some headers with public key encryption
+  - Public key in DNS record
+- STARTTLS:
+  - Link-by-link encryption
+  - Running IMAP and SMTP/POP over TLS
+  - Opportunistic: use TLS if available
+
+End-to-end security:
+
+- Pretty Good Privacy (PGP)
+  - Message encrypted with session key generated for each email
+  - Session key encrypted with receiver's long-term public key
+  - Optional authentication: hash of plaintext signed with sender's private key
+  - Web of trust:
+    - Public keys on distributed servers
+    - Users sign other user's public keys, indicating trust
+    - Revocation: sign revocation certificate with their old key
+- Secure/Multipurpose Internet Mail Extension (S/MIME)
+  - PGP, but with X.509 certificates issued by CAs
+  - Authentication is required
+
+TODO [17. Malware and Cyber Attacks](./17.%20Malware%20and%20Cyber%20Attacks)
