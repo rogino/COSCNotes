@@ -90,7 +90,7 @@ Miller-Rabin test:
   - $b = b^2 \bmod n$
 - Return composite
 
-Returns *probable prime* for composite numbers with a maximum probablility of 25%.
+Returns *probable prime* for composite numbers with a maximum probability of 25%.
 
 Discrete logarithm problem:
 
@@ -445,18 +445,18 @@ Certificates (e.g. X.509 v3) contain:
 - Owner identity
 - Metadata (e.g. validity period, algorithms)
 
-Revokatiion: each CA has list of revoked certificates.
+Revocation: each CA has list of revoked certificates.
 
 ### Key Management
 
-Key management phasess:
+Key management phases:
 
 - Generation (all keys equally likely)
 - Distribution
-- Protection (only accessible to authrozied parties)
+- Protection (only accessible to authorized parties)
 - Destruction
 
-Mutual vs unilaterial authentication:
+Mutual vs unilateral authentication:
 
 - Mutual: both parties authenticate the other party
 - Unilateral: only one party authenticates (e.g. client authenticates server)
@@ -464,7 +464,7 @@ Mutual vs unilaterial authentication:
 **Pre-Shared Keys**:
 
 - Trusted authority (TA) generates and distributes long-term keys to all users when joining
-- Only involved during pre-distributino
+- Only involved during pre-distribution
 - Simple scheme: one key for each pair of users - $O(n^2)$ keys
 - Probabilistic schemes: high probability of secure channel between any two users
 
@@ -483,10 +483,10 @@ With symmetric keys:
 With asymmetric keys:
 
 - Each user has public key signed by trusted CA
-- Users trusted to geenrate good session keys; parties must all have good PRNGs
+- Users trusted to generate good session keys; parties must all have good PRNGs
 - Session keys encrypted with public keys
 - If long-term key compromised, attacker can act as owner
-  - Forwards secrecy: if compromise does not reveal previuos session keys
+  - Forwards secrecy: if compromise does not reveal previous session keys
   - Diffie-Hellman: both parties provide input to key material, allowing forwards secrecy
 
 ### TLS
@@ -520,9 +520,15 @@ DH Handshake:
 - Server-key exchange: nonces and DH parameters signed with public certificate
 - Client checks signature
 - Client-key exchange: client's DH parameter
-- Both parties compoute pre-master secret (PMS), then master secret (MS), then session keys
+- Both parties compute pre-master secret (PMS), then master secret (MS), then session keys
 - Client finished: encrypted with session key
 - Server finished: encrypted with session key
 
 RSA: client generates PMS and encrypts with server's public key. No forwards secrecy.
 
+TODO:
+
+- 14. TLS
+- 15. IPsec and VPN
+- 16. Email Security
+- 17. Malware and Cyber Attacks
