@@ -102,9 +102,9 @@ Fitt's Law
 
 - $A$ is amplitude/distance of movement
 - $W$ is width of target
-- Index of Difficulty $\mathrm{ID} = log_2{A/W} + 1$
+- Index of Difficulty $\mathrm{ID} = \log_2\left(\frac{A}{W} + 1\right)$
 - Movement Time $\mathrm{MT} = a + b \cdot \mathrm{ID}$
-  - $1/b$ called throughput/bandwidth
+  - $1/b$ called throughput or bandwidth
 
 Steering Law:
 
@@ -113,10 +113,12 @@ Steering Law:
 
 Hick/Hyman Law of Decision Time:
 
-- Visual search time usually $T = a + bn$ ($O(n)$)
+- Visual search time usually $T = a + b\frac{n + 1}{2}$ - that is, $O(n)$
 - Hick/Hyman models reaction time when **optimally prepared** (i.e. expert with a spatially stable UI)
-- $T = a + bH$ where $H = \sum_i^n{p_i log_2 \left(\frac{1}{p_i}\right)}$
-- For $n$ equally probable items, decision time is $O(log{n})$
+- $T = a + bH$
+  - For $n$ equally probable items, $H = \log_2\left(n\right)$
+  - To pick item $i$ with probability $p_i$: $H_i = \log_2\left(\frac{1}{p_i}\right)$
+  - Average time: $H = \sum_i^n{p_i \log_2 \left(\frac{1}{p_i}\right)}$
 
 Power Law of Practice:
 
@@ -201,9 +203,10 @@ Top-level design process:
   - Low-fidelity sketches:
     - Focus on high-level concepts
     - Fast to develop, change, little change resistance
-    - Delays commmitment
+    - Delays commitment
     - Sequential sketches: shows state transitions and actions that trigger state change
     - Zipf's law: focus on 20% of most frequent interactions
+      - $n$th most frequent item appears with probability $n^{-\alpha}$ where $\alpha \approx 1$
   - Medium-fidelity, paper prototypes:
     - Fine-tune interface, screen design
     - Do heuristic evaluation and redesign
@@ -211,8 +214,6 @@ Top-level design process:
       - User tasked to do some task
         - Is the story believable?
         - If so, ask how they will do it
-      - Facilitator should prompt user for thoughts
-      - State updates (e.g. changing paper sketch, PowerPoint slide) should be deterministic
   - Further evaluation:
     - Participatory interaction
     - Task scenario walk-through: to to X, A will press this button then...
@@ -261,71 +262,71 @@ User-Centered System Design (UCSD):
 Nielson's Ten Heuristics:
 
 1. Simple and natural dialogue
-  - Make it as simple as possible but no simpler
-  - Presentation + navigatino should be natural and consistent
-  - Design: organize, economize, communicate
+    - Make it as simple as possible but no simpler
+    - Presentation + navigation should be natural and consistent
+    - Design: organize, economize, communicate
 2. Speak the user's language
-  - Affordances (it is used the way it looks like it should be used)
-  - Mappings
-  - Metaphors
-  - Base terminology on user's task language, not implementation
+    - Affordances (it is used the way it looks like it should be used)
+    - Mappings
+    - Metaphors
+    - Base terminology on user's task language, not implementation
 3. Minimize memory load
-  - Recall slow; use recognition where possible
-  - Show input formats, provide defaults (e.g. date fields - what format is it supposed to be entered in, can a sensible default be provided?)
-  - Support reuse/re-visitation (e.g. show a few of the most commonly or recently used)
-  - Support unit exchange
-  - Support generalization: universal commands, modifiers
+    - Recall slow; use recognition where possible
+    - Show input formats, provide defaults (e.g. date fields - what format is it supposed to be entered in, can a sensible default be provided?)
+    - Support reuse/re-visitation (e.g. show a few of the most commonly or recently used)
+    - Support unit exchange
+    - Support generalization: universal commands, modifiers
 4. Consistency
-  - In graphic design
-  - In command structure (e.g. pick command then select object or select object and run command)
-  - Internally
-  - Externally (within the platform)
-  - Beyond computing
+    - In graphic design
+    - In command structure (e.g. pick command then select object or select object and run command)
+    - Internally
+    - Externally (within the platform)
+    - Beyond computing
 5. Feedback
-  - Continuous feedback about the system state and system's interpretation of user input
-  - Feedback should be:
-    - Specific
-    - Consider feed-forward: show effect of action *before* it is commited
-  - Autocomplete
-    - Must be stable and predictable - muscle memory, not reading
-    - Consider persistance: how distruptive and enduring should the feedback be?
+    - Continuous feedback about the system state and system's interpretation of user input
+    - Feedback should be:
+      - Specific
+      - Consider feed-forward: show effect of action *before* it is committed
+    - Autocomplete
+      - Must be stable and predictable - muscle memory, not reading
+      - Consider persistance: how disruptive and enduring should the feedback be?
 6. Clearly-marked exits; don't trap the user
-  - Cancel buttons, universal undo, interrupt long-running operations etc.
-  - More recent actions should override older ones
-  - Quit
-    - 'Do you want to save changes to ${filename}?': 'Don't Save', 'Cancel', 'Save'; should be specific
+    - Cancel buttons, universal undo, interrupt long-running operations etc.
+    - More recent actions should override older ones
+    - Quit
+      - 'Do you want to save changes to ${filename}?': 'Don't Save', 'Cancel', 'Save'; should be specific
 7. Shortcuts
-  - Keyboard accelerators
-  - Command completion, type-ahead
-  - Function keys
-  - Double clicking
-  - Gestures
-  - History
-  - Customizable toolbars
+    - Keyboard accelerators
+    - Command completion, type-ahead
+    - Function keys
+    - Double clicking
+    - Gestures
+    - History
+    - Customizable toolbars
 8. Prevent errors, avoid modes
-  - Syntactic correctness - disable items that aren't valid
-  - Feedback reduces chance of slips
-  - Easy correction - universal undo
-  - Commensurate effort: states difficult to get to should be difficult to irreversibly leave
-  - Forcing functions: prevent behaviour until problem corrected
-    - Interlocks: force right order of operations (e.g. remove card before ATM dispenses cash)
-    - Lock-ins: force user to remain in space (e.g. would you like to save changes dialog on close)
-    - Lock-outs: force user leaving space or prevent event from occuring
-    - Don't just ignore illegal actions - user must infer what is wrong
-  - Mode errors:
-    - Have as few modes as possible
-    - Make current mode easily apparent
-    - Spring-loaded modes: ongoing action required to stay in mode
+    - Syntactic correctness - disable items that aren't valid
+    - Feedback reduces chance of slips
+    - Easy correction - universal undo
+    - Commensurate effort: states difficult to get to should be difficult to irreversibly leave
+    - Forcing functions: prevent behavior until problem corrected
+      - Interlocks: force right order of operations (e.g. remove card before ATM dispenses cash)
+      - Lock-ins: force user to remain in space (e.g. would you like to save changes dialog on close)
+      - Lock-outs: force user leaving space or prevent event from occurring
+      - Don't just ignore illegal actions - user must infer what is wrong
+    - Mode errors:
+      - Have as few modes as possible
+      - Make current mode easily apparent
+      - Spring-loaded modes: ongoing action required to stay in mode
 9. Deal with errors positively and helpfully
-  - Clear language, not codes
-  - Precise
-  - Constructive - offer solutions
+    - Clear language, not codes
+    - Precise
+    - Constructive - offer solutions
 10. Help and documentation
-  - Documentation is not permission to design a crappy UI
-  - Write the manual before the system
-  - Reminders: tooltips
-  - Wizards: puts system, not user in control. Don't overuse
-  - Tutorials
+    - Documentation is not permission to design a crappy UI
+    - Write the manual before the system
+    - Reminders: tooltips
+    - Wizards: puts system, not user in control. Don't overuse
+    - Tutorials
 
 Heuristic evaluation:
 
@@ -348,7 +349,7 @@ Gestalt Laws of Perceptual Organization:
 PARC Principles:
 
 - Proximity
-  - Group related elements, seperate unrelated
+  - Group related elements, separate unrelated
   - Use whitespace over borders
 - Alignment
   - Grids, tables etc. visually connect elements
@@ -380,3 +381,4 @@ UI Evaluation:
   - Good for probing particular issues
   - Prone to post-hac rationalization
 
+TODO: [./03.%20User%20Interface%20Evaluation](03. User Interface Evaluation).
