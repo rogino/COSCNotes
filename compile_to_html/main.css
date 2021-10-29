@@ -452,6 +452,9 @@ table tr th:last-child {
   border-radius: 0.4rem;
 }
 
+/* This no longer does anything since the ToC is removed in the render process
+   if it is empty
+*/
 .table-of-contents > ol:empty {
   display: none;
 }
@@ -508,7 +511,7 @@ are required to exclude the top level H1 links from having a counter
 .toc-show-h1 .table-of-contents > ol > li:not(:first-child) {
   /* First child is page title which will always be hidden, so don't increment
      counter */
-  counter-increment:  toc-counter;
+  counter-increment: toc-counter;
 }
 
 /* Hide ToC entry for the page title. If display:none used counter doesn't

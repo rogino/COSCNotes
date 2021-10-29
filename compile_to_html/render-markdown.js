@@ -90,9 +90,15 @@ module.exports.default = (markdownText, forceToC = true, contentBelowTitle = "",
   }
 
   let renderedHtml = md.render(markdownText);
+
+  // Horrible way of removing the table of contents if it is empty
+  // Need to get a proper HTML parser at some point
+  const removeTocIfEmptyReg = /<nav class="table-of-contents"><ol><li><a href="[^"'<>]+">[^"'<>]+<\/a><\/li><\/ol>/;
+  renderedHtml = renderedHtml.replace(removeTocIfEmptyReg, "");
+
   if (wrapContentInArticle) {
     // yes this is horrible
-    return renderedHtml.replace(`<p>${ARTICLE_SECTION_TAG}</p>`, "<article>") + "</article>";
+    renderedHtml = renderedHtml.replace(`<p>${ARTICLE_SECTION_TAG}</p>`, "<article>") + "</article>";
   }
 
   return renderedHtml;
