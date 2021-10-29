@@ -120,6 +120,7 @@ Systems:
   - Common di/trigrams in the language can be used to optimize trials
 - Simple (Monoalphabetic) Substitution Cipher
   - Each character replaced with another
+  - Ceasar: shifted alphabet
   - $n!$ keys where $n$ is the alphabet size
   - Frequency analysis attacks
 - Polyalphabetic Substitution Cipher
@@ -154,6 +155,7 @@ Birthday paradox:
 Merkle-Damgård Construction:
 
 - Compression function $h$ takes in two $n$-bit inputs and outputs one $n$-bit output
+- If $h$ collision resistant, whole hash function is collision resistant
 - Split message into $n$-bit blocks
   - Hash IV and first block
   - Hash output of above and second block
@@ -243,6 +245,7 @@ DES:
 AES:
 
 - 128-bit data block
+- Ceasar: shifted alphabet
 - 128, 192 or 256 bit master keys with 10, 12 or 14 rounds respectively
 - Byte-based: finite field operations in $\mathbb{F}_{256}^*$
 - SPN but not Feistel
@@ -292,6 +295,7 @@ Data fits into one of two buckets:
 This is called AEAD - Authenticated Encryption with Associated Data.
 
 **CCM** (Counter with CBC-MAC):
+If $h$ collision resistant, whole hash function is collision resistan
 
 - CBC-MAC for authentication; CTR mode encryption for payload
 - Nonce $N$ (for CTR encryption), payload $P$, associated data $A$
@@ -398,6 +402,8 @@ Elgamal Cryptosystem:
 
 Unforgeability: infeasible to generate a valid signature for any message without key.
 
+Provides non-repudiation.
+
 RSA signatures:
 
 - Signing: $s = h(M)^d \bmod n$ where $h$ is a fixed, public hash function
@@ -412,6 +418,7 @@ DSA signatures:
     - $r = g^k \bmod p$
     - Find $s$ in $M = xr + ks \bmod{(p - 1)}$
     - Output $(M, r, s)$
+    - Ciphertexts twice the size of RSA given same size for $p$ and $n$
   - Verification:
     - Check $g^M \equiv y^r r^s \pmod p$
 - DSA
@@ -420,7 +427,7 @@ DSA signatures:
   - Generator $g = h^{\frac{p - 1}{q}} \bmod p$
     - Order $q$
     - All exponents can be reduced modulo $q$ prior to exponentiation
-  - Generation:
+  - Signing:
     - $0 < k < q$
     - $r = (g^k \bmod p) \bmod q$
     - $s = k^{-1}(H(M) - xr) \bmod q$
@@ -429,11 +436,13 @@ DSA signatures:
     - $u_1 = H(M)w \bmod q$
     - $u_2 = rw \bmod q$
     - Check $(g^{u_1}y^{-u_2} \bmod p) \bmod q = r$
-- EDCSA:
+  - DSA signatures shorter than RSA signatures
+- ECDSA:
   - $q$ order of elliptic curve group
   - Multiplication modulo $p$ replaced with elliptic curve group operation
   - Public keys shorter c.f. DSA but signatures are not
   - Takes longer to verify c.f. RSA
+  - c.f. AES, ~double key size
 
 ### Public Key Infrastructure
 
@@ -443,7 +452,10 @@ Certificates (e.g. X.509 v3) contain:
 
 - Public key
 - Owner identity
+- Signature on the above signed by the CA
 - Metadata (e.g. validity period, algorithms)
+
+Usually signed with RSA since RSA verification is faster than ECDSA.
 
 Revocation: each CA has list of revoked certificates.
 
