@@ -178,6 +178,10 @@ section.footnotes > ol.footnotes-list::before {
   content: "Footnotes";
 }
 
+/* Strike-through */
+s {
+  text-decoration-thickness: from-font;
+}
 
 /* Links */
 a {
@@ -316,13 +320,18 @@ From https://codepen.io/nana8/pen/VEeoPW
   text-decoration: underline;
 }
 
-/* Add #'s to left of headers. Doesn't work well in mobile */
-h2, h3, h4, h5, h6 { position: relative }
-h2::before,
-h3::before,
-h4::before,
-h5::before,
-h6::before {
+/* Add #'s to left of headers (excluding title).
+   Doesn't work well in mobile
+*/
+article h1, article h2,
+article h3, article h4,
+article h5, article h6 {
+  position: relative
+}
+
+article h1::before, article h2::before,
+article h3::before, article h4::before,
+article h5::before, article h6::before {
   color: var(--somewhat-close-to-background-grey);
   font-size: 1rem;
   font-family: monospace;
@@ -332,15 +341,18 @@ h6::before {
   margin-right: 0.2rem;
 }
 
-h2::before { content: "##"    ; bottom:  0.9ex; }
-h3::before { content: "###"   ; bottom:  0.3ex; }
-h4::before { content: "####"  ; bottom:  0.2ex; }
-h5::before { content: "#####" ; bottom:  0.0ex; }
-h6::before { content: "######"; bottom: -0.1ex; }
+article h1::before { content: "#"     ; bottom:  1.0ex; }
+article h2::before { content: "##"    ; bottom:  0.6ex; }
+article h3::before { content: "###"   ; bottom:  0.4ex; }
+article h4::before { content: "####"  ; bottom:  0.2ex; }
+article h5::before { content: "#####" ; bottom:  0.0ex; }
+article h6::before { content: "######"; bottom: -0.1ex; }
 
 @media (max-width: 58rem) {
   /* article width + ~4rem * 2 to ensure all hashes are visible */
-  h2::before, h3::before, h4::before, h5::before, h6::before {
+  article h1::before, article h2::before,
+  article h3::before, article h4::before,
+  article h5::before, article h6::before {
     content: none;
   }
 }
