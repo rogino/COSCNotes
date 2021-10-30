@@ -95,8 +95,8 @@ Humans Input:
 Human output:
 
 - Response time: ~200 ms for visual, ~150 for auditory, ~700 for haptics
-- Isotonic: muscle contractions that yield movements (e.g. moving mouse)
-- Isometric: no movements (e.g. holding weight steady)
+- Isotonic: input that movement (e.g. moving mouse)
+- Isometric: input through force (e.g. keyboard)
 
 Fitt's Law
 

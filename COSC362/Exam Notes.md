@@ -177,6 +177,7 @@ MACs:
 - Tag generated from message and secret key
 - **Unforgeability**: cannot produce Message-Tag pair without key
 - **Unforegability under chosen message attack**: above holds even with access to oracle that can calculate MAC for attacker-chosen messages
+- But not non-repudiation: signed with session key, not sender's private key
 
 HMAC:
 
