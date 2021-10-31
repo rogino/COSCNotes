@@ -205,7 +205,7 @@ Top-level design process:
     - Fast to develop, change, little change resistance
     - Delays commitment
     - Sequential sketches: shows state transitions and actions that trigger state change
-    - Zipf's law: focus on 20% of most frequent interactions
+    - Zipf's law (or Pareto principle): focus on 20% of most frequent interactions; they account for 80% of usage
       - $n$th most frequent item appears with probability $n^{-\alpha}$ where $\alpha \approx 1$
   - Medium-fidelity, paper prototypes:
     - Fine-tune interface, screen design
