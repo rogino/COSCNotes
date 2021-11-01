@@ -197,6 +197,10 @@ Encryption and MAC:
 
 ### Block Cipher
 
+Key sizes and equivalents for symmetric algorithms (block ciphers), factoring modulus (e.g. RSA's $n$), discrete logarithm key (exponent) and group ($p$), elliptic curve, hashes: https://www.keylength.com/en/4/
+
+<!-- https://crypto.stackexchange.com/questions/67222/in-nist-modulus-and-key-size-recommendations-is-group-equivalent-to-modulus-an -->
+
 Product cipher: chain simple functions together, each using its own key.
 
 Iterated cipher: product cipher but each round uses the same function using a key derived from a master key (using *key schedule*).
