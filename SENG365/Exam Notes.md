@@ -246,7 +246,7 @@ Chai-HTTP:
 
 W3C WebDriver:
 
-- Interface to manipulate DOM and control behaviour of the user agent
+- Interface to manipulate DOM and control behavior of the user agent
 - Platform- and language-agnostic
 
 Selenium-WebDriver:

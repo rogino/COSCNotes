@@ -49,7 +49,7 @@ A node is an assignment of values to some of the variables.
 Search:
 
 - Select a variable $Y$ that is not assigned to node $N$
-- Generate the neighbour to $N$ where $Y$ has been assigned for all possible values of $Y$
+- Generate the neighbor to $N$ where $Y$ has been assigned for all possible values of $Y$
 - Prune if the assignment is not consistent with the constraints
 
 The start node is the empty assignment, and the goal node is a total assignment that satisfies the constraints.
@@ -157,7 +157,7 @@ def CSPSolver(variables, domains, constraints, todo):
 
 ### Variable Elimination
 
-Eliminate variables one-by-one, passing constraints onto their neighbours.
+Eliminate variables one-by-one, passing constraints onto their neighbors.
 
 Constraints can be thought of as a relation containing tuples for all possible valid values.
 

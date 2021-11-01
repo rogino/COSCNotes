@@ -175,7 +175,7 @@ Geometric RV:
 - MAC: multiple stations, shared channel usable by one station at a time, no other channels, broadcast medium
 - Want: small medium access delay, fairness, reuse of resources, low overhead, stability
 
-Orthogonal: behaviour of one station independent of another.
+Orthogonal: behavior of one station independent of another.
 
 Frequency division multiple access:
 

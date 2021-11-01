@@ -793,7 +793,7 @@ const generateConcatFilesAndNodes = async (tree) => {
     concatNode.bodyClasses = "toc-show-h1";
 
     const results = await Promise.all(filePromises);
-    const outputFile = "# " + concatNode.name + "\n\n" + results.join("\n\n");
+    const outputFile = "# " + concatNode.name + "\n\n" + results.join("\n");
     await fse.writeFile(concatNode.markdownPath, outputFile);
     console.log(`WROTE CONCAT MARKDOWN FILE FOR DIR ${node.directoryPath}`);
 

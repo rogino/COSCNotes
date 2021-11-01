@@ -1,14 +1,14 @@
 # Week 09: Basic Machine Learning
 
-Learning: improving behaviour based experience. This could be:
+Learning: improving behavior based experience. This could be:
 
-- The range of behaviours increasing
+- The range of behaviors increasing
 - The accuracy of its tasks increasing
 - The speed at which it executes its tasks is faster
 
 Components of a learning problem:
 
-- Task: the behaviour/task being improved e.g. classification
+- Task: the behavior/task being improved e.g. classification
 - Data: experiences used to improve the performance of its tasks
 - Measure of improvement: a way of measuring the performance/improvement e.g. accuracy of classification
 
@@ -131,11 +131,11 @@ Non-parametric models are not characterized by parameters - a family of this is 
 - The cost of learning is 0; all the cost is in the computation of the prediction
 - It is called **lazy-learning**: learning is put off until it is required
 
-#### *k*-Nearest Neighbours
+#### *k*-Nearest Neighbors
 
-An example of a instance-based learning algorithm is *k*-nearest neighbours:
+An example of a instance-based learning algorithm is *k*-nearest neighbors:
 
-- It uses the local neighbourhood to obtain a prediction - the *k* memorized examples most similar to the one being classified is retrieved
+- It uses the local neighborhood to obtain a prediction - the *k* memorized examples most similar to the one being classified is retrieved
 - A distance function is used to compare similarity (e.g. Euclidean or Manhattan distance)
 - If the distance function is changed, how examples are classified changes
 
@@ -144,7 +144,7 @@ Training only requires storing all the examples.
 Prediction: $H(x_new)$:
 
 - Let $x_1, \dots, x_k$ be the *k* most similar examples to $x_new$
-- $h(x_{new}) = combine\_predictions(x_1, \dots, x_k)$; given the *k* nearest neighbours to $x_{new}$, calculate which value it should have
+- $h(x_{new}) = combine\_predictions(x_1, \dots, x_k)$; given the *k* nearest neighbors to $x_{new}$, calculate which value it should have
 
 If *k* is too high, it will be under-fit.
 

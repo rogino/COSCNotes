@@ -13,7 +13,7 @@ A **constrained optimization problem** adds a set of constraints which determine
 
 Use algorithms to **iteratively improve** a state.
 
-A single **current state** is kept in memory and in each iteration, we move to one of its neighbours to improve it.
+A single **current state** is kept in memory and in each iteration, we move to one of its neighbors to improve it.
 
 Most local search algorithms are greedy. Two such algorithms are **hill climbing** and **greedy descent**.
 
@@ -33,11 +33,11 @@ Put *n* queens on an *n* by *n* board such that no two queens can attack each ot
 
 Heuristic: number of pairs of queens that can attack each other.
 
-One queen on each column, queens can move up and down only. For each state there will be $n(n-1)$ neighbours (each can move to $n-1$ locations).
+One queen on each column, queens can move up and down only. For each state there will be $n(n-1)$ neighbors (each can move to $n-1$ locations).
 
 ### Variants of Greedy Descent
 
-- Find the variable-value pair that minimises the number of conflicts at each step
+- Find the variable-value pair that minimizes the number of conflicts at each step
 
 - Select the variable that participates in the most number of conflicts, and find the value of that variable that minimizes this
 - Select a variable that appears in any conflict and find the value of that variable that minimizes this
@@ -46,7 +46,7 @@ One queen on each column, queens can move up and down only. For each state there
 
 Can get stuck in **local optima**/flat areas of the **landscape** - randomized greedy descent can sometimes help:
 
-- Random **step**: move to a random neighbour
+- Random **step**: move to a random neighbor
 - Random **restart**: reassign random values to all variables
 
 These two make the search global.

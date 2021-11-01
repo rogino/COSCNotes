@@ -8,8 +8,8 @@ A*: $f(path) = cost(path) + h(path[-1])$.
 
 - Admissible: estimate is always an underestimate
 
-- Monotone/consistent:  $h(n) \leq cost(n,n') + h(n')$ for all neighbours $n'$ of $n$
-  - That is, the estimate is always less than estimate from a neighbour plus the cost to go to the neighbour
+- Monotone/consistent:  $h(n) \leq cost(n,n') + h(n')$ for all neighbors $n'$ of $n$
+  - That is, the estimate is always less than estimate from a neighbor plus the cost to go to the neighbor
 - Fails if pruning + heuristic not monotone
 
 Bidirectional search (BFS, LCFS, A\*): $2 * b^{d/2} \ll b^d$; saves time and space.
@@ -103,7 +103,7 @@ Halve the domain for some variable, create two instances of the problem with the
 
 ### Variable Elimination
 
-Eliminate variables by passing constraints on to their neighbours.
+Eliminate variables by passing constraints on to their neighbors.
 
 - Select a variable $X$
 - For each constraint involving $X$, find all assignments that satisfy that constraint
@@ -115,8 +115,8 @@ Eliminate variables by passing constraints on to their neighbours.
 
 - Optimization problem: finding the assignment that optimizes (min/max) the value of an objective function
 - Local search
-  - Each iteration, move to one of its neighbours
-  - Use random restarts/steps (moving to random neighbours) to prevent getting stuck in local optima
+  - Each iteration, move to one of its neighbors
+  - Use random restarts/steps (moving to random neighbors) to prevent getting stuck in local optima
 
 - Constrained satisfaction problem
   - The objective function is the number of unsatisfied constraints
@@ -152,7 +152,7 @@ If it is the probability over all variables, it is called the **joint probabilit
 - Naïve Bayes model: assume features only dependent on class variable (thing being predicted)
 - Laplace smoothing: add pseudo-count to reduce confidence
   - Add pseudo-count to counts for every tuple
-- K-nearest neighbours
+- K-nearest neighbors
   - Non-parametric, instance-based learning: needs to store all examples
   - Uses k examples closest to one being retrieved and method to merge them
 

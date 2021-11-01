@@ -50,12 +50,12 @@ def search(graph, start_nodes, is_goal_node):
     if is_goal_node[path[-1]]:
       return path
 
-  for n in path[-1].neighbours():
+  for n in path[-1].neighbors():
     frontier.append(path + n)
 ```
 
 - The value selected from the frontier at each stage defines the search strategy - above, the frontier object is passed to the search procedure using `pop`
-- The `neighbours` function defines the graph - `outgoing_arcs` is used above
+- The `neighbors` function defines the graph - `outgoing_arcs` is used above
 - The `goal` function defines solution that is used
   - **Finish after you remove from the frontier**. Otherwise, in graphs with costs, the lowest cost path may not be found
 - If more than one answer is required, the search can continue - use the `yield` keyword
@@ -242,7 +242,7 @@ Uses less memory but more CPU when compared to BFS:
 - Nothing is remembered between iterations; wasteful
 - **This will find the same first solution as BFS**
 - But linear in depth of goal node: $O(bd)$
-- If there is no path to the goal: identical behaviour to BFS. Infinite loop if not pruning
+- If there is no path to the goal: identical behavior to BFS. Infinite loop if not pruning
 
 Complexity with solution at depth $k$ and branching factor $b$:
 

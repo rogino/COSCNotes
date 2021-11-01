@@ -111,9 +111,9 @@ Metrics must be understood and have value to the team:
 - Kanban: task flow
 - Scrum: delivering
 
-Refactor: increases code quality; changes function without its behaviour. Should be low risk and done incrementally.
+Refactor: increases code quality; changes function without its behavior. Should be low risk and done incrementally.
 
-Re-engineering: fixing behavioural issues
+Re-engineering: fixing behavioral issues
 
 Tracking:
 
@@ -183,7 +183,7 @@ A promise of a conversation to be had with a hypothetical user. Should discussed
 Users:
 
 - From user interviews not imagination
-- Persona: fictitious with clear behaviour patterns and goals: user archetype
+- Persona: fictitious with clear behavior patterns and goals: user archetype
 - Profile: class of user defined by their background, physical/cognitive state, education, task experience
 
 ###### Use Case Scenarios
@@ -267,7 +267,7 @@ Metrics:
 Validation vs verification:
 
 - Validation: check it meets requirements
-- Verification: identify erroneous behaviours
+- Verification: identify erroneous behaviors
 
 Fit for purpose:
 
@@ -305,9 +305,9 @@ System testing:
 - Third-party systems
 - Dedicated testers
 
-Load testing: test behaviour/performance in normal/extreme loads to find bottlenecks
+Load testing: test behavior/performance in normal/extreme loads to find bottlenecks
 
-Stress testing: under unfavourable conditions
+Stress testing: under unfavorable conditions
 
 Capacity testing: if it can handle the expected amount of traffic
 
@@ -410,7 +410,7 @@ Honeycomb:
 Misc:
 
 - Whitespace is important; don't overload the interface
-- Consistent design and behaviour
+- Consistent design and behavior
 - Icons alone not enough - use text
 - Feedback
   - Success/error messages
@@ -424,7 +424,7 @@ Wireframes: low-fidelity sketch; flow between screens. Be extra careful who you 
 
 Mock-ups: high-fidelity representations based off of the wireframes; no interactivity. Focus on the **visual identify**.
 
-Prototype: limited functional implementation (e.g. mocking) but with a functioning workflow. Concentrate on visual behaviour, risky features.
+Prototype: limited functional implementation (e.g. mocking) but with a functioning workflow. Concentrate on visual behavior, risky features.
 
 ## Weekly Readings
 
@@ -468,7 +468,7 @@ Prototype: limited functional implementation (e.g. mocking) but with a functioni
 04. Test Principles
     - Fast: sub-second; long enough to lose focus, not long enough to start something
     - Deterministic: policy of deleting non-deterministic tests?
-    - Sensitive to behavioural changes, insensitive to structural changes
+    - Sensitive to behavioral changes, insensitive to structural changes
     - Cheap to write, read, change
 05. Code Reviews
     - Waiting for feedback is a pain
@@ -606,7 +606,7 @@ Prototype: limited functional implementation (e.g. mocking) but with a functioni
 
 ## Design Principles
 
-Cohesion: data + behaviour together.
+Cohesion: data + behavior together.
 
 Coupling: information hiding, separation of concerns, independence between modules
 
@@ -626,7 +626,7 @@ Tell, Don't Ask:
 
 - If a decision is based entirely on the state of one object, it should be made in that object, not outsourced
 - Avoid asking for information from an object in order to make decisions about it
-- Encourages cohesion; related data and behaviour together
+- Encourages cohesion; related data and behavior together
 
 Composition over Inheritance:
 
@@ -647,7 +647,7 @@ SOLID:
   - Every module/class should have responsibility over one part of the functionality (and should be fully encapsulated)
   - Bigger = more reasons to change, bigger blast radius when changes are made
 - Open-closed: make your system open for extension, closed for modification
-- Liskov-substitution principle: behaviour shouldn't change depending on subclass
+- Liskov-substitution principle: behavior shouldn't change depending on subclass
 - Interface-Segregation Principle: clients shouldn't need to depend on methods/interfaces they don't use
   - Split interfaces into smaller, more cohesive interfaces
   - e.g. class implementing interface having lots of `UnsupportedOperationException`s

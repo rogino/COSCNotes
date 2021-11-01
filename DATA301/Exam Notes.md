@@ -311,7 +311,7 @@ If set $I$ appears as least $s$ times, every subset $J$  must also appear at lea
 
 ## Similarity
 
-Finding neighbours in a high-dimensional space.
+Finding neighbors in a high-dimensional space.
 
 Problem: given vector of data-points (possibly a flattened matrix) and a distance function $d(x_1, x_2)$, find all points closer than some threshold $s$.
 
@@ -768,7 +768,7 @@ Multiple processes - distributed memory model.
 
 #### Problem Decomposition
 
-Large data sets split into small tasks; assume there needs to be communication between neighbouring regions.
+Large data sets split into small tasks; assume there needs to be communication between neighboring regions.
 
 Blocks: each task given vertical slice of height $n$. $2n$ items need to be communicated at each boundary.
 
