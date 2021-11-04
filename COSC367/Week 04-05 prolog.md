@@ -71,12 +71,12 @@ k(X):-f(X),g(X),h(X).
 Asking `?: k(Y).` will:
 
 - Set `Y=X`
-- Replace `k(Y).` with `f(X), g(X), h(X)
+- Replace `k(Y).` with `f(X), g(X), h(X)`
 - Try `X=a`
 - `f(a)` succeeds
 - `g(a), h(a).`: dead end
 - Try `X=b`
-- ``f(b),g(b),h(b)` becomes `g(b), h(b)` becomes `h(b)` becomes empty; success
+- `f(b),g(b),h(b)` becomes `g(b), h(b)` becomes `h(b)` becomes empty; success
 - Get `Y=B`
 
 #### Recursion
