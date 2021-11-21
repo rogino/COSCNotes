@@ -494,7 +494,9 @@ With symmetric keys:
   - $B$ sends ID and nonce to $A$
   - $A$ sends ID and nonce for both parties to TA
   - $S$ generates session key between $A$ and $B$ encrypted with long-term key $SA$
-    - $S \to A: \left\{ K_{AB}, \mathrm{ID}_A, \mathrm{ID}_B, N_A \right\}_{K_{AS}}, \left\{ K_{AB}, \mathrm{ID}_A, \mathrm{ID}_B, N_B \right\}_{K_{BS}}$
+     $$
+       S \to A: \left\{ K_{AB}, \mathrm{ID}_A, \mathrm{ID}_B, N_A \right\}_{K_{AS}}, \left\{ K_{AB}, \mathrm{ID}_A, \mathrm{ID}_B, N_B \right\}_{K_{BS}}
+     $$
   - $A$ sends portion of message encrypted with long-term key $SB$
 
 With asymmetric keys:
