@@ -2,13 +2,59 @@
   "2020-S1": [
     {
       "name": "COSC261",
-      "description": "DFAs and Automata"
-    }, {
+      "description": "Formal Languages and Compilers"
+    },
+    {
       "name": "COSC262",
-      "description": "Algorithms!"
+      "description": "Algorithms"
     }
   ],
-  "2020-S2": ["COSC264", "COSC265", "COSC367"],
-  "2021-S1": ["SENG301", "SENG365", "DATA301"],
-  "2021-S2": ["ENEL301", "COSC362", "COSC368"]
+  "2020-S2": [
+    {
+      "name": "COSC264",
+      "description": "Computer Networks"
+    },
+    {
+      "name": "COSC265",
+      "description": "Introduction to Databases"
+    },
+    {
+      "name": "COSC367",
+      "description": "Introduction to Artificial Intelligence"
+    }
+  ],
+  "2021-S1": [
+    {
+      "name": "SENG301",
+      "description": "Software Engineering II"
+    },
+    {
+      "name": "SENG365",
+      "description": "Web Development"
+    },
+    {
+      "name": "DATA301",
+      "description": "Big Data"
+    }
+  ],
+  "2021-S2": [
+    {
+      "name": "ENEL301",
+      "description": "Engineering Ethics, Economics and Management"
+    },
+    {
+      "name": "COSC362",
+      "description": "Data and Network Security"
+    },
+    {
+      "name": "COSC368",
+      "description": "Human-Computer Interaction"
+    }
+  ],
+  "2022-S1": [
+    {
+      "name": "COSC428",
+      "description": "Computer Vision"
+    }
+  ]
 }
