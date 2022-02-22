@@ -2,6 +2,8 @@
 
 Lecture notes for courses taken at the University of Canterbury
 
+## Courses
+
 2020 Semester 2:
 
 - [COSC264 Computer Networks and the Internet](./COSC264)
@@ -39,3 +41,15 @@ Lecture notes for courses taken at the University of Canterbury
 2022 Semester 1:
 
 - [COSC428 Computer Vision](./COSC428)
+
+## Rendering as HTML
+
+To export to a static directory containing HTML files:
+
+```bash
+cd ./compile_to_html
+npm install
+node index.js
+```
+
+Run `node index.js -h` to see options.
