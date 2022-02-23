@@ -40,7 +40,9 @@ Lecture notes for courses taken at the University of Canterbury
 
 2022 Semester 1:
 
+- [COSC421 Advanced Topics in Security](./COSC421)
 - [COSC428 Computer Vision](./COSC428)
+- [SENG401 Engineering III](./SENG401)
 
 ## Rendering as HTML
 
