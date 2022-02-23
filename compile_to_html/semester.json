@@ -53,8 +53,16 @@
   ],
   "2022-S1": [
     {
+      "name": "COSC421",
+      "description": "Advanced Topics in Security"
+    },
+    {
       "name": "COSC428",
       "description": "Computer Vision"
+    },
+    {
+      "name": "SENG401",
+      "description": "Software Engineering III"
     }
   ]
 }
