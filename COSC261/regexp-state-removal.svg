@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="47.889591mm"
+   height="25.185423mm"
+   viewBox="0 0 47.889591 25.185423"
+   version="1.1"
+   id="svg5"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <defs
+     id="defs2" />
+  <g
+     id="layer1"
+     transform="translate(-102.95212,-101.89053)">
+    <circle
+       cx="105.73024"
+       cy="114.4249"
+       fill="#ffffff"
+       stroke="#000000"
+       pointer-events="all"
+       id="ellipse826"
+       r="2.6458333"
+       style="stroke-width:0.264583" />
+    <g
+       transform="matrix(0.26458333,0,0,0.26458333,102.95212,101.06345)"
+       id="g832">
+      <switch
+         id="switch830">
+        <foreignObject
+           pointer-events="none"
+           width="100%"
+           height="100%"
+           requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+           style="overflow: visible; text-align: left;">
+          <xhtml:div
+             style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 18px; height: 1px; padding-top: 50px; margin-left: 1px;">
+            <xhtml:div
+               data-drawio-colors="color: rgb(0, 0, 0); "
+               style="box-sizing: border-box; font-size: 0px; text-align: center;">
+              <xhtml:div
+                 style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">q<xhtml:sub>i</xhtml:sub>
+</xhtml:div>
+            </xhtml:div>
+          </xhtml:div>
+        </foreignObject>
+        <text
+           x="10"
+           y="54"
+           fill="#000000"
+           font-family="Helvetica"
+           font-size="12px"
+           text-anchor="middle"
+           id="text828">qi</text>
+      </switch>
+    </g>
+    <path
+       d="m 129.54274,114.42491 h 14.18961"
+       fill="none"
+       stroke="#000000"
+       stroke-miterlimit="10"
+       pointer-events="stroke"
+       id="path834"
+       style="stroke-width:0.264583" />
+    <path
+       d="m 145.12141,114.42491 -1.85208,0.92604 0.46302,-0.92604 -0.46302,-0.92605 z"
+       fill="#000000"
+       stroke="#000000"
+       stroke-miterlimit="10"
+       pointer-events="all"
+       id="path836"
+       style="stroke-width:0.264583" />
+    <g
+       transform="matrix(0.26458333,0,0,0.26458333,102.95212,102.65096)"
+       id="g842">
+      <switch
+         id="switch840">
+        <foreignObject
+           pointer-events="none"
+           width="100%"
+           height="100%"
+           requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+           style="overflow: visible; text-align: left;">
+          <xhtml:div
+             style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 50px; margin-left: 130px;">
+            <xhtml:div
+               data-drawio-colors="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); "
+               style="box-sizing: border-box; font-size: 0px; text-align: center;">
+              <xhtml:div
+                 style="display: inline-block; font-size: 11px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; background-color: rgb(255, 255, 255); white-space: nowrap;">r<xhtml:sub>jk</xhtml:sub>
+</xhtml:div>
+            </xhtml:div>
+          </xhtml:div>
+        </foreignObject>
+        <text
+           x="130"
+           y="54"
+           fill="#000000"
+           font-family="Helvetica"
+           font-size="11px"
+           text-anchor="middle"
+           id="text838">rjk</text>
+      </switch>
+    </g>
+    <circle
+       cx="126.89691"
+       cy="114.4249"
+       fill="#ffffff"
+       stroke="#000000"
+       pointer-events="all"
+       id="ellipse844"
+       r="2.6458333"
+       style="stroke-width:0.264583" />
+    <g
+       transform="matrix(0.26458333,0,0,0.26458333,102.95212,101.06345)"
+       id="g850">
+      <switch
+         id="switch848">
+        <foreignObject
+           pointer-events="none"
+           width="100%"
+           height="100%"
+           requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+           style="overflow: visible; text-align: left;">
+          <xhtml:div
+             style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 18px; height: 1px; padding-top: 50px; margin-left: 81px;">
+            <xhtml:div
+               data-drawio-colors="color: rgb(0, 0, 0); "
+               style="box-sizing: border-box; font-size: 0px; text-align: center;">
+              <xhtml:div
+                 style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">q<xhtml:sub>j</xhtml:sub>
+</xhtml:div>
+            </xhtml:div>
+          </xhtml:div>
+        </foreignObject>
+        <text
+           x="90"
+           y="54"
+           fill="#000000"
+           font-family="Helvetica"
+           font-size="12px"
+           text-anchor="middle"
+           id="text846">qj</text>
+      </switch>
+    </g>
+    <circle
+       cx="148.06358"
+       cy="114.4249"
+       fill="#ffffff"
+       stroke="#000000"
+       pointer-events="all"
+       id="ellipse852"
+       r="2.6458333"
+       style="stroke-width:0.264583" />
+    <g
+       transform="matrix(0.26458333,0,0,0.26458333,102.95212,101.06345)"
+       id="g858">
+      <switch
+         id="switch856">
+        <foreignObject
+           pointer-events="none"
+           width="100%"
+           height="100%"
+           requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+           style="overflow: visible; text-align: left;">
+          <xhtml:div
+             style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 18px; height: 1px; padding-top: 50px; margin-left: 161px;">
+            <xhtml:div
+               data-drawio-colors="color: rgb(0, 0, 0); "
+               style="box-sizing: border-box; font-size: 0px; text-align: center;">
+              <xhtml:div
+                 style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">q<xhtml:sub>k</xhtml:sub>
+</xhtml:div>
+            </xhtml:div>
+          </xhtml:div>
+        </foreignObject>
+        <text
+           x="170"
+           y="54"
+           fill="#000000"
+           font-family="Helvetica"
+           font-size="12px"
+           text-anchor="middle"
+           id="text854">qk</text>
+      </switch>
+    </g>
+    <path
+       d="m 108.37608,114.42491 h 14.1896"
+       fill="none"
+       stroke="#000000"
+       stroke-miterlimit="10"
+       pointer-events="stroke"
+       id="path860"
+       style="stroke-width:0.264583" />
+    <path
+       d="m 123.95474,114.42491 -1.85208,0.92604 0.46302,-0.92604 -0.46302,-0.92605 z"
+       fill="#000000"
+       stroke="#000000"
+       stroke-miterlimit="10"
+       pointer-events="all"
+       id="path862"
+       style="stroke-width:0.264583" />
+    <g
+       transform="matrix(0.26458333,0,0,0.26458333,102.95212,102.65096)"
+       id="g868">
+      <switch
+         id="switch866">
+        <foreignObject
+           pointer-events="none"
+           width="100%"
+           height="100%"
+           requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+           style="overflow: visible; text-align: left;">
+          <xhtml:div
+             style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 50px; margin-left: 50px;">
+            <xhtml:div
+               data-drawio-colors="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); "
+               style="box-sizing: border-box; font-size: 0px; text-align: center;">
+              <xhtml:div
+                 style="display: inline-block; font-size: 11px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; background-color: rgb(255, 255, 255); white-space: nowrap;">r<xhtml:sub>ij</xhtml:sub>
+</xhtml:div>
+            </xhtml:div>
+          </xhtml:div>
+        </foreignObject>
+        <text
+           x="50"
+           y="54"
+           fill="#000000"
+           font-family="Helvetica"
+           font-size="11px"
+           text-anchor="middle"
+           id="text864">rij</text>
+      </switch>
+    </g>
+    <path
+       d="m 128.73744,112.37388 c 1.52492,-0.72915 2.2282,-2.21805 2.20037,-3.6554 -0.0407,-2.10059 -1.75309,-3.88163 -4.05283,-3.86074 -2.5103,0.0228 -4.06613,2.21305 -4.02889,3.71644 0.0365,1.47148 0.23781,2.05674 1.02457,2.74452"
+       fill="none"
+       stroke="#000000"
+       stroke-miterlimit="10"
+       pointer-events="stroke"
+       id="path870"
+       style="stroke:#000000;stroke-width:0.264583;stroke-opacity:1" />
+    <path
+       d="m 124.82522,112.33734 -1.93939,-0.7276 0.99483,-0.29104 0.36248,-0.96838 z"
+       fill="#000000"
+       stroke="#000000"
+       stroke-miterlimit="10"
+       pointer-events="all"
+       id="path872"
+       style="stroke-width:0.264583" />
+    <g
+       transform="matrix(0.26458333,0,0,0.26458333,102.95212,101.06345)"
+       id="g878">
+      <switch
+         id="switch876">
+        <foreignObject
+           pointer-events="none"
+           width="100%"
+           height="100%"
+           requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+           style="overflow: visible; text-align: left;">
+          <xhtml:div
+             style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 7px; margin-left: 90px;">
+            <xhtml:div
+               data-drawio-colors="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); "
+               style="box-sizing: border-box; font-size: 0px; text-align: center;">
+              <xhtml:div
+                 style="display: inline-block; font-size: 11px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; background-color: rgb(255, 255, 255); white-space: nowrap;">r<xhtml:sub>jj</xhtml:sub>
+</xhtml:div>
+            </xhtml:div>
+          </xhtml:div>
+        </foreignObject>
+        <text
+           x="90"
+           y="11"
+           fill="#000000"
+           font-family="Helvetica"
+           font-size="11px"
+           text-anchor="middle"
+           id="text874">rjj</text>
+      </switch>
+    </g>
+    <circle
+       cx="105.73024"
+       cy="123.94991"
+       fill="#ffffff"
+       stroke="#000000"
+       pointer-events="all"
+       id="ellipse880"
+       r="2.6458333"
+       style="stroke-width:0.264583" />
+    <g
+       transform="matrix(0.26458333,0,0,0.26458333,102.95212,101.06345)"
+       id="g886">
+      <switch
+         id="switch884">
+        <foreignObject
+           pointer-events="none"
+           width="100%"
+           height="100%"
+           requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+           style="overflow: visible; text-align: left;">
+          <xhtml:div
+             style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 18px; height: 1px; padding-top: 86px; margin-left: 1px;">
+            <xhtml:div
+               data-drawio-colors="color: rgb(0, 0, 0); "
+               style="box-sizing: border-box; font-size: 0px; text-align: center;">
+              <xhtml:div
+                 style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">q<xhtml:sub>i</xhtml:sub>
+</xhtml:div>
+            </xhtml:div>
+          </xhtml:div>
+        </foreignObject>
+        <text
+           x="10"
+           y="90"
+           fill="#000000"
+           font-family="Helvetica"
+           font-size="12px"
+           text-anchor="middle"
+           id="text882">qi</text>
+      </switch>
+    </g>
+    <circle
+       cx="148.06358"
+       cy="123.94991"
+       fill="#ffffff"
+       stroke="#000000"
+       pointer-events="all"
+       id="ellipse888"
+       r="2.6458333"
+       style="stroke-width:0.264583" />
+    <g
+       transform="matrix(0.26458333,0,0,0.26458333,102.95212,101.06345)"
+       id="g894">
+      <switch
+         id="switch892">
+        <foreignObject
+           pointer-events="none"
+           width="100%"
+           height="100%"
+           requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+           style="overflow: visible; text-align: left;">
+          <xhtml:div
+             style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 18px; height: 1px; padding-top: 86px; margin-left: 161px;">
+            <xhtml:div
+               data-drawio-colors="color: rgb(0, 0, 0); "
+               style="box-sizing: border-box; font-size: 0px; text-align: center;">
+              <xhtml:div
+                 style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">q<xhtml:sub>k</xhtml:sub>
+</xhtml:div>
+            </xhtml:div>
+          </xhtml:div>
+        </foreignObject>
+        <text
+           x="170"
+           y="90"
+           fill="#000000"
+           font-family="Helvetica"
+           font-size="12px"
+           text-anchor="middle"
+           id="text890">qk</text>
+      </switch>
+    </g>
+    <path
+       d="m 108.37608,123.94991 q 0,0 35.35627,0"
+       fill="none"
+       stroke="#000000"
+       stroke-miterlimit="10"
+       pointer-events="stroke"
+       id="path896"
+       style="stroke-width:0.264583" />
+    <path
+       d="m 145.12141,123.94991 -1.85208,0.92604 0.46302,-0.92604 -0.46302,-0.92605 z"
+       fill="#000000"
+       stroke="#000000"
+       stroke-miterlimit="10"
+       pointer-events="all"
+       id="path898"
+       style="stroke-width:0.264583" />
+    <g
+       transform="matrix(0.26458333,0,0,0.26458333,102.95212,102.65096)"
+       id="g904">
+      <switch
+         id="switch902">
+        <foreignObject
+           pointer-events="none"
+           width="100%"
+           height="100%"
+           requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+           style="overflow: visible; text-align: left;">
+          <xhtml:div
+             style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 86px; margin-left: 91px;">
+            <xhtml:div
+               data-drawio-colors="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); "
+               style="box-sizing: border-box; font-size: 0px; text-align: center;">
+              <xhtml:div
+                 style="display: inline-block; font-size: 11px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; background-color: rgb(255, 255, 255); white-space: nowrap;">r<xhtml:sub>ik</xhtml:sub>
+|r<xhtml:sub>ij</xhtml:sub>
+r<xhtml:sub>jj</xhtml:sub>
+*r<xhtml:sub>ik</xhtml:sub>
+</xhtml:div>
+            </xhtml:div>
+          </xhtml:div>
+        </foreignObject>
+        <text
+           x="91"
+           y="90"
+           fill="#000000"
+           font-family="Helvetica"
+           font-size="11px"
+           text-anchor="middle"
+           id="text900">rik|rijrjj*rik</text>
+      </switch>
+    </g>
+    <switch
+       id="switch914"
+       transform="matrix(0.26458333,0,0,0.26458333,103.08441,101.19574)">
+      <g
+         requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
+         id="g908" />
+      <a
+         transform="translate(0,-5)"
+         xlink:href="https://www.diagrams.net/doc/faq/svg-export-text-problems"
+         target="_blank"
+         id="a912">
+        <text
+           text-anchor="middle"
+           font-size="10px"
+           x="50%"
+           y="100%"
+           id="text910">Text is not SVG - cannot display</text>
+      </a>
+    </switch>
+  </g>
+</svg>
