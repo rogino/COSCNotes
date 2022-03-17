@@ -10,7 +10,7 @@ Binarization of images depending on brightness.
 
 [OpenCV](https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html) has a few types of thresholding.
 
-Simpe/basic thresholding uses a single, global threshold for binarization.
+Simper/basic thresholding uses a single, global threshold for binarization.
 
 Adaptive thresholding uses the surrounding pixels to find some 'average' value of the neighboring pixels (some square centered around the target pixel), then subtracts some constant $c$ to calculate the threshold, which is then compared to the pixel value. The 'average' is either the mean or a Guassian-weighted sum.
 
@@ -50,11 +50,11 @@ Adaptive thresholding uses the surrounding pixels to find some 'average' value o
 
 ## Lab 02
 
-[Kalman filter](https://github.com/rlabbe/Kalman-and-Bayesian-Filters-in-Python)
+Kalman filter:
 
-Unscented Kalman filter: for highly non-linear state transitions
-
-Harris Corner detector: TODO
+- https://github.com/rlabbe/Kalman-and-Bayesian-Filters-in-Python
+- Combine noisy measurements to get better estimate of real state
+- Unscented Kalman filter: for highly non-linear state transitions
 
 Blob detector:
 
