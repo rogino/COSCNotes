@@ -67,7 +67,7 @@ Blob detector:
   - Area: blob area between min and max
   - Circularity: how 'circular' they are (ratio of area to perimeter squared). 1 means perfect circle
   - Convexity: ratio of area to the area of its convex hull. 1 means completely convex
-  - Intertia ratio: think moment of inertia. Circle has smallest inertia for a given area (1), a line has the greatest (0)
+  - Inertia ratio: think moment of inertia. Circle has smallest inertia for a given area (1), a line has the greatest (0)
 between images
 
 Lucas-Kanade Optical Flow:
@@ -76,3 +76,25 @@ Lucas-Kanade Optical Flow:
 - Assumes that the pixel intensities of an object do not change between frames, and that neighboring pixels have similar motion. Falls apart when lighting (or background) changes.
 
 https://docs.opencv.org/4.5.0/d4/dee/tutorial_optical_flow.html
+
+## Lab 03
+
+Tesseract OCR:
+
+- From HP in the 80s and 90s, picked up by Google since open sourcing in 2005
+- Can detect characters from multiple languages, or simply return bounding boxes of characters
+- Requires clean, binarized image
+
+Open3D:
+
+- Point cloud visualization
+- Point clouds noisy; to filter out outliers, find nearest n neighbors and eliminate points where the mean distance is greater than some threshold
+- Segmentation:
+  - Detect shapes within point clouds
+  - Filter out points outside some range
+  - Fit points to primitive shapes (e.g. planes, cylinders) using RANSAC (RANdom SAmple Consensus)
+    - Randomly pick a few data points and create a model that matches the primitive (e.g. for plane, pick three points, generate equation for the plane)
+    - Find what points are consistent with the model
+      - Outliers are further away than some error threshold
+    - Repeat until you get a model with few outliers
+    - Using all non-outlier points, generate a new model
