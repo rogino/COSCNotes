@@ -493,15 +493,21 @@ are required to exclude the top level H1 links from having a counter
   counter-reset: toc-counter;
 }
 .table-of-contents > ol > li ol li {
-  /*After every li, increment the counter for immediate parent ol element by 1 */
+  /* After every li, increment the counter for immediate parent ol element by 1 */
   counter-increment: toc-counter;
 }
 .table-of-contents > ol > li ol li > a::before {
   /* Shows contents of all counters in the hierarchy with the given formatting */
   content: counters(toc-counter, ".") ". ";
-  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
 }
-
+body:not(.toc-show-h1) .table-of-contents > ol > li > ol > li > a::before {
+  /* For main page ToC, align course names. Can't do it when there is nesting */
+  display: inline-block;
+  width: 1.5em; /* Hopefully won't have any three digit numbers */
+  text-align: right;
+  margin-right: 0.2em;
+}
 
 /* Define counter when showing H1 elements so that the H2 and other child ToC
  entries will have the counter for the H1 element */
