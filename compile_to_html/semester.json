@@ -64,5 +64,19 @@
       "name": "SENG401",
       "description": "Software Engineering III"
     }
+  ],
+  "2022-S2": [
+    {
+      "name": "COSC477",
+      "description": "Mixed Reality"
+    },
+    {
+      "name": "SENG440",
+      "description": "Mobile Computing"
+    },
+    {
+      "name": "SENG406",
+      "description": "Software Security"
+    }
   ]
 }
